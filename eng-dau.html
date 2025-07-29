@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>English Speaking Practice App</title>
-
-  <link rel="manifest" href="https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/manifest.json" />
+  <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Bubblegum Sans', cursive;
+      font-size: 18px;
       max-width: 800px;
       margin: 30px auto;
       padding: 20px;
@@ -17,11 +17,10 @@
       border-radius: 20px;
       box-shadow: 0 0 12px rgba(255, 192, 203, 0.5);
       color: #5a005a;
-      position: relative;
     }
     input, button {
-      padding: 10px;
-      font-size: 16px;
+      padding: 12px;
+      font-size: 18px;
       margin: 6px 0;
       box-sizing: border-box;
       font-family: inherit;
@@ -30,10 +29,6 @@
       width: 100%;
       border: 2px solid #f7c5ff;
       border-radius: 10px;
-    }
-
-    div#topBarText span {
-      margin: 0 8px;
     }
     button {
       background: #1491a5;
@@ -45,14 +40,16 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       margin-right: 12px;
       margin-bottom: 10px;
-      padding: 10px 20px;
+      padding: 12px 24px;
     }
     button:hover {
-      transform: scale(1.02);
+      transform: scale(1.05);
     }
     h2, h3 { color: #cc33aa; }
+
     .section { margin-bottom: 30px; }
     .hidden { display: none; }
+
     .sticky-header {
       position: sticky;
       top: 0;
@@ -60,20 +57,30 @@
       padding: 12px 20px;
       border-bottom: 3px dashed #ffb4f2;
       z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .sticky-header img {
+      width: 40px;
+      height: 40px;
     }
     .sticky-header .content {
-      font-size: 22px;
+      font-size: 28px;
       font-weight: bold;
-      color: #d400a6;
-      display: contents;
-      justify-content: center;
+      color: #000;
+      display: flex;
       align-items: center;
-      flex-wrap: nowrap;
-      gap: 10px;
-      white-space: nowrap;
+      flex-wrap: wrap;
+      gap: 5px;
     }
+    
+    .sticky-header .content span {
+    margin: 0 6px;
+}
+
     .bar {
-      height: 20px;
+      height: 22px;
       background: #ffd6f5;
       margin-top: 10px;
       border-radius: 10px;
@@ -89,59 +96,63 @@
       font-weight: bold;
       transition: width 0.5s;
     }
+
     .letter-box {
       display: inline-block;
-      width: 35px;
-      height: 42px;
+      width: 36px;
+      height: 44px;
       border: 2px dashed #eeaadd;
       margin: 2px;
       text-align: center;
-      font-size: 18px;
+      font-size: 20px;
       background: #fff8fc;
       border-radius: 6px;
     }
+
     .word-group {
       margin-right: 18px;
       display: inline-block;
     }
-    .confetti {
-      font-size: 40px;
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: pop 0.8s ease forwards;
-    }
-    @keyframes pop {
-      0% { transform: translate(-50%, 0) scale(0); opacity: 0; }
-      50% { transform: translate(-50%, -20px) scale(1.2); opacity: 1; }
-      100% { transform: translate(-50%, -60px) scale(1); opacity: 0; }
-    }
+
     @media (max-width: 600px) {
       body {
         padding: 15px;
         margin: 10px;
+        font-size: 16px;
+      }
+      .sticky-header {
+       
+        align-items: flex-start;
+      }
+      .sticky-header img {
+        width: 36px;
+        height: 36px;
       }
       .sticky-header .content {
-        flex-direction: column;
         font-size: 18px;
       }
       button {
         width: 100%;
         margin-right: 0;
         margin-bottom: 12px;
-        padding: 12px;
+        padding: 14px;
+        font-size: 17px;
+      }
+      input[type="text"] {
         font-size: 16px;
       }
-    }
-
-    /* 👇 BỔ SUNG: CSS cho icon 👇 */
-    .topbar-icon {
-      width: 30px;
-      height: 30px;
-      vertical-align: middle;
-      margin-right: 10px;
-      border-radius: 50%;
+      .letter-box {
+        width: 30px;
+        height: 40px;
+        font-size: 18px;
+      }
+      .section h3 {
+        font-size: 18px;
+      }
+      h2 {
+        font-size: 22px;
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -149,7 +160,7 @@
   <div id="inputSection">
     <h2>🌸 Dau Dau English Practice🌸</h2>
     <div class="section">
-      <input id="sentenceInput" type="text" placeholder="Nhap 1 cau Tieng Anh" />
+      <input id="sentenceInput" type="text" placeholder="Nhap 1 cau tieng anh can hoc" />
       <input id="keyword1Input" type="text" placeholder="Tu moi 1" />
       <input id="keyword2Input" type="text" placeholder="Tu moi 2" />
       <button onclick="startPractice()">✨ Start ✨</button>
@@ -157,28 +168,54 @@
   </div>
 
   <div id="stickyHeader" class="sticky-header hidden">
-    <div><small style="font-size: 12px; color: #888;">Sentence • Keywords</small></div>
-    <div class="content" id="topBarText"></div>
+    <img src="https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau.png" alt="Icon" />
+    <div>
+      <div style="font-size: 14px; color: #888;">Sentence • Keywords</div>
+      <div class="content">
+        <span id="stickySentence"></span>
+        <span>|</span>
+        <span id="stickyKeyword1"></span>
+        <span>•</span>
+        <span id="stickyKeyword2"></span>
+      </div>
+    </div>
   </div>
 
   <div id="practiceContent" class="hidden">
     <div class="section">
       <h3>1. 🔊 Read the Sentence</h3>
-      <button onclick="speak(false, this)">🔊 Read Normally</button>
-      <button onclick="speak(true, this)">🔊 Read Slowly</button>
+      <button onclick="speak(false, this)">Read Normally</button>
+      <button onclick="speak(true, this)">Read Slowly</button>
     </div>
 
     <div class="section">
       <h3>2. 🧁 Read Keywords</h3>
-      <button onclick="speakKeyword(1, this)">🔊 Keyword 1</button>
-      <button onclick="speakKeyword(2, this)">🔊 Keyword 2</button>
+      <button onclick="speakKeyword(1, this)">Keyword 1</button>
+      <button onclick="speakKeyword(2, this)">Keyword 2</button>
     </div>
 
     <div class="section">
       <h3>3. 🎤 Speak and Get Score</h3>
-      <button onclick="startRecognition()">🎙️ Start Recording</button>
+      <button onclick="startRecognition()">Start Recording</button>
       <p id="userSpeech">You said: ...</p>
       <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
+    </div>
+
+    <!-- ✅ Bước mới: Kiểm tra từng keyword riêng biệt -->
+    <div class="section">
+      <h3>3.5 🎧 Check Your Keywords</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <div style="flex: 1 1 48%;">
+          <button onclick="checkKeyword(1)">🎙️ Record Keyword 1</button>
+          <p id="keyword1Result">Keyword 1: ...</p>
+          <div class="bar"><div id="keyword1Bar" class="bar-fill">0/1</div></div>
+        </div>
+        <div style="flex: 1 1 48%;">
+          <button onclick="checkKeyword(2)">🎙️ Record Keyword 2</button>
+          <p id="keyword2Result">Keyword 2: ...</p>
+          <div class="bar"><div id="keyword2Bar" class="bar-fill">0/1</div></div>
+        </div>
+      </div>
     </div>
 
     <div class="section">
@@ -203,13 +240,9 @@
       document.getElementById("practiceContent").classList.remove("hidden");
       document.getElementById("stickyHeader").classList.remove("hidden");
 
-      document.getElementById("topBarText").innerHTML =
-        `${sentence} <span>|</span> ${keyword1} <span>•</span> ${keyword2}`;
-
-      // 👇 BỔ SUNG: Thêm icon vào trước topBarText 👇
-      document.getElementById("topBarText").innerHTML =
-        `<img src="https://raw.githubusercontent.com/contactluva/bird70/main/dau.png" alt="icon" class="topbar-icon" /> ` +
-        document.getElementById("topBarText").innerHTML;
+      document.getElementById("stickySentence").textContent = sentence;
+      document.getElementById("stickyKeyword1").textContent = keyword1;
+      document.getElementById("stickyKeyword2").textContent = keyword2;
 
       createRewriteBoxes();
     }
@@ -219,6 +252,7 @@
       btn.dataset.originalText = btn.textContent;
       btn.textContent = label;
     }
+
     function enableButton(btn) {
       btn.disabled = false;
       btn.textContent = btn.dataset.originalText;
@@ -272,6 +306,19 @@
       }
     }
 
+    function checkKeyword(n) {
+      recognition.start();
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        const keyword = n === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
+        const resultId = n === 1 ? "keyword1Result" : "keyword2Result";
+        const barId = n === 1 ? "keyword1Bar" : "keyword2Bar";
+        document.getElementById(resultId).textContent = `You said: ${transcript}`;
+        const score = transcript.includes(keyword) ? 1 : 0;
+        updateBar(barId, score, 1);
+      };
+    }
+
     function levenshteinDistance(a, b) {
       const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
       for (let i = 0; i <= a.length; i++) dp[i][0] = i;
@@ -288,7 +335,7 @@
     function evaluatePronunciation(userSpeech) {
       const dist = levenshteinDistance(userSpeech.toLowerCase(), sentence.toLowerCase());
       const score = Math.max(0, 10 - dist);
-      updateBar("scoreBar", score);
+      updateBar("scoreBar", score, 10);
     }
 
     function createRewriteBoxes() {
@@ -314,34 +361,24 @@
       const original = sentence.replace(/\s/g, "");
       const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
       const score = Math.max(0, 10 - dist);
-      updateBar("rewriteBar", score);
+      updateBar("rewriteBar", score, 10);
     }
 
-    function updateBar(id, score) {
+    function updateBar(id, score, max) {
       const bar = document.getElementById(id);
-      bar.style.width = (score * 10) + "%";
-      bar.textContent = score + "/10";
-      if (score === 10) {
-        showConfetti();
-      }
+      bar.style.width = (score / max * 100) + "%";
+      bar.textContent = `${score}/${max}`;
     }
 
-    function showConfetti() {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.textContent = '🎉 Great job!';
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 1200);
-    }
-
-    // Register Service Worker for PWA
+    // Register PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/sw.js').then(reg => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
           console.log('Service Worker registered!', reg);
         });
       });
     }
   </script>
 </body>
+
 </html>
