@@ -232,20 +232,24 @@
     </div>
   </div>
 
-  <script>
+ <script>
   let sentence = '', keyword1 = '', keyword2 = '';
   let voices = [];
+  let voicesReady = false;
 
-  function loadVoices() {
+  function waitForVoices(callback) {
     voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-    if (voices.length === 0) {
+    if (voices.length > 0) {
+      voicesReady = true;
+      callback();
+    } else {
       speechSynthesis.onvoiceschanged = () => {
         voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+        voicesReady = true;
+        callback();
       };
     }
   }
-
-  loadVoices();
 
   function startPractice() {
     sentence = document.getElementById("sentenceInput").value.trim();
@@ -277,51 +281,52 @@
 
   function speak(slow, btn) {
     disableButton(btn);
-    const selectedVoice = voices.find(v => v.lang === 'en-US') || voices[0];
-
-    if (!selectedVoice) {
-      alert("No English voice available on this device.");
-      enableButton(btn);
-      return;
-    }
-
-    if (!slow) {
-      const utterance = new SpeechSynthesisUtterance(sentence);
-      utterance.voice = selectedVoice;
-      utterance.rate = 1.0;
-      utterance.onend = () => enableButton(btn);
-      speechSynthesis.speak(utterance);
-    } else {
-      const words = sentence.split(" ");
-      let index = 0;
-
-      function speakNext() {
-        if (index >= words.length) return enableButton(btn);
-        const utterance = new SpeechSynthesisUtterance(words[index]);
-        utterance.voice = selectedVoice;
-        utterance.rate = 0.6;
-        speechSynthesis.speak(utterance);
-        index++;
-        setTimeout(speakNext, 1000);
+    waitForVoices(() => {
+      const selectedVoice = voices.find(v => v.lang === 'en-US') || voices[0];
+      if (!selectedVoice) {
+        alert("No English voice available on this device.");
+        enableButton(btn);
+        return;
       }
-      speakNext();
-    }
+
+      if (!slow) {
+        const utterance = new SpeechSynthesisUtterance(sentence);
+        utterance.voice = selectedVoice;
+        utterance.rate = 1.0;
+        utterance.onend = () => enableButton(btn);
+        speechSynthesis.speak(utterance);
+      } else {
+        const words = sentence.split(" ");
+        let index = 0;
+        function speakNext() {
+          if (index >= words.length) return enableButton(btn);
+          const utterance = new SpeechSynthesisUtterance(words[index]);
+          utterance.voice = selectedVoice;
+          utterance.rate = 0.6;
+          speechSynthesis.speak(utterance);
+          index++;
+          setTimeout(speakNext, 1000);
+        }
+        speakNext();
+      }
+    });
   }
 
   function speakKeyword(n, btn) {
     disableButton(btn);
     const text = n === 1 ? keyword1 : keyword2;
-    const selectedVoice = voices.find(v => v.lang === 'en-US') || voices[0];
-    if (!selectedVoice) {
-      alert("No English voice available on this device.");
-      enableButton(btn);
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = selectedVoice;
-    utterance.onend = () => enableButton(btn);
-    speechSynthesis.speak(utterance);
+    waitForVoices(() => {
+      const selectedVoice = voices.find(v => v.lang === 'en-US') || voices[0];
+      if (!selectedVoice) {
+        alert("No English voice available on this device.");
+        enableButton(btn);
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = selectedVoice;
+      utterance.onend = () => enableButton(btn);
+      speechSynthesis.speak(utterance);
+    });
   }
 
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -354,7 +359,7 @@
 
   function levenshteinDistance(a, b) {
     const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
-    for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+    for (let i = 0; i i++) dp[i][0] = i;
     for (let j = 0; j <= b.length; j++) dp[0][j] = j;
     for (let i = 1; i <= a.length; i++) {
       for (let j = 1; j <= b.length; j++) {
@@ -403,7 +408,7 @@
     bar.textContent = `${score}/${max}`;
   }
 
-  // Register PWA
+  // Đăng ký PWA
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then(reg => {
@@ -414,6 +419,7 @@
     });
   }
 </script>
+
 
 </body>
 
