@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,15 +7,11 @@
   <title>English Speaking Practice App</title>
   <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
- <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#cc33aa" />
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png">
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-
-
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png">
+  <meta name="theme-color" content="#cc33aa" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png" type="image/png" />
-  <!-- Thêm Puter.js -->
   <script src="https://js.puter.com/v2/"></script>
   <style>
     body {
@@ -82,9 +79,6 @@
       flex-wrap: wrap;
       gap: 5px;
     }
-    .sticky-header .content span {
-      margin: 0 6px;
-    }
     .bar {
       height: 22px;
       background: #ffd6f5;
@@ -117,45 +111,6 @@
       margin-right: 18px;
       display: inline-block;
     }
-    @media (max-width: 600px) {
-      body {
-        padding: 15px;
-        margin: 10px;
-        font-size: 16px;
-      }
-      .sticky-header {
-        align-items: center;
-      }
-      .sticky-header img {
-        width: 66px;
-        height: 66px;
-      }
-      .sticky-header .content {
-        font-size: 26px;
-      }
-      button {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 12px;
-        padding: 14px;
-        font-size: 17px;
-      }
-      input[type="text"] {
-        font-size: 16px;
-      }
-      .letter-box {
-        width: 30px;
-        height: 40px;
-        font-size: 18px;
-      }
-      .section h3 {
-        font-size: 18px;
-      }
-      h2 {
-        font-size: 22px;
-        text-align: center;
-      }
-    }
   </style>
 </head>
 <body>
@@ -171,15 +126,11 @@
 
   <div id="stickyHeader" class="sticky-header hidden">
     <img src="https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau.png" alt="Icon" />
-    <div>
-     
-      <div class="content">
-        <span id="stickySentence"></span>
+    <div class="content">
+      <span id="stickySentence"></span>
       <div style="font-size: 18px; color: #888;" class="newword">
-        <span id="stickyKeyword1"></span>
-        <span>•</span>
-        <span id="stickyKeyword2"></span>
-      </div></div>
+        <span id="stickyKeyword1"></span> • <span id="stickyKeyword2"></span>
+      </div>
     </div>
   </div>
 
@@ -230,138 +181,80 @@
 
   <script>
     let sentence = '', keyword1 = '', keyword2 = '';
+    let mediaRecorder = null, chunks = [], currentKeywordIndex = 0;
 
     function startPractice() {
       sentence = document.getElementById("sentenceInput").value.trim();
       keyword1 = document.getElementById("keyword1Input").value.trim();
       keyword2 = document.getElementById("keyword2Input").value.trim();
       if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
-
       document.getElementById("inputSection").classList.add("hidden");
       document.getElementById("practiceContent").classList.remove("hidden");
       document.getElementById("stickyHeader").classList.remove("hidden");
-
       document.getElementById("stickySentence").textContent = sentence;
       document.getElementById("stickyKeyword1").textContent = keyword1;
       document.getElementById("stickyKeyword2").textContent = keyword2;
-
       createRewriteBoxes();
     }
 
-    function disableButton(btn, label = "...") {
-      btn.disabled = true;
-      btn.dataset.originalText = btn.textContent;
-      btn.textContent = label;
-    }
-
-    function enableButton(btn) {
-      btn.disabled = false;
-      btn.textContent = btn.dataset.originalText;
-    }
-
     function speak(slow, btn) {
-      disableButton(btn);
-      if (!slow) {
-        // Đọc bình thường
-        const text = sentence;
-        const options = {
-          voice: "Joanna", // Giọng nữ Mỹ
-          engine: "neural",
-          language: "en-US",
-          rate: 1.0
-        };
-        puter.ai.txt2speech(text, options)
-          .then((audio) => {
-            audio.play();
-            enableButton(btn);
-          })
-          .catch((error) => {
-            console.error('Lỗi phát âm:', error);
-            alert('Lỗi phát âm: Vui lòng kiểm tra kết nối mạng hoặc thử lại.');
-            enableButton(btn);
-          });
-      } else {
-        // Đọc chậm: Chia câu thành từng từ và phát từng từ
-        const words = sentence.split(" ");
-        let index = 0;
-        function speakNext() {
-          if (index >= words.length) {
-            enableButton(btn);
-            return;
-          }
-          const text = words[index];
-          const options = {
-            voice: "Joanna",
-            engine: "neural",
-            language: "en-US",
-            rate: 0.6 // Tốc độ chậm cho mỗi từ
-          };
-          puter.ai.txt2speech(text, options)
-            .then((audio) => {
-              audio.play();
-              audio.onended = () => {
-                index++;
-                setTimeout(speakNext, 500); // Khoảng dừng 500ms giữa các từ
-              };
-            })
-            .catch((error) => {
-              console.error('Lỗi phát âm:', error);
-              alert('Lỗi phát âm: Vui lòng kiểm tra kết nối mạng hoặc thử lại.');
-              enableButton(btn);
-            });
-        }
-        speakNext();
-      }
+      btn.disabled = true;
+      const words = sentence.split(" ");
+      const options = { voice: "Joanna", engine: "neural", language: "en-US", rate: slow ? 0.6 : 1.0 };
+      const speakNext = (index) => {
+        if (index >= words.length) return btn.disabled = false;
+        puter.ai.txt2speech(slow ? words[index] : sentence, options).then(audio => {
+          audio.play();
+          audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false);
+        });
+      };
+      speakNext(0);
     }
 
     function speakKeyword(n, btn) {
-      disableButton(btn);
+      btn.disabled = true;
       const text = n === 1 ? keyword1 : keyword2;
-      const options = {
-        voice: "Joanna",
-        engine: "neural",
-        language: "en-US",
-        rate: 1.0
-      };
-      puter.ai.txt2speech(text, options)
-        .then((audio) => {
-          audio.play();
-          enableButton(btn);
-        })
-        .catch((error) => {
-          console.error('Lỗi phát âm:', error);
-          alert('Lỗi phát âm: Vui lòng kiểm tra kết nối mạng hoặc thử lại.');
-          enableButton(btn);
+      const options = { voice: "Joanna", engine: "neural", language: "en-US", rate: 1.0 };
+      puter.ai.txt2speech(text, options).then(audio => {
+        audio.play();
+        audio.onended = () => btn.disabled = false;
+      });
+    }
+
+    async function record(type) {
+      currentKeywordIndex = type;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      chunks = [];
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const arrayBuffer = await blob.arrayBuffer();
+        const res = await fetch('/api/transcribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/octet-stream' },
+          body: arrayBuffer
         });
+        const data = await res.json();
+        const transcript = (data.text || "").toLowerCase();
+        if (currentKeywordIndex === 0) {
+          document.getElementById("userSpeech").textContent = "You said: " + transcript;
+          evaluatePronunciation(transcript);
+        } else {
+          const keyword = currentKeywordIndex === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
+          const resultId = currentKeywordIndex === 1 ? "keyword1Result" : "keyword2Result";
+          const barId = currentKeywordIndex === 1 ? "keyword1Bar" : "keyword2Bar";
+          document.getElementById(resultId).textContent = `You said: ${transcript}`;
+          const score = transcript.includes(keyword) ? 1 : 0;
+          updateBar(barId, score, 1);
+        }
+      };
+      mediaRecorder.start();
+      setTimeout(() => mediaRecorder.stop(), 5000);
     }
 
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'en-US';
-
-    function startRecognition() {
-      recognition.start();
-      recognition.onresult = function (event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById("userSpeech").textContent = "You said: " + transcript;
-        evaluatePronunciation(transcript);
-      };
-      recognition.onerror = function (event) {
-        alert("Lỗi ghi âm: " + event.error);
-      };
-    }
-
-    function checkKeyword(n) {
-      recognition.start();
-      recognition.onresult = function (event) {
-        const transcript = event.results[0][0].transcript.toLowerCase();
-        const keyword = n === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
-        const resultId = n === 1 ? "keyword1Result" : "keyword2Result";
-        const barId = n === 1 ? "keyword1Bar" : "keyword2Bar";
-        document.getElementById(resultId).textContent = `You said: ${transcript}`;
-        const score = transcript.includes(keyword) ? 1 : 0;
-        updateBar(barId, score, 1);
-      };
-    }
+    function startRecognition() { record(0); }
+    function checkKeyword(n) { record(n); }
 
     function levenshteinDistance(a, b) {
       const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
@@ -370,11 +263,7 @@
       for (let i = 1; i <= a.length; i++) {
         for (let j = 1; j <= b.length; j++) {
           const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-          dp[i][j] = Math.min(
-            dp[i - 1][j] + 1,
-            dp[i][j - 1] + 1,
-            dp[i - 1][j - 1] + cost
-          );
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
         }
       }
       return dp[a.length][b.length];
@@ -389,8 +278,7 @@
     function createRewriteBoxes() {
       const container = document.getElementById("rewriteBoxes");
       container.innerHTML = "";
-      const words = sentence.split(" ");
-      words.forEach(word => {
+      sentence.split(" ").forEach(word => {
         const group = document.createElement("div");
         group.className = "word-group";
         [...word].forEach(() => {
