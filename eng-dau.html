@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>English Speaking Practice App</title>
+  <link rel="manifest" href="manifest.json" />
   <style>
     body {
       font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
@@ -13,6 +15,7 @@
       border-radius: 20px;
       box-shadow: 0 0 12px rgba(255, 192, 203, 0.5);
       color: #5a005a;
+      position: relative;
     }
     input, button {
       padding: 10px;
@@ -41,12 +44,9 @@
     button:hover {
       transform: scale(1.02);
     }
-    h2, h3 {
-      color: #cc33aa;
-    }
+    h2, h3 { color: #cc33aa; }
     .section { margin-bottom: 30px; }
     .hidden { display: none; }
-
     .sticky-header {
       position: sticky;
       top: 0;
@@ -60,7 +60,11 @@
       font-weight: bold;
       color: #d400a6;
       display: flex;
+      justify-content: center;
       align-items: center;
+      flex-wrap: nowrap;
+      gap: 10px;
+      white-space: nowrap;
     }
     .bar {
       height: 20px;
@@ -94,6 +98,36 @@
       margin-right: 18px;
       display: inline-block;
     }
+    .confetti {
+      font-size: 40px;
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: pop 0.8s ease forwards;
+    }
+    @keyframes pop {
+      0% { transform: translate(-50%, 0) scale(0); opacity: 0; }
+      50% { transform: translate(-50%, -20px) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, -60px) scale(1); opacity: 0; }
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+        margin: 10px;
+      }
+      .sticky-header .content {
+        flex-direction: column;
+        font-size: 18px;
+      }
+      button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 12px;
+        padding: 12px;
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -109,31 +143,25 @@
 
   <div id="stickyHeader" class="sticky-header hidden">
     <div><small style="font-size: 14px; color: #888;">Sentence • Keywords</small></div>
-    <div class="content">
-      <span id="stickySentence"></span>
-      <span style="margin: 0 15px;">|</span>
-      <span id="stickyKeyword1"></span>
-      <span style="margin: 0 5px;">•</span>
-      <span id="stickyKeyword2"></span>
-    </div>
+    <div class="content" id="topBarText"></div>
   </div>
 
   <div id="practiceContent" class="hidden">
     <div class="section">
       <h3>1. 🔊 Read the Sentence</h3>
-      <button onclick="speak(false, this)">Read Normally</button>
-      <button onclick="speak(true, this)">Read Slowly</button>
+      <button onclick="speak(false, this)">🔊 Read Normally</button>
+      <button onclick="speak(true, this)">🔊 Read Slowly</button>
     </div>
 
     <div class="section">
       <h3>2. 🧁 Read Keywords</h3>
-      <button onclick="speakKeyword(1, this)">Keyword 1</button>
-      <button onclick="speakKeyword(2, this)">Keyword 2</button>
+      <button onclick="speakKeyword(1, this)">🔊 Keyword 1</button>
+      <button onclick="speakKeyword(2, this)">🔊 Keyword 2</button>
     </div>
 
     <div class="section">
       <h3>3. 🎤 Speak and Get Score</h3>
-      <button onclick="startRecognition()">Start Recording</button>
+      <button onclick="startRecognition()">🎙️ Start Recording</button>
       <p id="userSpeech">You said: ...</p>
       <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
     </div>
@@ -148,7 +176,7 @@
   </div>
 
   <script>
-    let sentence = "", keyword1 = "", keyword2 = "";
+    let sentence = '', keyword1 = '', keyword2 = '';
 
     function startPractice() {
       sentence = document.getElementById("sentenceInput").value.trim();
@@ -160,9 +188,8 @@
       document.getElementById("practiceContent").classList.remove("hidden");
       document.getElementById("stickyHeader").classList.remove("hidden");
 
-      document.getElementById("stickySentence").textContent = sentence;
-      document.getElementById("stickyKeyword1").textContent = keyword1;
-      document.getElementById("stickyKeyword2").textContent = keyword2;
+      document.getElementById("topBarText").innerHTML =
+        `${sentence} <span>|</span> ${keyword1} <span>•</span> ${keyword2}`;
 
       createRewriteBoxes();
     }
@@ -172,7 +199,6 @@
       btn.dataset.originalText = btn.textContent;
       btn.textContent = label;
     }
-
     function enableButton(btn) {
       btn.disabled = false;
       btn.textContent = btn.dataset.originalText;
@@ -275,6 +301,26 @@
       const bar = document.getElementById(id);
       bar.style.width = (score * 10) + "%";
       bar.textContent = score + "/10";
+      if (score === 10) {
+        showConfetti();
+      }
+    }
+
+    function showConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.textContent = '🎉 Great job!';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 1200);
+    }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('Service Worker registered!', reg);
+        });
+      });
     }
   </script>
 </body>
