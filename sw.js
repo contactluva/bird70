@@ -4,9 +4,9 @@ self.addEventListener('install', event => {
       return cache.addAll([
         './',
         'https://engdau.vercel.app/eng-dau.html',
-        './manifest.json',
-        'https://github.com/contactluva/bird70/blob/main/dau2.png',
-        'https://github.com/contactluva/bird70/blob/main/dau.png'
+        'https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/manifest.json',
+        'https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau2.png',
+        'https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau.png'
       ]);
     })
   );
