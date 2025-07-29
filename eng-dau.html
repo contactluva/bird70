@@ -1,88 +1,44 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>English Speaking Practice App</title>
   <link rel="manifest" href="manifest.json" />
-  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png">
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet" />
   <meta name="theme-color" content="#cc33aa" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png" type="image/png" />
   <script src="https://js.puter.com/v2/"></script>
   <style>
     body {
       font-family: 'Bubblegum Sans', cursive;
-      font-size: 18px;
       max-width: 800px;
       margin: 30px auto;
       padding: 20px;
       background: #ffeefc;
       border-radius: 20px;
-      box-shadow: 0 0 12px rgba(255, 192, 203, 0.5);
       color: #5a005a;
     }
     input, button {
-      padding: 12px;
-      font-size: 18px;
-      margin: 6px 0;
-      box-sizing: border-box;
       font-family: inherit;
-    }
-    input[type="text"] {
-      width: 100%;
-      border: 2px solid #f7c5ff;
+      font-size: 18px;
+      padding: 12px;
+      margin: 6px 0;
       border-radius: 10px;
     }
     button {
       background: #1491a5;
       color: white;
       border: none;
-      border-radius: 12px;
-      transition: 0.2s;
       font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-right: 12px;
-      margin-bottom: 10px;
-      padding: 12px 24px;
+      transition: 0.2s;
     }
     button:hover {
       transform: scale(1.05);
     }
-    h2, h3 { color: #cc33aa; }
-    .section { margin-bottom: 30px; }
-    .hidden { display: none; }
-    .sticky-header {
-      position: sticky;
-      top: 0;
-      background: #fff0f9;
-      padding: 12px 20px;
-      border-bottom: 3px dashed #ffb4f2;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .sticky-header img {
-      width: 80px;
-      height: 80px;
-    }
-    .sticky-header .content {
-      font-size: 28px;
-      font-weight: bold;
-      color: #000;
-      display: inline;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
     .bar {
       height: 22px;
       background: #ffd6f5;
-      margin-top: 10px;
       border-radius: 10px;
       overflow: hidden;
       border: 1px solid #f9c2e6;
@@ -96,165 +52,103 @@
       font-weight: bold;
       transition: width 0.5s;
     }
-    .letter-box {
-      display: inline-block;
-      width: 36px;
-      height: 44px;
-      border: 2px dashed #eeaadd;
-      margin: 2px;
-      text-align: center;
-      font-size: 20px;
-      background: #fff8fc;
-      border-radius: 6px;
-    }
-    .word-group {
-      margin-right: 18px;
-      display: inline-block;
-    }
   </style>
 </head>
 <body>
-  <div id="inputSection">
-    <h2>🌸 Dau Dau English Practice🌸</h2>
-    <div class="section">
-      <input id="sentenceInput" type="text" placeholder="Nhap 1 cau tieng anh can hoc" />
-      <input id="keyword1Input" type="text" placeholder="Tu moi 1" />
-      <input id="keyword2Input" type="text" placeholder="Tu moi 2" />
-      <button onclick="startPractice()">✨ Start ✨</button>
-    </div>
+  <h2>🌸 Dau Dau English Practice🌸</h2>
+  <div>
+    <input id="sentenceInput" type="text" placeholder="Nhập câu tiếng Anh cần học"/>
+    <button onclick="startPractice()">✨ Start ✨</button>
   </div>
 
-  <div id="stickyHeader" class="sticky-header hidden">
-    <img src="https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau.png" alt="Icon" />
-    <div class="content">
-      <span id="stickySentence"></span>
-      <div style="font-size: 18px; color: #888;" class="newword">
-        <span id="stickyKeyword1"></span> • <span id="stickyKeyword2"></span>
-      </div>
-    </div>
-  </div>
+  <div id="practiceSection" style="display:none;">
+    <p><strong>Câu luyện nói:</strong> <span id="sentenceText"></span></p>
 
-  <div id="practiceContent" class="hidden">
-    <div class="section">
-      <h3>1. 🔊 Read the Sentence</h3>
-      <button onclick="speak(false, this)">Read Normally</button>
-      <button onclick="speak(true, this)">Read Slowly</button>
-    </div>
+    <h3>1. 🔊 Phát âm câu</h3>
+    <button onclick="speak(false)">Đọc bình thường</button>
+    <button onclick="speak(true)">Đọc chậm</button>
 
-    <div class="section">
-      <h3>2. 🧁 Read Keywords</h3>
-      <button onclick="speakKeyword(1, this)">Keyword 1</button>
-      <button onclick="speakKeyword(2, this)">Keyword 2</button>
-    </div>
-
-    <div class="section">
-      <h3>3. 🎤 Speak and Get Score</h3>
-      <button onclick="startRecognition()">Start Recording</button>
-      <p id="userSpeech">You said: ...</p>
-      <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
-    </div>
-
-    <div class="section">
-      <h3>3.5 🎧 Check Your Keywords</h3>
-      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-        <div style="flex: 1 1 48%;">
-          <button onclick="checkKeyword(1)">🎙️ Record Keyword 1</button>
-          <p id="keyword1Result">Keyword 1: ...</p>
-          <div class="bar"><div id="keyword1Bar" class="bar-fill">0/1</div></div>
-        </div>
-        <div style="flex: 1 1 48%;">
-          <button onclick="checkKeyword(2)">🎙️ Record Keyword 2</button>
-          <p id="keyword2Result">Keyword 2: ...</p>
-          <div class="bar"><div id="keyword2Bar" class="bar-fill">0/1</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>4. ✍️ Rewrite the Sentence</h3>
-      <div id="rewriteBoxes"></div>
-      <br>
-      <button onclick="checkRewrite()">Check</button>
-      <div class="bar"><div id="rewriteBar" class="bar-fill">0/10</div></div>
-    </div>
+    <h3>2. 🎤 Ghi âm và chấm điểm</h3>
+    <button id="startBtn" onclick="startRecording()">Start Recording</button>
+    <button id="stopBtn" onclick="stopRecording()" disabled>Stop Recording</button>
+    <p id="userSpeech">Bạn đã nói: ...</p>
+    <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
   </div>
 
   <script>
-    let sentence = '', keyword1 = '', keyword2 = '';
-    let mediaRecorder = null, chunks = [], currentKeywordIndex = 0;
+    let sentence = "";
+    let mediaRecorder;
+    let chunks = [];
 
     function startPractice() {
       sentence = document.getElementById("sentenceInput").value.trim();
-      keyword1 = document.getElementById("keyword1Input").value.trim();
-      keyword2 = document.getElementById("keyword2Input").value.trim();
-      if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
-      document.getElementById("inputSection").classList.add("hidden");
-      document.getElementById("practiceContent").classList.remove("hidden");
-      document.getElementById("stickyHeader").classList.remove("hidden");
-      document.getElementById("stickySentence").textContent = sentence;
-      document.getElementById("stickyKeyword1").textContent = keyword1;
-      document.getElementById("stickyKeyword2").textContent = keyword2;
-      createRewriteBoxes();
+      if (!sentence) return alert("Hãy nhập một câu!");
+      document.getElementById("sentenceText").textContent = sentence;
+      document.getElementById("practiceSection").style.display = "block";
     }
 
-    function speak(slow, btn) {
-      btn.disabled = true;
-      const words = sentence.split(" ");
-      const options = { voice: "Joanna", engine: "neural", language: "en-US", rate: slow ? 0.6 : 1.0 };
-      const speakNext = (index) => {
-        if (index >= words.length) return btn.disabled = false;
-        puter.ai.txt2speech(slow ? words[index] : sentence, options).then(audio => {
-          audio.play();
-          audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false);
-        });
+    function speak(slow) {
+      const text = sentence;
+      const options = {
+        voice: "Joanna",
+        engine: "neural",
+        language: "en-US",
+        rate: slow ? 0.6 : 1.0
       };
-      speakNext(0);
+
+      if (!slow) {
+        puter.ai.txt2speech(text, options).then(audio => audio.play());
+      } else {
+        const words = text.split(" ");
+        let i = 0;
+        function next() {
+          if (i >= words.length) return;
+          puter.ai.txt2speech(words[i++], options).then(audio => {
+            audio.play();
+            audio.onended = () => setTimeout(next, 500);
+          });
+        }
+        next();
+      }
     }
 
-    function speakKeyword(n, btn) {
-      btn.disabled = true;
-      const text = n === 1 ? keyword1 : keyword2;
-      const options = { voice: "Joanna", engine: "neural", language: "en-US", rate: 1.0 };
-      puter.ai.txt2speech(text, options).then(audio => {
-        audio.play();
-        audio.onended = () => btn.disabled = false;
-      });
-    }
-
-    async function record(type) {
-      currentKeywordIndex = type;
+    async function startRecording() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       chunks = [];
+
       mediaRecorder.ondataavailable = e => chunks.push(e.data);
-      mediaRecorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        const arrayBuffer = await blob.arrayBuffer();
-        const res = await fetch('/api/transcribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/octet-stream' },
-          body: arrayBuffer
-        });
-        const data = await res.json();
-        const transcript = (data.text || "").toLowerCase();
-        if (currentKeywordIndex === 0) {
-          document.getElementById("userSpeech").textContent = "You said: " + transcript;
-          evaluatePronunciation(transcript);
-        } else {
-          const keyword = currentKeywordIndex === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
-          const resultId = currentKeywordIndex === 1 ? "keyword1Result" : "keyword2Result";
-          const barId = currentKeywordIndex === 1 ? "keyword1Bar" : "keyword2Bar";
-          document.getElementById(resultId).textContent = `You said: ${transcript}`;
-          const score = transcript.includes(keyword) ? 1 : 0;
-          updateBar(barId, score, 1);
-        }
-      };
+      mediaRecorder.onstop = handleRecordingStop;
+
       mediaRecorder.start();
-      setTimeout(() => mediaRecorder.stop(), 5000);
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("stopBtn").disabled = false;
     }
 
-    function startRecognition() { record(0); }
-    function checkKeyword(n) { record(n); }
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        document.getElementById("stopBtn").disabled = true;
+        document.getElementById("startBtn").disabled = false;
+      }
+    }
+
+    async function handleRecordingStop() {
+      const blob = new Blob(chunks, { type: "audio/webm" });
+      const arrayBuffer = await blob.arrayBuffer();
+
+      const res = await fetch('/api/transcribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/octet-stream' },
+        body: arrayBuffer
+      });
+
+      const data = await res.json();
+      const transcript = data.text || "";
+
+      document.getElementById("userSpeech").textContent = "Bạn đã nói: " + transcript;
+      evaluatePronunciation(transcript);
+    }
 
     function levenshteinDistance(a, b) {
       const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
@@ -263,7 +157,11 @@
       for (let i = 1; i <= a.length; i++) {
         for (let j = 1; j <= b.length; j++) {
           const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+          dp[i][j] = Math.min(
+            dp[i - 1][j] + 1,
+            dp[i][j - 1] + 1,
+            dp[i - 1][j - 1] + cost
+          );
         }
       }
       return dp[a.length][b.length];
@@ -275,31 +173,6 @@
       updateBar("scoreBar", score, 10);
     }
 
-    function createRewriteBoxes() {
-      const container = document.getElementById("rewriteBoxes");
-      container.innerHTML = "";
-      sentence.split(" ").forEach(word => {
-        const group = document.createElement("div");
-        group.className = "word-group";
-        [...word].forEach(() => {
-          const input = document.createElement("input");
-          input.className = "letter-box";
-          input.maxLength = 1;
-          group.appendChild(input);
-        });
-        container.appendChild(group);
-      });
-    }
-
-    function checkRewrite() {
-      const boxes = document.querySelectorAll(".letter-box");
-      const typed = Array.from(boxes).map(b => b.value).join("");
-      const original = sentence.replace(/\s/g, "");
-      const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
-      const score = Math.max(0, 10 - dist);
-      updateBar("rewriteBar", score, 10);
-    }
-
     function updateBar(id, score, max) {
       const bar = document.getElementById(id);
       bar.style.width = (score / max * 100) + "%";
@@ -308,11 +181,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-          console.log('✅ Service Worker registered!', reg);
-        }).catch(err => {
-          console.error('❌ Service Worker registration failed:', err);
-        });
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('✅ SW registered!', reg))
+          .catch(err => console.error('❌ SW failed:', err));
       });
     }
   </script>
