@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>English Speaking Practice App</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #ffeefc;
+      border-radius: 20px;
+      box-shadow: 0 0 12px rgba(255, 192, 203, 0.5);
+      color: #5a005a;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 6px 0;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    input[type="text"] {
+      width: 100%;
+      border: 2px solid #f7c5ff;
+      border-radius: 10px;
+    }
+    button {
+      background: #1491a5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      transition: 0.2s;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-right: 12px;
+      margin-bottom: 10px;
+      padding: 10px 20px;
+    }
+    button:hover {
+      transform: scale(1.02);
+    }
+    h2, h3 {
+      color: #cc33aa;
+    }
+    .section { margin-bottom: 30px; }
+    .hidden { display: none; }
+
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background: #fff0f9;
+      padding: 12px 20px;
+      border-bottom: 3px dashed #ffb4f2;
+      z-index: 1000;
+    }
+    .sticky-header .content {
+      font-size: 22px;
+      font-weight: bold;
+      color: #d400a6;
+      display: flex;
+      align-items: center;
+    }
+    .bar {
+      height: 20px;
+      background: #ffd6f5;
+      margin-top: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #f9c2e6;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #ff66cc;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      transition: width 0.5s;
+    }
+    .letter-box {
+      display: inline-block;
+      width: 35px;
+      height: 42px;
+      border: 2px dashed #eeaadd;
+      margin: 2px;
+      text-align: center;
+      font-size: 18px;
+      background: #fff8fc;
+      border-radius: 6px;
+    }
+    .word-group {
+      margin-right: 18px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div id="inputSection">
+    <h2>🌸 English Practice for Little Princess 🌸</h2>
+    <div class="section">
+      <input id="sentenceInput" type="text" placeholder="Enter English sentence" />
+      <input id="keyword1Input" type="text" placeholder="Enter keyword 1" />
+      <input id="keyword2Input" type="text" placeholder="Enter keyword 2" />
+      <button onclick="startPractice()">✨ Start ✨</button>
+    </div>
+  </div>
+
+  <div id="stickyHeader" class="sticky-header hidden">
+    <div><small style="font-size: 14px; color: #888;">Sentence • Keywords</small></div>
+    <div class="content">
+      <span id="stickySentence"></span>
+      <span style="margin: 0 15px;">|</span>
+      <span id="stickyKeyword1"></span>
+      <span style="margin: 0 5px;">•</span>
+      <span id="stickyKeyword2"></span>
+    </div>
+  </div>
+
+  <div id="practiceContent" class="hidden">
+    <div class="section">
+      <h3>1. 🔊 Read the Sentence</h3>
+      <button onclick="speak(false, this)">Read Normally</button>
+      <button onclick="speak(true, this)">Read Slowly</button>
+    </div>
+
+    <div class="section">
+      <h3>2. 🧁 Read Keywords</h3>
+      <button onclick="speakKeyword(1, this)">Keyword 1</button>
+      <button onclick="speakKeyword(2, this)">Keyword 2</button>
+    </div>
+
+    <div class="section">
+      <h3>3. 🎤 Speak and Get Score</h3>
+      <button onclick="startRecognition()">Start Recording</button>
+      <p id="userSpeech">You said: ...</p>
+      <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
+    </div>
+
+    <div class="section">
+      <h3>4. ✍️ Rewrite the Sentence</h3>
+      <div id="rewriteBoxes"></div>
+      <br>
+      <button onclick="checkRewrite()">Check</button>
+      <div class="bar"><div id="rewriteBar" class="bar-fill">0/10</div></div>
+    </div>
+  </div>
+
+  <script>
+    let sentence = "", keyword1 = "", keyword2 = "";
+
+    function startPractice() {
+      sentence = document.getElementById("sentenceInput").value.trim();
+      keyword1 = document.getElementById("keyword1Input").value.trim();
+      keyword2 = document.getElementById("keyword2Input").value.trim();
+      if (!sentence || !keyword1 || !keyword2) return alert("Please fill all fields!");
+
+      document.getElementById("inputSection").classList.add("hidden");
+      document.getElementById("practiceContent").classList.remove("hidden");
+      document.getElementById("stickyHeader").classList.remove("hidden");
+
+      document.getElementById("stickySentence").textContent = sentence;
+      document.getElementById("stickyKeyword1").textContent = keyword1;
+      document.getElementById("stickyKeyword2").textContent = keyword2;
+
+      createRewriteBoxes();
+    }
+
+    function disableButton(btn, label = "...") {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = label;
+    }
+
+    function enableButton(btn) {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText;
+    }
+
+    function speak(slow, btn) {
+      disableButton(btn);
+      if (!slow) {
+        const utterance = new SpeechSynthesisUtterance(sentence);
+        utterance.lang = 'en-US';
+        utterance.rate = 1.0;
+        utterance.onend = () => enableButton(btn);
+        speechSynthesis.speak(utterance);
+      } else {
+        const words = sentence.split(" ");
+        let index = 0;
+        function speakNext() {
+          if (index >= words.length) return enableButton(btn);
+          const utterance = new SpeechSynthesisUtterance(words[index]);
+          utterance.lang = 'en-US';
+          utterance.rate = 0.6;
+          speechSynthesis.speak(utterance);
+          index++;
+          setTimeout(speakNext, 1000);
+        }
+        speakNext();
+      }
+    }
+
+    function speakKeyword(n, btn) {
+      disableButton(btn);
+      const text = n === 1 ? keyword1 : keyword2;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.onend = () => enableButton(btn);
+      speechSynthesis.speak(utterance);
+    }
+
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+
+    function startRecognition() {
+      recognition.start();
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("userSpeech").textContent = "You said: " + transcript;
+        evaluatePronunciation(transcript);
+      };
+      recognition.onerror = function(event) {
+        alert("Error: " + event.error);
+      }
+    }
+
+    function levenshteinDistance(a, b) {
+      const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+      }
+      return dp[a.length][b.length];
+    }
+
+    function evaluatePronunciation(userSpeech) {
+      const dist = levenshteinDistance(userSpeech.toLowerCase(), sentence.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("scoreBar", score);
+    }
+
+    function createRewriteBoxes() {
+      const container = document.getElementById("rewriteBoxes");
+      container.innerHTML = "";
+      const words = sentence.split(" ");
+      words.forEach(word => {
+        const group = document.createElement("div");
+        group.className = "word-group";
+        [...word].forEach(() => {
+          const input = document.createElement("input");
+          input.className = "letter-box";
+          input.maxLength = 1;
+          group.appendChild(input);
+        });
+        container.appendChild(group);
+      });
+    }
+
+    function checkRewrite() {
+      const boxes = document.querySelectorAll(".letter-box");
+      const typed = Array.from(boxes).map(b => b.value).join("");
+      const original = sentence.replace(/\s/g, "");
+      const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("rewriteBar", score);
+    }
+
+    function updateBar(id, score) {
+      const bar = document.getElementById(id);
+      bar.style.width = (score * 10) + "%";
+      bar.textContent = score + "/10";
+    }
+  </script>
+</body>
+</html>
