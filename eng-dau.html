@@ -6,6 +6,11 @@
   <title>English Speaking Practice App</title>
   <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+<!-- ✅ PWA setup -->
+  <link rel="manifest" href="https://raw.githubusercontent.com/contactluva/bird70/main/manifest.json" />
+  <meta name="theme-color" content="#cc33aa" />
+  <link rel="icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png" type="image/png" />
+</head>
   <style>
     body {
       font-family: 'Bubblegum Sans', cursive;
@@ -379,6 +384,18 @@
       });
     }
   </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('✅ Service Worker registered!', reg);
+      }).catch(err => {
+        console.error('❌ Service Worker registration failed:', err);
+      });
+    });
+  }
+</script>
+
 </body>
 
 </html>
