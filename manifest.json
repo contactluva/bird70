@@ -7,12 +7,12 @@
   "theme_color": "#1491a5",
   "icons": [
     {
-      "src": "https://github.com/contactluva/bird70/blob/main/dau2.png",
+      "src": "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau2.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://github.com/contactluva/bird70/blob/main/dau.png",
+      "src": "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/dau.png",
       "sizes": "512x512",
       "type": "image/png"
     }
