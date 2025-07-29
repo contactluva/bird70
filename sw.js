@@ -3,10 +3,10 @@ self.addEventListener('install', event => {
     caches.open('app-cache-v1').then(cache => {
       return cache.addAll([
         './',
-        './index.html',
+        'https://engdau.vercel.app/eng-dau.html',
         './manifest.json',
-        './icon-192.png',
-        './icon-512.png'
+        'https://github.com/contactluva/bird70/blob/main/dau2.png',
+        'https://github.com/contactluva/bird70/blob/main/dau.png'
       ]);
     })
   );
