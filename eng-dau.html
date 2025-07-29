@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,7 +148,7 @@
 
     <div class="section">
       <h3>3. 🎤 Speak and Get Score</h3>
-      <button onclick="startRecognition()">Start Recording</button>
+      <button id="recordButton" onclick="toggleRecording(0)">Start Recording</button>
       <p id="userSpeech">You said: ...</p>
       <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
     </div>
@@ -158,12 +157,12 @@
       <h3>3.5 🎧 Check Your Keywords</h3>
       <div style="display: flex; flex-wrap: wrap; gap: 10px;">
         <div style="flex: 1 1 48%;">
-          <button onclick="checkKeyword(1)">🎙️ Record Keyword 1</button>
+          <button id="keyword1Button" onclick="toggleRecording(1)">🎙️ Record Keyword 1</button>
           <p id="keyword1Result">Keyword 1: ...</p>
           <div class="bar"><div id="keyword1Bar" class="bar-fill">0/1</div></div>
         </div>
         <div style="flex: 1 1 48%;">
-          <button onclick="checkKeyword(2)">🎙️ Record Keyword 2</button>
+          <button id="keyword2Button" onclick="toggleRecording(2)">🎙️ Record Keyword 2</button>
           <p id="keyword2Result">Keyword 2: ...</p>
           <div class="bar"><div id="keyword2Bar" class="bar-fill">0/1</div></div>
         </div>
@@ -181,7 +180,9 @@
 
   <script>
     let sentence = '', keyword1 = '', keyword2 = '';
-    let mediaRecorder = null, chunks = [], currentKeywordIndex = 0;
+    let currentKeywordIndex = 0;
+    let recognition = null;
+    let isRecording = false;
 
     function startPractice() {
       sentence = document.getElementById("sentenceInput").value.trim();
@@ -221,57 +222,77 @@
       });
     }
 
-    async function record(type) {
+    function toggleRecording(type) {
       currentKeywordIndex = type;
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      chunks = [];
-      mediaRecorder.ondataavailable = e => chunks.push(e.data);
-      mediaRecorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        const arrayBuffer = await blob.arrayBuffer();
-        const res = await fetch('/api/transcribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/octet-stream' },
-          body: arrayBuffer
-        });
-        const data = await res.json();
-        const transcript = (data.text || "").toLowerCase();
-        if (currentKeywordIndex === 0) {
-          document.getElementById("userSpeech").textContent = "You said: " + transcript;
-          evaluatePronunciation(transcript);
-        } else {
-          const keyword = currentKeywordIndex === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
-          const resultId = currentKeywordIndex === 1 ? "keyword1Result" : "keyword2Result";
-          const barId = currentKeywordIndex === 1 ? "keyword1Bar" : "keyword2Bar";
-          document.getElementById(resultId).textContent = `You said: ${transcript}`;
-          const score = transcript.includes(keyword) ? 1 : 0;
-          updateBar(barId, score, 1);
-        }
-      };
-      mediaRecorder.start();
-      setTimeout(() => mediaRecorder.stop(), 5000);
-    }
+      const buttonId = type === 0 ? "recordButton" : type === 1 ? "keyword1Button" : "keyword2Button";
+      const button = document.getElementById(buttonId);
 
-    function startRecognition() { record(0); }
-    function checkKeyword(n) { record(n); }
+      if (!isRecording) {
+        // Bắt đầu ghi âm
+        try {
+          recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+          recognition.lang = 'en-US';
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
 
-    function levenshteinDistance(a, b) {
-      const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
-      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
-      for (let i = 1; i <= a.length; i++) {
-        for (let j = 1; j <= b.length; j++) {
-          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            if (currentKeywordIndex === 0) {
+              document.getElementById("userSpeech").textContent = "You said: " + transcript;
+              evaluatePronunciation(transcript);
+            } else {
+              const keyword = currentKeywordIndex === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
+              const resultId = currentKeywordIndex === 1 ? "keyword1Result" : "keyword2Result";
+              const barId = currentKeywordIndex === 1 ? "keyword1Bar" : "keyword2Bar";
+              document.getElementById(resultId).textContent = `You said: ${transcript}`;
+              const score = transcript.includes(keyword) ? 1 : 0;
+              updateBar(barId, score, 1);
+            }
+            resetButton(buttonId);
+          };
+
+          recognition.onerror = (event) => {
+            alert('Lỗi thu âm: ' + event.error);
+            resetButton(buttonId);
+          };
+
+          recognition.onend = () => {
+            recognition.stop();
+            resetButton(buttonId);
+          };
+
+          recognition.start();
+          isRecording = true;
+          button.textContent = type === 0 ? "Stop Recording" : `Stop Recording Keyword ${type}`;
+          button.style.background = "#ff4444"; // Đổi màu nút khi ghi âm
+        } catch (error) {
+          alert('Lỗi truy cập micro: ' + error.message);
+          resetButton(buttonId);
         }
+      } else {
+        // Dừng ghi âm
+        recognition.stop();
+        resetButton(buttonId);
       }
-      return dp[a.length][b.length];
     }
+
+    function resetButton(buttonId) {
+      const button = document.getElementById(buttonId);
+      isRecording = false;
+      button.textContent = buttonId === "recordButton" ? "Start Recording" : buttonId === "keyword1Button" ? "🎙️ Record Keyword 1" : "🎙️ Record Keyword 2";
+      button.style.background = "#1491a5"; // Khôi phục màu gốc
+    }
+
+    function startRecognition() { toggleRecording(0); }
+    function checkKeyword(n) { toggleRecording(n); }
 
     function evaluatePronunciation(userSpeech) {
-      const dist = levenshteinDistance(userSpeech.toLowerCase(), sentence.toLowerCase());
-      const score = Math.max(0, 10 - dist);
+      const cleanSentence = sentence.toLowerCase().replace(/[.,!?]/g, '').trim();
+      const cleanUserSpeech = userSpeech.toLowerCase().replace(/[.,!?]/g, '').trim();
+      const wordsOriginal = cleanSentence.split(' ').filter(w => w);
+      const wordsUser = cleanUserSpeech.split(' ').filter(w => w);
+      const wordAccuracy = wordsUser.filter((w, i) => w === wordsOriginal[i]).length / Math.max(wordsOriginal.length, 1);
+      const score = Math.max(0, Math.round(10 * wordAccuracy));
       updateBar("scoreBar", score, 10);
     }
 
@@ -298,6 +319,19 @@
       const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
       const score = Math.max(0, 10 - dist);
       updateBar("rewriteBar", score, 10);
+    }
+
+    function levenshteinDistance(a, b) {
+      const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+      }
+      return dp[a.length][b.length];
     }
 
     function updateBar(id, score, max) {
