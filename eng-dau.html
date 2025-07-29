@@ -6,11 +6,12 @@
   <title>English Speaking Practice App</title>
   <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
-<!-- ✅ PWA setup -->
+  <!-- PWA setup -->
   <link rel="manifest" href="https://raw.githubusercontent.com/contactluva/bird70/main/manifest.json" />
   <meta name="theme-color" content="#cc33aa" />
   <link rel="icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png" type="image/png" />
-</head>
+  <!-- Thêm Puter.js -->
+  <script src="https://js.puter.com/v2/"></script>
   <style>
     body {
       font-family: 'Bubblegum Sans', cursive;
@@ -51,10 +52,8 @@
       transform: scale(1.05);
     }
     h2, h3 { color: #cc33aa; }
-
     .section { margin-bottom: 30px; }
     .hidden { display: none; }
-
     .sticky-header {
       position: sticky;
       top: 0;
@@ -79,11 +78,9 @@
       flex-wrap: wrap;
       gap: 5px;
     }
-    
     .sticky-header .content span {
-    margin: 0 6px;
-}
-
+      margin: 0 6px;
+    }
     .bar {
       height: 22px;
       background: #ffd6f5;
@@ -101,7 +98,6 @@
       font-weight: bold;
       transition: width 0.5s;
     }
-
     .letter-box {
       display: inline-block;
       width: 36px;
@@ -113,12 +109,10 @@
       background: #fff8fc;
       border-radius: 6px;
     }
-
     .word-group {
       margin-right: 18px;
       display: inline-block;
     }
-
     @media (max-width: 600px) {
       body {
         padding: 15px;
@@ -126,7 +120,6 @@
         font-size: 16px;
       }
       .sticky-header {
-       
         align-items: flex-start;
       }
       .sticky-header img {
@@ -165,9 +158,9 @@
   <div id="inputSection">
     <h2>🌸 Dau Dau English Practice🌸</h2>
     <div class="section">
-      <input id="sentenceInput" type="text" placeholder="Nhap 1 cau tieng anh can hoc" />
-      <input id="keyword1Input" type="text" placeholder="Tu moi 1" />
-      <input id="keyword2Input" type="text" placeholder="Tu moi 2" />
+      <input id="sentenceInput" type="text" placeholder="Nhập 1 câu tiếng Anh cần học" />
+      <input id="keyword1Input" type="text" placeholder="Từ mới 1" />
+      <input id="keyword2Input" type="text" placeholder="Từ mới 2" />
       <button onclick="startPractice()">✨ Start ✨</button>
     </div>
   </div>
@@ -206,7 +199,6 @@
       <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
     </div>
 
-    <!-- ✅ Bước mới: Kiểm tra từng keyword riêng biệt -->
     <div class="section">
       <h3>3.5 🎧 Check Your Keywords</h3>
       <div style="display: flex; flex-wrap: wrap; gap: 10px;">
@@ -232,200 +224,205 @@
     </div>
   </div>
 
- <script>
-let sentence = '', keyword1 = '', keyword2 = '';
-let voices = [];
-let voicesReady = false;
+  <script>
+    let sentence = '', keyword1 = '', keyword2 = '';
 
-function waitForVoices(callback) {
-  voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-  if (voices.length > 0) {
-    voicesReady = true;
-    callback();
-  } else {
-    speechSynthesis.onvoiceschanged = () => {
-      voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-      voicesReady = true;
-      callback();
-    };
-  }
-}
+    function startPractice() {
+      sentence = document.getElementById("sentenceInput").value.trim();
+      keyword1 = document.getElementById("keyword1Input").value.trim();
+      keyword2 = document.getElementById("keyword2Input").value.trim();
+      if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
 
-function startPractice() {
-  sentence = document.getElementById("sentenceInput").value.trim();
-  keyword1 = document.getElementById("keyword1Input").value.trim();
-  keyword2 = document.getElementById("keyword2Input").value.trim();
-  if (!sentence || !keyword1 || !keyword2) return alert("Please fill all fields!");
+      document.getElementById("inputSection").classList.add("hidden");
+      document.getElementById("practiceContent").classList.remove("hidden");
+      document.getElementById("stickyHeader").classList.remove("hidden");
 
-  document.getElementById("inputSection").classList.add("hidden");
-  document.getElementById("practiceContent").classList.remove("hidden");
-  document.getElementById("stickyHeader").classList.remove("hidden");
+      document.getElementById("stickySentence").textContent = sentence;
+      document.getElementById("stickyKeyword1").textContent = keyword1;
+      document.getElementById("stickyKeyword2").textContent = keyword2;
 
-  document.getElementById("stickySentence").textContent = sentence;
-  document.getElementById("stickyKeyword1").textContent = keyword1;
-  document.getElementById("stickyKeyword2").textContent = keyword2;
-
-  createRewriteBoxes();
-}
-
-function disableButton(btn, label = "...") {
-  btn.disabled = true;
-  btn.dataset.originalText = btn.textContent;
-  btn.textContent = label;
-}
-
-function enableButton(btn) {
-  btn.disabled = false;
-  btn.textContent = btn.dataset.originalText;
-}
-
-function speak(slow, btn) {
-  disableButton(btn);
-  waitForVoices(() => {
-    const selectedVoice = voices.find(v => v.lang === 'en-US') || voices[0];
-    if (!selectedVoice) {
-      alert("No English voice available on this device.");
-      enableButton(btn);
-      return;
+      createRewriteBoxes();
     }
 
-    if (!slow) {
-      const utterance = new SpeechSynthesisUtterance(sentence);
-      utterance.voice = selectedVoice;
-      utterance.rate = 1.0;
-      utterance.onend = () => enableButton(btn);
-      speechSynthesis.speak(utterance);
-    } else {
-      const words = sentence.split(" ");
-      let index = 0;
-      function speakNext() {
-        if (index >= words.length) return enableButton(btn);
-        const utterance = new SpeechSynthesisUtterance(words[index]);
-        utterance.voice = selectedVoice;
-        utterance.rate = 0.6;
-        speechSynthesis.speak(utterance);
-        index++;
-        setTimeout(speakNext, 1000);
+    function disableButton(btn, label = "...") {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = label;
+    }
+
+    function enableButton(btn) {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText;
+    }
+
+    function speak(slow, btn) {
+      disableButton(btn);
+      if (!slow) {
+        // Đọc bình thường
+        const text = sentence;
+        const options = {
+          voice: "Joanna", // Giọng nữ Mỹ
+          engine: "neural",
+          language: "en-US",
+          rate: 1.0
+        };
+        puter.ai.txt2speech(text, options)
+          .then((audio) => {
+            audio.play();
+            enableButton(btn);
+          })
+          .catch((error) => {
+            console.error('Lỗi phát âm:', error);
+            alert('Lỗi phát âm: Vui lòng kiểm tra kết nối mạng hoặc thử lại.');
+            enableButton(btn);
+          });
+      } else {
+        // Đọc chậm: Chia câu thành từng từ và phát từng từ
+        const words = sentence.split(" ");
+        let index = 0;
+        function speakNext() {
+          if (index >= words.length) {
+            enableButton(btn);
+            return;
+          }
+          const text = words[index];
+          const options = {
+            voice: "Joanna",
+            engine: "neural",
+            language: "en-US",
+            rate: 0.6 // Tốc độ chậm cho mỗi từ
+          };
+          puter.ai.txt2speech(text, options)
+            .then((audio) => {
+              audio.play();
+              audio.onended = () => {
+                index++;
+                setTimeout(speakNext, 500); // Khoảng dừng 500ms giữa các từ
+              };
+            })
+            .catch((error) => {
+              console.error('Lỗi phát âm:', error);
+              alert('Lỗi phát âm: Vui lòng kiểm tra kết nối mạng hoặc thử lại.');
+              enableButton(btn);
+            });
+        }
+        speakNext();
       }
-      speakNext();
-    }
-  });
-}
-
-function speakKeyword(n, btn) {
-  disableButton(btn);
-  const text = n === 1 ? keyword1 : keyword2;
-  waitForVoices(() => {
-    const selectedVoice = voices.find(v => v.lang === 'en-US') || voices[0];
-    if (!selectedVoice) {
-      alert("No English voice available on this device.");
-      enableButton(btn);
-      return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = selectedVoice;
-    utterance.onend = () => enableButton(btn);
-    speechSynthesis.speak(utterance);
-  });
-}
-
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'en-US';
-
-function startRecognition() {
-  recognition.start();
-  recognition.onresult = function (event) {
-    const transcript = event.results[0][0].transcript;
-    document.getElementById("userSpeech").textContent = "You said: " + transcript;
-    evaluatePronunciation(transcript);
-  };
-  recognition.onerror = function (event) {
-    alert("Error: " + event.error);
-  };
-}
-
-function checkKeyword(n) {
-  recognition.start();
-  recognition.onresult = function (event) {
-    const transcript = event.results[0][0].transcript.toLowerCase();
-    const keyword = n === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
-    const resultId = n === 1 ? "keyword1Result" : "keyword2Result";
-    const barId = n === 1 ? "keyword1Bar" : "keyword2Bar";
-    document.getElementById(resultId).textContent = `You said: ${transcript}`;
-    const score = transcript.includes(keyword) ? 1 : 0;
-    updateBar(barId, score, 1);
-  };
-}
-
-function levenshteinDistance(a, b) {
-  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
-  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
-  for (let i = 1; i <= a.length; i++) {
-    for (let j = 1; j <= b.length; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      dp[i][j] = Math.min(
-        dp[i - 1][j] + 1,
-        dp[i][j - 1] + 1,
-        dp[i - 1][j - 1] + cost
-      );
+    function speakKeyword(n, btn) {
+      disableButton(btn);
+      const text = n === 1 ? keyword1 : keyword2;
+      const options = {
+        voice: "Joanna",
+        engine: "neural",
+        language: "en-US",
+        rate: 1.0
+      };
+      puter.ai.txt2speech(text, options)
+        .then((audio) => {
+          audio.play();
+          enableButton(btn);
+        })
+        .catch((error) => {
+          console.error('Lỗi phát âm:', error);
+          alert('Lỗi phát âm: Vui lòng kiểm tra kết nối mạng hoặc thử lại.');
+          enableButton(btn);
+        });
     }
-  }
-  return dp[a.length][b.length];
-}
 
-function evaluatePronunciation(userSpeech) {
-  const dist = levenshteinDistance(userSpeech.toLowerCase(), sentence.toLowerCase());
-  const score = Math.max(0, 10 - dist);
-  updateBar("scoreBar", score, 10);
-}
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
 
-function createRewriteBoxes() {
-  const container = document.getElementById("rewriteBoxes");
-  container.innerHTML = "";
-  const words = sentence.split(" ");
-  words.forEach(word => {
-    const group = document.createElement("div");
-    group.className = "word-group";
-    [...word].forEach(() => {
-      const input = document.createElement("input");
-      input.className = "letter-box";
-      input.maxLength = 1;
-      group.appendChild(input);
-    });
-    container.appendChild(group);
-  });
-}
+    function startRecognition() {
+      recognition.start();
+      recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("userSpeech").textContent = "You said: " + transcript;
+        evaluatePronunciation(transcript);
+      };
+      recognition.onerror = function (event) {
+        alert("Lỗi ghi âm: " + event.error);
+      };
+    }
 
-function checkRewrite() {
-  const boxes = document.querySelectorAll(".letter-box");
-  const typed = Array.from(boxes).map(b => b.value).join("");
-  const original = sentence.replace(/\s/g, "");
-  const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
-  const score = Math.max(0, 10 - dist);
-  updateBar("rewriteBar", score, 10);
-}
+    function checkKeyword(n) {
+      recognition.start();
+      recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        const keyword = n === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
+        const resultId = n === 1 ? "keyword1Result" : "keyword2Result";
+        const barId = n === 1 ? "keyword1Bar" : "keyword2Bar";
+        document.getElementById(resultId).textContent = `You said: ${transcript}`;
+        const score = transcript.includes(keyword) ? 1 : 0;
+        updateBar(barId, score, 1);
+      };
+    }
 
-function updateBar(id, score, max) {
-  const bar = document.getElementById(id);
-  bar.style.width = (score / max * 100) + "%";
-  bar.textContent = `${score}/${max}`;
-}
+    function levenshteinDistance(a, b) {
+      const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(
+            dp[i - 1][j] + 1,
+            dp[i][j - 1] + 1,
+            dp[i - 1][j - 1] + cost
+          );
+        }
+      }
+      return dp[a.length][b.length];
+    }
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-      console.log('✅ Service Worker registered!', reg);
-    }).catch(err => {
-      console.error('❌ Service Worker registration failed:', err);
-    });
-  });
-}
+    function evaluatePronunciation(userSpeech) {
+      const dist = levenshteinDistance(userSpeech.toLowerCase(), sentence.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("scoreBar", score, 10);
+    }
 
-</script>
+    function createRewriteBoxes() {
+      const container = document.getElementById("rewriteBoxes");
+      container.innerHTML = "";
+      const words = sentence.split(" ");
+      words.forEach(word => {
+        const group = document.createElement("div");
+        group.className = "word-group";
+        [...word].forEach(() => {
+          const input = document.createElement("input");
+          input.className = "letter-box";
+          input.maxLength = 1;
+          group.appendChild(input);
+        });
+        container.appendChild(group);
+      });
+    }
 
+    function checkRewrite() {
+      const boxes = document.querySelectorAll(".letter-box");
+      const typed = Array.from(boxes).map(b => b.value).join("");
+      const original = sentence.replace(/\s/g, "");
+      const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("rewriteBar", score, 10);
+    }
 
+    function updateBar(id, score, max) {
+      const bar = document.getElementById(id);
+      bar.style.width = (score / max * 100) + "%";
+      bar.textContent = `${score}/${max}`;
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('✅ Service Worker registered!', reg);
+        }).catch(err => {
+          console.error('❌ Service Worker registration failed:', err);
+        });
+      });
+    }
+  </script>
 </body>
-
 </html>
