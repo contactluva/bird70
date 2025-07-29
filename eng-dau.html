@@ -147,15 +147,24 @@
       <button onclick="speakKeyword(2, this)">Keyword 2</button>
     </div>
 
+<div class="section">
+      <h3>3. ✍️ Rewrite the Sentence</h3>
+      <div id="rewriteBoxes"></div>
+      <br>
+      <button onclick="checkRewrite()">Check</button>
+      <div class="bar"><div id="rewriteBar" class="bar-fill">0/10</div></div>
+    </div>
+
+    
     <div class="section">
-      <h3>3. 🎤 Speak and Get Score</h3>
+      <h3>4. 🎤 Speak and Get Score</h3>
       <button id="recordButton" onclick="toggleRecording(0)">Start Recording</button>
       <p id="userSpeech">You said: ...</p>
       <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
     </div>
 
     <div class="section">
-      <h3>3.5 🎧 Check Your Keywords</h3>
+      <h3>4.5 🎧 Check Your Keywords</h3>
       <div style="display: flex; flex-wrap: wrap; gap: 10px;">
         <div style="flex: 1 1 48%;">
           <button id="keyword1Button" onclick="toggleRecording(1)">🎙️ Record Keyword 1</button>
@@ -170,13 +179,7 @@
       </div>
     </div>
 
-    <div class="section">
-      <h3>4. ✍️ Rewrite the Sentence</h3>
-      <div id="rewriteBoxes"></div>
-      <br>
-      <button onclick="checkRewrite()">Check</button>
-      <div class="bar"><div id="rewriteBar" class="bar-fill">0/10</div></div>
-    </div>
+    
   </div>
 
   <script>
