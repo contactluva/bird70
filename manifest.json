@@ -1,11 +1,12 @@
 {
-  "name": "English Practice App",
-  "short_name": "EnglishPractice",
-  "start_url": "https://contactluva.github.io/bird70/eng-dau.html",
+  "name": "Dau Dau English Practice",
+  "short_name": "DauDau English",
+  "start_url": "/eng-dau.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffeefc",
   "theme_color": "#cc33aa",
-  "orientation": "portrait",
+  "description": "Luyện nói tiếng Anh dễ thương với từ khóa và phát âm!",
   "icons": [
     {
       "src": "https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png",
