@@ -1,0 +1,20 @@
+{
+  "name": "English Practice App",
+  "short_name": "EngPractice",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffeefc",
+  "theme_color": "#1491a5",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
