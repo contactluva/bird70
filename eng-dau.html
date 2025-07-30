@@ -25,6 +25,7 @@
       box-shadow: 0 0 12px rgba(255, 192, 203, 0.5);
       color: #5a005a;
     }
+    
     input, button {
       padding: 12px;
       font-size: 18px;
@@ -117,17 +118,17 @@
       margin-right: 18px;
       display: inline-block;
     }
-    .draggable {
-      display: inline-block;
-      padding: 10px 15px;
-      margin: 5px;
-      border-radius: 8px;
-      cursor: move;
-      user-select: none;
-      font-size: 18px;
-      color: white;
-      text-align: center;
-    }
+  .draggable {
+    display: inline-block;
+    padding: 2px 9px;
+    margin: 3px;
+    border-radius: 8px;
+    cursor: move;
+    user-select: none;
+    font-size: 22px;
+    color: white;
+    text-align: center;
+  }
     .draggable.dragging {
       opacity: 0.5;
     }
@@ -135,6 +136,22 @@
       min-height: 100px;
       padding: 10px;
     }
+    
+ #sourceWords {
+  position: relative;
+}
+
+#sourceWords::after {
+  content: "➜"; /* hoặc dùng ký tự khác như '→' hoặc icon */
+  position: absolute;
+  top: 50%;
+  left: 90%; /* đặt ngay sát bên phải phần tử */
+  transform: translateY(-40%);
+  margin-left: 8px; /* tạo khoảng cách nhỏ giữa viền và mũi tên */
+  font-size: 18px;
+  color: #4753558a;
+}
+
   </style>
 </head>
 <body>
@@ -196,153 +213,148 @@
   </div>
 
   <script>
-   // Khởi tạo polyfill ngay đầu mã để hỗ trợ kéo thả trên di động
-if (typeof window !== "undefined") {
-  // Ngăn cuộn trang khi chạm, cần cho mobile-drag-drop
-  window.addEventListener("touchmove", () => {}, { passive: false });
-}
+    let sentence = '', keyword1 = '', keyword2 = '';
 
-// Các biến toàn cục
-let sentence = '', keyword1 = '', keyword2 = '';
-
-function startPractice() {
-  sentence = document.getElementById("sentenceInput").value.trim();
-  keyword1 = document.getElementById("keyword1Input").value.trim();
-  keyword2 = document.getElementById("keyword2Input").value.trim();
-  if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
-  if (!/^[a-zA-Z\s]+$/.test(sentence) || !/^[a-zA-Z]+$/.test(keyword1) || !/^[a-zA-Z]+$/.test(keyword2)) {
-    return alert("Vui lòng chỉ sử dụng chữ cái và khoảng trắng cho câu, chỉ chữ cái cho từ khóa!");
-  }
-  document.getElementById("inputSection").classList.add("hidden");
-  document.getElementById("practiceContent").classList.remove("hidden");
-  document.getElementById("stickyHeader").classList.remove("hidden");
-  document.getElementById("stickySentence").textContent = sentence;
-  document.getElementById("stickyKeyword1").textContent = keyword1;
-  document.getElementById("stickyKeyword2").textContent = keyword2;
-  createRewriteBoxes();
-  createDragDropSection();
-}
-
-function speak(slow, btn) {
-  btn.disabled = true;
-  btn.classList.add('playing');
-  btn.textContent = 'Stop';
-  const words = sentence.split(" ");
-  const options = { 
-    voice: "Joanna", 
-    engine: "neural", 
-    language: "en-US", 
-    rate: slow ? 0.6 : 0.8,
-    volume: 1.0
-  };
-  const speakNext = (index) => {
-    if (index >= words.length) {
-      btn.disabled = false;
-      btn.classList.remove('playing');
-      btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
-      return;
+    function startPractice() {
+      sentence = document.getElementById("sentenceInput").value.trim();
+      keyword1 = document.getElementById("keyword1Input").value.trim();
+      keyword2 = document.getElementById("keyword2Input").value.trim();
+      if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
+      if (!/^[a-zA-Z\s]+$/.test(sentence) || !/^[a-zA-Z]+$/.test(keyword1) || !/^[a-zA-Z]+$/.test(keyword2)) {
+        return alert("Vui lòng chỉ sử dụng chữ cái và khoảng trắng cho câu, chỉ chữ cái cho từ khóa!");
+      }
+      document.getElementById("inputSection").classList.add("hidden");
+      document.getElementById("practiceContent").classList.remove("hidden");
+      document.getElementById("stickyHeader").classList.remove("hidden");
+      document.getElementById("stickySentence").textContent = sentence;
+      document.getElementById("stickyKeyword1").textContent = keyword1;
+      document.getElementById("stickyKeyword2").textContent = keyword2;
+      createRewriteBoxes();
+      createDragDropSection();
     }
-    puter.ai.txt2speech(slow ? words[index] : sentence, options).then(audio => {
-      audio.volume = 1.0;
-      audio.play();
-      audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false, btn.classList.remove('playing'), btn.textContent = slow ? 'Read Slowly' : 'Read Normally');
-    }).catch(err => {
-      alert('Lỗi phát âm thanh: ' + err.message);
-      btn.disabled = false;
-      btn.classList.remove('playing');
-      btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
-    });
-  };
-  speakNext(0);
-}
 
-function speakKeyword(n, btn) {
-  btn.disabled = true;
-  btn.classList.add('playing');
-  btn.textContent = 'Stop';
-  const text = n === 1 ? keyword1 : keyword2;
-  const options = { 
-    voice: "Joanna", 
-    engine: "neural", 
-    language: "en-US", 
-    rate: 1.0,
-    volume: 1.0
-  };
-  puter.ai.txt2speech(text, options).then(audio => {
-    audio.volume = 1.0;
-    audio.play();
-    audio.onended = () => {
-      btn.disabled = false;
-      btn.classList.remove('playing');
-      btn.textContent = `Keyword ${n}`;
-    };
-  }).catch(err => {
-    alert('Lỗi phát âm thanh: ' + err.message);
-    btn.disabled = false;
-    btn.classList.remove('playing');
-    btn.textContent = `Keyword ${n}`;
-  });
-}
-
-function createRewriteBoxes() {
-  const container = document.getElementById("rewriteBoxes");
-  container.innerHTML = "";
-  sentence.split(" ").forEach(word => {
-    const group = document.createElement("div");
-    group.className = "word-group";
-    [...word].forEach(() => {
-      const input = document.createElement("input");
-      input.className = "letter-box";
-      input.maxLength = 1;
-      input.addEventListener('input', (e) => {
-        if (e.target.value.length === 1) {
-          const nextInput = e.target.nextElementSibling || 
-            e.target.parentElement.nextElementSibling?.firstChild;
-          if (nextInput) nextInput.focus();
+    function speak(slow, btn) {
+      btn.disabled = true;
+      btn.classList.add('playing');
+      btn.textContent = 'Stop';
+      const words = sentence.split(" ");
+      const options = { 
+        voice: "Joanna", 
+        engine: "neural", 
+        language: "en-US", 
+        rate: slow ? 0.6 : 0.8,
+        volume: 1.0
+      };
+      const speakNext = (index) => {
+        if (index >= words.length) {
+          btn.disabled = false;
+          btn.classList.remove('playing');
+          btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
+          return;
         }
+        puter.ai.txt2speech(slow ? words[index] : sentence, options).then(audio => {
+          audio.volume = 1.0;
+          audio.play();
+          audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false, btn.classList.remove('playing'), btn.textContent = slow ? 'Read Slowly' : 'Read Normally');
+        }).catch(err => {
+          alert('Lỗi phát âm thanh: ' + err.message);
+          btn.disabled = false;
+          btn.classList.remove('playing');
+          btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
+        });
+      };
+      speakNext(0);
+    }
+
+    function speakKeyword(n, btn) {
+      btn.disabled = true;
+      btn.classList.add('playing');
+      btn.textContent = 'Stop';
+      const text = n === 1 ? keyword1 : keyword2;
+      const options = { 
+        voice: "Joanna", 
+        engine: "neural", 
+        language: "en-US", 
+        rate: 1.0,
+        volume: 1.0
+      };
+      puter.ai.txt2speech(text, options).then(audio => {
+        audio.volume = 1.0;
+        audio.play();
+        audio.onended = () => {
+          btn.disabled = false;
+          btn.classList.remove('playing');
+          btn.textContent = `Keyword ${n}`;
+        };
+      }).catch(err => {
+        alert('Lỗi phát âm thanh: ' + err.message);
+        btn.disabled = false;
+        btn.classList.remove('playing');
+        btn.textContent = `Keyword ${n}`;
       });
-      group.appendChild(input);
-    });
-    container.appendChild(group);
-  });
-}
+    }
 
-function checkRewrite() {
-  const boxes = document.querySelectorAll(".letter-box");
-  const typed = Array.from(boxes).map(b => b.value).join("");
-  const original = sentence.replace(/\s/g, "");
-  if (typed.length !== original.length) {
-    alert("Vui lòng điền đầy đủ các ô!");
-    return;
-  }
-  const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
-  const score = Math.max(0, 10 - dist);
-  updateBar("rewriteBar", score, 10);
+    function createRewriteBoxes() {
+      const container = document.getElementById("rewriteBoxes");
+      container.innerHTML = "";
+      sentence.split(" ").forEach(word => {
+        const group = document.createElement("div");
+        group.className = "word-group";
+        [...word].forEach(() => {
+          const input = document.createElement("input");
+          input.className = "letter-box";
+          input.maxLength = 1;
+          input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1) {
+              const nextInput = e.target.nextElementSibling || 
+                e.target.parentElement.nextElementSibling?.firstChild;
+              if (nextInput) nextInput.focus();
+            }
+          });
+          group.appendChild(input);
+        });
+        container.appendChild(group);
+      });
+    }
 
-  if (score === 10) {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#ff66cc', '#1491a5', '#cc33aa']
-    });
+    function checkRewrite() {
+      const boxes = document.querySelectorAll(".letter-box");
+      const typed = Array.from(boxes).map(b => b.value).join("");
+      const original = sentence.replace(/\s/g, "");
+      if (typed.length !== original.length) {
+        alert("Vui lòng điền đầy đủ các ô!");
+        return;
+      }
+      const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("rewriteBar", score, 10);
 
-    const audioFiles = [
-      'https://engdau.vercel.app/daukhen.mp3',
-      'https://engdau.vercel.app/daukhen2.mp3'
-    ];
-    const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-    const audio = new Audio(randomAudio);
-    audio.volume = 1.0;
-    audio.play().catch(err => {
-      console.error('Lỗi phát âm thanh:', err);
-    });
-  }
-}
+      if (score === 10) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ff66cc', '#1491a5', '#cc33aa']
+        });
+
+        const audioFiles = [
+          'https://engdau.vercel.app/daukhen.mp3',
+          'https://engdau.vercel.app/daukhen2.mp3'
+        ];
+        const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        const audio = new Audio(randomAudio);
+        audio.volume = 1.0;
+        audio.play().catch(err => {
+          console.error('Lỗi phát âm thanh:', err);
+        });
+      }
+    }
 
 function createDragDropSection() {
   const sourceContainer = document.getElementById("sourceWords");
   const targetContainer = document.getElementById("targetWords");
+  sourceContainer.innerHTML = "";
+  targetContainer.innerHTML = "";
 
   const words = sentence.split(" ");
   const shuffledWords = words.sort(() => Math.random() - 0.5);
@@ -352,104 +364,84 @@ function createDragDropSection() {
     const wordElement = document.createElement("div");
     wordElement.className = "draggable";
     wordElement.textContent = word;
-    wordElement.draggable = true;
     wordElement.style.background = colors[Math.floor(Math.random() * colors.length)];
     sourceContainer.appendChild(wordElement);
   });
 
   const draggables = document.querySelectorAll(".draggable");
-  const dropzones = [sourceContainer, targetContainer];
 
   draggables.forEach(draggable => {
-    draggable.addEventListener("dragstart", (e) => {
-      draggable.classList.add("dragging");
-      e.dataTransfer.setData("text/plain", draggable.textContent);
-    });
-
-    draggable.addEventListener("dragend", () => {
-      draggable.classList.remove("dragging");
-    });
-  });
-
-  dropzones.forEach(zone => {
-    zone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-
-    // Thêm dragenter để hỗ trợ polyfill trên di động
-    zone.addEventListener("dragenter", (e) => {
-      e.preventDefault();
-    });
-
-    zone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const text = e.dataTransfer.getData("text/plain");
-      const draggable = Array.from(draggables).find(d => d.textContent === text);
-      if (draggable) {
-        zone.appendChild(draggable);
+    draggable.addEventListener("click", () => {
+      // If the word is in sourceWords, move it to targetWords
+      if (draggable.parentElement === sourceContainer) {
+        targetContainer.appendChild(draggable);
+      } 
+      // If the word is in targetWords, move it back to sourceWords
+      else if (draggable.parentElement === targetContainer) {
+        sourceContainer.appendChild(draggable);
       }
     });
   });
 }
+    
+    function checkArrangement() {
+      const targetContainer = document.getElementById("targetWords");
+      const arrangedWords = Array.from(targetContainer.querySelectorAll(".draggable")).map(d => d.textContent);
+      const originalWords = sentence.split(" ");
+      
+      const dist = levenshteinDistance(arrangedWords.join(" ").toLowerCase(), sentence.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("arrangeBar", score, 10);
 
-function checkArrangement() {
-  const targetContainer = document.getElementById("targetWords");
-  const arrangedWords = Array.from(targetContainer.querySelectorAll(".draggable")).map(d => d.textContent);
-  const originalWords = sentence.split(" ");
-  
-  const dist = levenshteinDistance(arrangedWords.join(" ").toLowerCase(), sentence.toLowerCase());
-  const score = Math.max(0, 10 - dist);
-  updateBar("arrangeBar", score, 10);
+      if (score === 10) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ff66cc', '#1491a5', '#cc33aa']
+        });
 
-  if (score === 10) {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#ff66cc', '#1491a5', '#cc33aa']
-    });
-
-    const audioFiles = [
-      'https://engdau.vercel.app/daukhen.mp3',
-      'https://engdau.vercel.app/daukhen2.mp3'
-    ];
-    const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-    const audio = new Audio(randomAudio);
-    audio.volume = 1.0;
-    audio.play().catch(err => {
-      console.error('Lỗi phát âm thanh:', err);
-    });
-  }
-}
-
-function levenshteinDistance(a, b) {
-  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
-  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
-  for (let i = 1; i <= a.length; i++) {
-    for (let j = 1; j <= b.length; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        const audioFiles = [
+          'https://engdau.vercel.app/daukhen.mp3',
+          'https://engdau.vercel.app/daukhen2.mp3'
+        ];
+        const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        const audio = new Audio(randomAudio);
+        audio.volume = 1.0;
+        audio.play().catch(err => {
+          console.error('Lỗi phát âm thanh:', err);
+        });
+      }
     }
-  }
-  return dp[a.length][b.length];
-}
 
-function updateBar(id, score, max) {
-  const bar = document.getElementById(id);
-  bar.style.width = (score / max * 100) + "%";
-  bar.textContent = `${score}/${max}`;
-}
+    function levenshteinDistance(a, b) {
+      const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+      }
+      return dp[a.length][b.length];
+    }
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-      console.log('✅ Service Worker registered!', reg);
-    }).catch(err => {
-      console.error('❌ Service Worker registration failed:', err);
-    });
-  });
-}
+    function updateBar(id, score, max) {
+      const bar = document.getElementById(id);
+      bar.style.width = (score / max * 100) + "%";
+      bar.textContent = `${score}/${max}`;
+    }
+
+    if ('serviceWorker ' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('✅ Service Worker registered!', reg);
+        }).catch(err => {
+          console.error('❌ Service Worker registration failed:', err);
+        });
+      });
+    }
   </script>
 </body>
 </html>
