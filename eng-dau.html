@@ -12,6 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" href="https://raw.githubusercontent.com/contactluva/bird70/main/dau2.png" type="image/png" />
   <script src="https://js.puter.com/v2/"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
       font-family: 'Bubblegum Sans', cursive;
@@ -24,6 +25,7 @@
       box-shadow: 0 0 12px rgba(255, 192, 203, 0.5);
       color: #5a005a;
     }
+    
     input, button {
       padding: 12px;
       font-size: 18px;
@@ -50,6 +52,9 @@
     }
     button:hover {
       transform: scale(1.05);
+    }
+    button.playing {
+      background: #ff4444;
     }
     h2, h3 { color: #cc33aa; }
     .section { margin-bottom: 30px; }
@@ -99,18 +104,54 @@
       display: inline-block;
       width: 40px;
       height: 44px;
-      border: 2px dashed #eeaadd;
+      border: 1px solid rgba(238, 170, 221, 0.3);
+      border-bottom: 2px solid #eeaadd;
       margin: 2px;
       text-align: center;
       font-size: 20px;
       background: #fff8fc;
       border-radius: 6px;
       padding: 0px !important;
+      outline: none;
     }
     .word-group {
       margin-right: 18px;
       display: inline-block;
     }
+    .draggable {
+      display: inline-block;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: move;
+      user-select: none;
+      font-size: 18px;
+      color: white;
+      text-align: center;
+    }
+    .draggable.dragging {
+      opacity: 0.5;
+    }
+    .dropzone {
+      min-height: 100px;
+      padding: 10px;
+    }
+    
+ #sourceWords {
+  position: relative;
+}
+
+#sourceWords::after {
+  content: "➡"; /* hoặc dùng ký tự khác như '→' hoặc icon */
+  position: absolute;
+  top: 45%;
+  left: 100%; /* đặt ngay sát bên phải phần tử */
+  transform: translateY(-40%);
+  margin-left: 8px; /* tạo khoảng cách nhỏ giữa viền và mũi tên */
+  font-size: 18px;
+  color: #f0a;
+}
+
   </style>
 </head>
 <body>
@@ -138,7 +179,7 @@
     <div class="section">
       <h3>1. 🔊 Read the Sentence</h3>
       <button onclick="speak(false, this)">Read Normally</button>
-      <button onclick="speak(true, this)">Read Slowly</button>
+      <button onclick=" speak(true, this)">Read Slowly</button>
     </div>
 
     <div class="section">
@@ -147,7 +188,7 @@
       <button onclick="speakKeyword(2, this)">Keyword 2</button>
     </div>
 
-<div class="section">
+    <div class="section">
       <h3>3. ✍️ Rewrite the Sentence</h3>
       <div id="rewriteBoxes"></div>
       <br>
@@ -155,44 +196,33 @@
       <div class="bar"><div id="rewriteBar" class="bar-fill">0/10</div></div>
     </div>
 
-    
     <div class="section">
-      <h3>4. 🎤 Speak and Get Score</h3>
-      <button id="recordButton" onclick="toggleRecording(0)">Start Recording</button>
-      <p id="userSpeech">You said: ...</p>
-      <div class="bar"><div id="scoreBar" class="bar-fill">0/10</div></div>
-    </div>
-
-    <div class="section">
-      <h3>4.5 🎧 Check Your Keywords</h3>
-      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-        <div style="flex: 1 1 48%;">
-          <button id="keyword1Button" onclick="toggleRecording(1)">🎙️ Record Keyword 1</button>
-          <p id="keyword1Result">Keyword 1: ...</p>
-          <div class="bar"><div id="keyword1Bar" class="bar-fill">0/1</div></div>
+      <h3>4. 🧩 Arrange the Words</h3>
+      <div style="display: flex; justify-content: space-between;">
+        <div id="sourceWords" class="dropzone" style="width: 45%; min-height: 100px; background: #fff8fc; border: 2px solid #f7c5ff; border-radius: 10px; padding: 10px;">
+          
         </div>
-        <div style="flex: 1 1 48%;">
-          <button id="keyword2Button" onclick="toggleRecording(2)">🎙️ Record Keyword 2</button>
-          <p id="keyword2Result">Keyword 2: ...</p>
-          <div class="bar"><div id="keyword2Bar" class="bar-fill">0/1</div></div>
+        <div id="targetWords" class="dropzone" style="width: 45%; min-height: 100px; background: #fff8fc; border: 2px solid #f7c5ff; border-radius: 10px; padding: 10px;">
+          
         </div>
       </div>
+      <br>
+      <button onclick="checkArrangement()">Check</button>
+      <div class="bar"><div id="arrangeBar" class="bar-fill">0/10</div></div>
     </div>
-
-    
   </div>
 
   <script>
     let sentence = '', keyword1 = '', keyword2 = '';
-    let currentKeywordIndex = 0;
-    let recognition = null;
-    let isRecording = false;
 
     function startPractice() {
       sentence = document.getElementById("sentenceInput").value.trim();
       keyword1 = document.getElementById("keyword1Input").value.trim();
       keyword2 = document.getElementById("keyword2Input").value.trim();
       if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
+      if (!/^[a-zA-Z\s]+$/.test(sentence) || !/^[a-zA-Z]+$/.test(keyword1) || !/^[a-zA-Z]+$/.test(keyword2)) {
+        return alert("Vui lòng chỉ sử dụng chữ cái và khoảng trắng cho câu, chỉ chữ cái cho từ khóa!");
+      }
       document.getElementById("inputSection").classList.add("hidden");
       document.getElementById("practiceContent").classList.remove("hidden");
       document.getElementById("stickyHeader").classList.remove("hidden");
@@ -200,17 +230,37 @@
       document.getElementById("stickyKeyword1").textContent = keyword1;
       document.getElementById("stickyKeyword2").textContent = keyword2;
       createRewriteBoxes();
+      createDragDropSection();
     }
 
     function speak(slow, btn) {
       btn.disabled = true;
+      btn.classList.add('playing');
+      btn.textContent = 'Stop';
       const words = sentence.split(" ");
-      const options = { voice: "Joanna", engine: "neural", language: "en-US", rate: slow ? 0.6 : 1.0 };
+      const options = { 
+        voice: "Joanna", 
+        engine: "neural", 
+        language: "en-US", 
+        rate: slow ? 0.6 : 0.8,
+        volume: 1.0
+      };
       const speakNext = (index) => {
-        if (index >= words.length) return btn.disabled = false;
+        if (index >= words.length) {
+          btn.disabled = false;
+          btn.classList.remove('playing');
+          btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
+          return;
+        }
         puter.ai.txt2speech(slow ? words[index] : sentence, options).then(audio => {
+          audio.volume = 1.0;
           audio.play();
-          audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false);
+          audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false, btn.classList.remove('playing'), btn.textContent = slow ? 'Read Slowly' : 'Read Normally');
+        }).catch(err => {
+          alert('Lỗi phát âm thanh: ' + err.message);
+          btn.disabled = false;
+          btn.classList.remove('playing');
+          btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
         });
       };
       speakNext(0);
@@ -218,86 +268,30 @@
 
     function speakKeyword(n, btn) {
       btn.disabled = true;
+      btn.classList.add('playing');
+      btn.textContent = 'Stop';
       const text = n === 1 ? keyword1 : keyword2;
-      const options = { voice: "Joanna", engine: "neural", language: "en-US", rate: 1.0 };
+      const options = { 
+        voice: "Joanna", 
+        engine: "neural", 
+        language: "en-US", 
+        rate: 1.0,
+        volume: 1.0
+      };
       puter.ai.txt2speech(text, options).then(audio => {
+        audio.volume = 1.0;
         audio.play();
-        audio.onended = () => btn.disabled = false;
+        audio.onended = () => {
+          btn.disabled = false;
+          btn.classList.remove('playing');
+          btn.textContent = `Keyword ${n}`;
+        };
+      }).catch(err => {
+        alert('Lỗi phát âm thanh: ' + err.message);
+        btn.disabled = false;
+        btn.classList.remove('playing');
+        btn.textContent = `Keyword ${n}`;
       });
-    }
-
-    function toggleRecording(type) {
-      currentKeywordIndex = type;
-      const buttonId = type === 0 ? "recordButton" : type === 1 ? "keyword1Button" : "keyword2Button";
-      const button = document.getElementById(buttonId);
-
-      if (!isRecording) {
-        // Bắt đầu ghi âm
-        try {
-          recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-          recognition.lang = 'en-US';
-          recognition.interimResults = false;
-          recognition.maxAlternatives = 1;
-
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript.toLowerCase();
-            if (currentKeywordIndex === 0) {
-              document.getElementById("userSpeech").textContent = "You said: " + transcript;
-              evaluatePronunciation(transcript);
-            } else {
-              const keyword = currentKeywordIndex === 1 ? keyword1.toLowerCase() : keyword2.toLowerCase();
-              const resultId = currentKeywordIndex === 1 ? "keyword1Result" : "keyword2Result";
-              const barId = currentKeywordIndex === 1 ? "keyword1Bar" : "keyword2Bar";
-              document.getElementById(resultId).textContent = `You said: ${transcript}`;
-              const score = transcript.includes(keyword) ? 1 : 0;
-              updateBar(barId, score, 1);
-            }
-            resetButton(buttonId);
-          };
-
-          recognition.onerror = (event) => {
-            alert('Lỗi thu âm: ' + event.error);
-            resetButton(buttonId);
-          };
-
-          recognition.onend = () => {
-            recognition.stop();
-            resetButton(buttonId);
-          };
-
-          recognition.start();
-          isRecording = true;
-          button.textContent = type === 0 ? "Stop Recording" : `Stop Recording Keyword ${type}`;
-          button.style.background = "#ff4444"; // Đổi màu nút khi ghi âm
-        } catch (error) {
-          alert('Lỗi truy cập micro: ' + error.message);
-          resetButton(buttonId);
-        }
-      } else {
-        // Dừng ghi âm
-        recognition.stop();
-        resetButton(buttonId);
-      }
-    }
-
-    function resetButton(buttonId) {
-      const button = document.getElementById(buttonId);
-      isRecording = false;
-      button.textContent = buttonId === "recordButton" ? "Start Recording" : buttonId === "keyword1Button" ? "🎙️ Record Keyword 1" : "🎙️ Record Keyword 2";
-      button.style.background = "#1491a5"; // Khôi phục màu gốc
-    }
-
-    function startRecognition() { toggleRecording(0); }
-    function checkKeyword(n) { toggleRecording(n); }
-
-    function evaluatePronunciation(userSpeech) {
-      const cleanSentence = sentence.toLowerCase().replace(/[.,!?]/g, '').trim();
-      const cleanUserSpeech = userSpeech.toLowerCase().replace(/[.,!?]/g, '').trim();
-      const wordsOriginal = cleanSentence.split(' ').filter(w => w);
-      const wordsUser = cleanUserSpeech.split(' ').filter(w => w);
-      const wordAccuracy = wordsUser.filter((w, i) => w === wordsOriginal[i]).length / Math.max(wordsOriginal.length, 1);
-      const score = Math.max(0, Math.round(10 * wordAccuracy));
-      updateBar("scoreBar", score, 10);
     }
 
     function createRewriteBoxes() {
@@ -310,6 +304,13 @@
           const input = document.createElement("input");
           input.className = "letter-box";
           input.maxLength = 1;
+          input.addEventListener('input', (e) => {
+            if (e.target.value.length === 1) {
+              const nextInput = e.target.nextElementSibling || 
+                e.target.parentElement.nextElementSibling?.firstChild;
+              if (nextInput) nextInput.focus();
+            }
+          });
           group.appendChild(input);
         });
         container.appendChild(group);
@@ -320,9 +321,111 @@
       const boxes = document.querySelectorAll(".letter-box");
       const typed = Array.from(boxes).map(b => b.value).join("");
       const original = sentence.replace(/\s/g, "");
+      if (typed.length !== original.length) {
+        alert("Vui lòng điền đầy đủ các ô!");
+        return;
+      }
       const dist = levenshteinDistance(typed.toLowerCase(), original.toLowerCase());
       const score = Math.max(0, 10 - dist);
       updateBar("rewriteBar", score, 10);
+
+      if (score === 10) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ff66cc', '#1491a5', '#cc33aa']
+        });
+
+        const audioFiles = [
+          'https://engdau.vercel.app/daukhen.mp3',
+          'https://engdau.vercel.app/daukhen2.mp3'
+        ];
+        const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        const audio = new Audio(randomAudio);
+        audio.volume = 1.0;
+        audio.play().catch(err => {
+          console.error('Lỗi phát âm thanh:', err);
+        });
+      }
+    }
+
+    function createDragDropSection() {
+      const sourceContainer = document.getElementById("sourceWords");
+      const targetContainer = document.getElementById("targetWords");
+     
+
+      const words = sentence.split(" ");
+      const shuffledWords = words.sort(() => Math.random() - 0.5);
+      const colors = ['#ff66cc', '#1491a5', '#cc33aa', '#ff4444', '#5a005a'];
+
+      shuffledWords.forEach(word => {
+        const wordElement = document.createElement("div");
+        wordElement.className = "draggable";
+        wordElement.textContent = word;
+        wordElement.draggable = true;
+        wordElement.style.background = colors[Math.floor(Math.random() * colors.length)];
+        sourceContainer.appendChild(wordElement);
+      });
+
+      const draggables = document.querySelectorAll(".draggable");
+      const dropzones = [sourceContainer, targetContainer];
+
+      draggables.forEach(draggable => {
+        draggable.addEventListener("dragstart", (e) => {
+          draggable.classList.add("dragging");
+          e.dataTransfer.setData("text/plain", draggable.textContent);
+        });
+
+        draggable.addEventListener("dragend", () => {
+          draggable.classList.remove("dragging");
+        });
+      });
+
+      dropzones.forEach(zone => {
+        zone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+        });
+
+        zone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const text = e.dataTransfer.getData("text/plain");
+          const draggable = Array.from(draggables).find(d => d.textContent === text);
+          if (draggable) {
+            zone.appendChild(draggable);
+          }
+        });
+      });
+    }
+
+    function checkArrangement() {
+      const targetContainer = document.getElementById("targetWords");
+      const arrangedWords = Array.from(targetContainer.querySelectorAll(".draggable")).map(d => d.textContent);
+      const originalWords = sentence.split(" ");
+      
+      const dist = levenshteinDistance(arrangedWords.join(" ").toLowerCase(), sentence.toLowerCase());
+      const score = Math.max(0, 10 - dist);
+      updateBar("arrangeBar", score, 10);
+
+      if (score === 10) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ff66cc', '#1491a5', '#cc33aa']
+        });
+
+        const audioFiles = [
+          'https://engdau.vercel.app/daukhen.mp3',
+          'https://engdau.vercel.app/daukhen2.mp3'
+        ];
+        const randomAudio = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        const audio = new Audio(randomAudio);
+        audio.volume = 1.0;
+        audio.play().catch(err => {
+          console.error('Lỗi phát âm thanh:', err);
+        });
+      }
     }
 
     function levenshteinDistance(a, b) {
@@ -344,7 +447,7 @@
       bar.textContent = `${score}/${max}`;
     }
 
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker ' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').then(reg => {
           console.log('✅ Service Worker registered!', reg);
