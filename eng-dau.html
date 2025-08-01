@@ -233,38 +233,39 @@
       createDragDropSection();
     }
 
-    function speak(slow, btn) {
-      btn.disabled = true;
-      btn.classList.add('playing');
-      btn.textContent = 'Stop';
-      const words = sentence.split(" ");
-      const options = { 
-        voice: "Joanna", 
-        engine: "neural", 
-        language: "en-US", 
-        rate: slow ? 0.6 : 0.8,
-        volume: 1.0
-      };
-      const speakNext = (index) => {
-        if (index >= words.length) {
-          btn.disabled = false;
-          btn.classList.remove('playing');
-          btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
-          return;
-        }
-        puter.ai.txt2speech(slow ? words[index] : sentence, options).then(audio => {
-          audio.volume = 1.0;
-          audio.play();
-          audio.onended = () => slow ? setTimeout(() => speakNext(index + 1), 500) : (btn.disabled = false, btn.classList.remove('playing'), btn.textContent = slow ? 'Read Slowly' : 'Read Normally');
-        }).catch(err => {
-          alert('Lỗi phát âm thanh: ' + err.message);
-          btn.disabled = false;
-          btn.classList.remove('playing');
-          btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
-        });
-      };
-      speakNext(0);
+ function speak(slow, btn) {
+  alert("Vui lòng tăng âm lượng thiết bị để nghe rõ hơn!");
+  btn.disabled = true;
+  btn.classList.add('playing');
+  btn.textContent = 'Stop';
+  const words = sentence.split(" ");
+  const options = { 
+    voice: "Joanna", 
+    engine: "neural", 
+    language: "en-US", 
+    rate: slow ? 0.6 : 0.8,
+    volume: 1.0
+  };
+  const speakNext = (index) => {
+    if (index >= words.length) {
+      btn.disabled = false;
+      btn.classList.remove('playing');
+      btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
+      return;
     }
+    puter.ai.txt2speech(words[index], options).then(audio => {
+      audio.volume = 1.0;
+      audio.play();
+      audio.onended = () => setTimeout(() => speakNext(index + 1), slow ? 500 : 200); // 500ms cho slow, 200ms cho normal
+    }).catch(err => {
+      alert('Lỗi phát âm thanh: ' + err.message);
+      btn.disabled = false;
+      btn.classList.remove('playing');
+      btn.textContent = slow ? 'Read Slowly' : 'Read Normally';
+    });
+  };
+  speakNext(0);
+}
 
     function speakKeyword(n, btn) {
       btn.disabled = true;
@@ -442,6 +443,39 @@ function createDragDropSection() {
         });
       });
     }
+
+    // Hàm yêu cầu Wake Lock để giữ màn hình bật
+async function requestWakeLock() {
+  try {
+    const wakeLock = await navigator.wakeLock.request('screen');
+    console.log('✅ Wake Lock được kích hoạt!');
+    wakeLock.addEventListener('release', () => {
+      console.log('❌ Wake Lock đã được giải phóng.');
+    });
+  } catch (err) {
+    console.error('❌ Lỗi khi yêu cầu Wake Lock:', err);
+  }
+}
+
+// Gọi hàm requestWakeLock khi bắt đầu thực hành
+function startPractice() {
+  sentence = document.getElementById("sentenceInput").value.trim();
+  keyword1 = document.getElementById("keyword1Input").value.trim();
+  keyword2 = document.getElementById("keyword2Input").value.trim();
+  if (!sentence || !keyword1 || !keyword2) return alert("Vui lòng điền đầy đủ các trường!");
+  if (!/^[a-zA-Z\s]+$/.test(sentence) || !/^[a-zA-Z]+$/.test(keyword1) || !/^[a-zA-Z]+$/.test(keyword2)) {
+    return alert("Vui lòng chỉ sử dụng chữ cái và khoảng trắng cho câu, chỉ chữ cái cho từ khóa!");
+  }
+  document.getElementById("inputSection").classList.add("hidden");
+  document.getElementById("practiceContent").classList.remove("hidden");
+  document.getElementById("stickyHeader").classList.remove("hidden");
+  document.getElementById("stickySentence").textContent = sentence;
+  document.getElementById("stickyKeyword1").textContent = keyword1;
+  document.getElementById("stickyKeyword2").textContent = keyword2;
+  createRewriteBoxes();
+  createDragDropSection();
+  requestWakeLock(); // Gọi Wake Lock khi bắt đầu
+}
   </script>
 </body>
 </html>
