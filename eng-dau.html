@@ -234,7 +234,7 @@
     }
 
  function speak(slow, btn) {
-  alert("Vui lòng tăng âm lượng thiết bị để nghe rõ hơn!");
+
   btn.disabled = true;
   btn.classList.add('playing');
   btn.textContent = 'Stop';
@@ -243,7 +243,7 @@
     voice: "Joanna", 
     engine: "neural", 
     language: "en-US", 
-    rate: slow ? 0.6 : 0.8,
+    rate: slow ? 0.6 : 1,
     volume: 1.0
   };
   const speakNext = (index) => {
@@ -256,7 +256,7 @@
     puter.ai.txt2speech(words[index], options).then(audio => {
       audio.volume = 1.0;
       audio.play();
-      audio.onended = () => setTimeout(() => speakNext(index + 1), slow ? 500 : 200); // 500ms cho slow, 200ms cho normal
+      audio.onended = () => setTimeout(() => speakNext(index + 1), slow ? 500 : 100); // 500ms cho slow, 200ms cho normal
     }).catch(err => {
       alert('Lỗi phát âm thanh: ' + err.message);
       btn.disabled = false;
