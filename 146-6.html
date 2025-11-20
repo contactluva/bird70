@@ -1,96 +1,450 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
- <meta property="og:title" content="Golden Harmony: Listen to the Yellow Canary's Song">
-<meta property="og:updated_time" content="2025-05-16T12:35:52">
-<meta property="og:locale" content="en_US">
-<meta property="og:url" content="https://raw.githubusercontent.com/contactluva/bird70/main/iiuauaajx%20(13).png"/>
-<meta property="og:image" content="https://raw.githubusercontent.com/contactluva/bird70/main/iiuauaajx%20(13).png"/>
- <meta property="og:site_name" content="bird">
-    <meta property="og:type" content="article">
-    <meta property="article:author" content="https://www.facebook.com/profile.php?id=61556591610860">
-    <meta property="article:publisher" content="https://www.facebook.com/profile.php?id=61556591610860">
-    <meta property="fb:app_id" content="361279065206052">
-<meta property="og:description" content=" Dive into the world of avian wonders with our captivating lineup of the top 10 most incredible birds this week! From vibrant plumage to mesmerizing melodies, each feathered marvel will leave you spellbound. Join us on this thrilling journey as we showcase the beauty and diversity of these extraordinary creatures, guaranteed to inspire awe and admiration. "/>
-
-<meta property="og:image:alt" content="Photo of 2 colorful birds" />
-<style>
+  <meta charset="UTF-8">
+  <title>Báo giá sản phẩm</title>
+  <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
+      font-family: Arial, sans-serif;
+      width: 210mm;
+      margin: auto;
+      padding: 10px;
     }
-
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
+    table {
+      border-collapse: collapse;
       width: 100%;
-      height: 100%;
-      background-color: #fff;
+    }
+    td, th {
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      padding: 5px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .header-cell {
+      text-align: left;
+      vertical-align: top;
+      padding-top: 10px;
+    }
+    .header-cell2 {
+      text-align: left;
+      vertical-align: top;
+      padding-top: 10px;
+      padding-left: 30px;
+      width: 250px;
+    }
+    .header-cell span,
+    .header-cell2 span {
+      display: inline-block;
+      vertical-align: top;
+      margin: 0;
+    }
+    .header-cell2 input,
+    .header-cell input, .header-cell textarea {
+      margin: 0px 2px;
+      padding: 0;
+      vertical-align: top;
+      text-align: left;
+      resize: none;
+      width: auto;
+      min-height: 20px;
+      font-weight: bold;
+      font-family: inherit;
+      font-size: 14px;
+      border: none;
+      display: inline-block;
+    }
+    .header-cell2 input { width: 100px; }
+    .header-cell textarea { margin-top: 2px; width: 400px; }
+    input#dateInput { text-align: left; }
+    .header-cell input:focus, .header-cell textarea:focus { outline: none; }
+    input[type="text"], input[type="number"], textarea {
+      width: 95%;
+      border: none;
+      text-align: center;
+      resize: none;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    textarea.product-info {
+      text-align: left;
+      line-height: 1.2;
+    }
+    textarea {
+      min-height: 60px;
+    }
+    input:focus, textarea:focus { outline: none; }
+    img.preview {
+      max-width: 100px;
+      max-height: 100px;
+      display: block;
+      margin: auto;
+    }
+    input.image-url {
+      display: block;
+      width: 95%;
+      margin: auto;
+    }
+    input.image-url.hidden, input[type="file"].hidden, label.upload-btn.hidden {
+      display: none;
+    }
+    .upload-btn {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      background-color: #008CBA;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px auto;
+      font-size: 20px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    #printBtn, #addRowBtn {
+      position: fixed;
+      bottom: 20px;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #printBtn { right: 20px; background-color: #4CAF50; }
+    #addRowBtn { left: 20px; background-color: #008CBA; }
+
+    @media print {
+      @page { size: A4 portrait; margin: 20mm; margin-top: 0; margin-bottom: 0; }
+      header, footer, #printBtn, #addRowBtn, input::placeholder, textarea::placeholder,
+      input.image-url, input[type="file"], label.upload-btn { display: none !important; }
+      .editable { border: none !important; padding: 0; display: inline; background: transparent; }
+      input, textarea { border: none; }
+      img.preview { display: block !important; }
+      body { margin: 0; padding: 0; }
+    }
+
+    .sib { font-weight: 400; font-size: 12px; color: #000; font-style: italic; }
+    .vaofd { margin: -10px 0px 20px 0px; }
+    .vaofd p { color: #7a7979; font-weight: 300; font-size: 12px; margin: 3px 0px !important; }
+
+    .logo { position: relative; background-color: #fff; padding: 10px 0; margin-bottom: 20px; }
+
+    textarea.center-vertical {
       display: flex;
-      justify-content: center;
       align-items: center;
-      z-index: 9999;
-      animation: fadeOut 1s ease-out forwards;
+      justify-content: center;
+      height: 100%;
+      text-align: left;
+      vertical-align: middle;
+      padding: 0;
+      margin-top: 20px;
     }
 
-    .loading-image {
-      max-width: 50%;
+    td:has(textarea.product-info) {
+      vertical-align: top;
     }
+    
+   /* Thêm vào cuối phần <style> */
+.signature-container {
+  text-align: right;
+  margin-top: -10px;
+  padding-right: 0px;
+  display: none;
+}
 
-    @keyframes fadeOut {
-      0% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        visibility: hidden;
-      }
-    }
+.signature-container img {
+  width: auto;
+  height: auto;
+  max-width: 376px;
+}
 
-    .content {
-      visibility: hidden;
-    }
+#signatureBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 120px;
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #FF9800;
+  z-index: 1000;
+}
+
+.signature-container {
+  display: none;
+}
+.signature-container.active {
+  display: block;
+}
+@media print {
+  .signature-container {
+    display: none !important;
+  }
+  .signature-container.active {
+    display: block !important;
+  }
+  .anin {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
-<div class="loading-overlay">
-    <img class="loading-image" src="https://raw.githubusercontent.com/contactluva/chim/main/Architecture%20Company%20Logo%20(1).png" alt="Loading...">
+  <br>
+  <div class="logo">
+    <img src="https://raw.githubusercontent.com/contactluva/bathroom/refs/heads/main/logo%20QM.webp" 
+         alt="Logo" style="width:66px;height:66px;vertical-align:middle;margin-right:10px;">
+    <div style="display:inline-block;vertical-align:middle;">
+      <p><strong>CÔNG TY TNHH QUANG MINH VN</strong></p>
+      <div class="vaofd">
+        <p>MST:2401038011</p>
+        <p>Thôn Hữu Định, xã Hợp Thịnh, Bắc Ninh</p>
+      </div>
+    </div>
   </div>
- <div class="content">
- <h1>Red-Eyed Majesty: The Owl You Have to See to Believe</h1>
-<p>In the vast and diverse world of owls, the Red-Eyed Majesty stands out as a symbol of elegance and mystery. Known for its striking red eyes that seem to glow in the dim light of dawn and dusk, this owl has captured the imagination of bird watchers and nature enthusiasts alike. Its presence in the wild is a testament to the beauty and complexity of nocturnal avian life.</p>
-<p>For bird watchers, the allure of the Red-Eyed Majesty lies in its rarity and the challenge of observing it in its natural habitat. Found primarily in dense, old-growth forests, this owl’s preferred environment makes it difficult to locate, adding an element of adventure to the quest. Birders often venture into these forests equipped with night vision scopes and audio equipment to detect its presence and capture a fleeting glimpse of this magnificent bird.</p>
-<p>Identifying the Red-Eyed Majesty requires a keen eye and knowledge of its unique features. In addition to its red eyes, birders look for its distinctive silhouette, mottled plumage, and specific hunting behaviors. Field guides and birding apps are essential tools for confirming sightings and differentiating this owl from other, more common species.</p>
-<p>Observing the Red-Eyed Majesty offers a deeper understanding of its role in the ecosystem. By watching its interactions with prey and its use of the forest environment, bird watchers gain insights into the owl’s hunting strategies and its importance in maintaining the ecological balance within its habitat.</p>
-<p>Advancements in technology and online birding communities have enhanced the ability to study and appreciate the Red-Eyed Majesty. Bird watchers can now share their observations, access real-time data, and contribute to conservation efforts through platforms like eBird, fostering a collaborative approach to understanding and protecting this remarkable owl.</p>
-<p>Whether you're an experienced birder or someone new to the world of owl watching, encountering the Red-Eyed Majesty in its natural setting is an unforgettable experience. Its striking appearance and nocturnal habits offer a fascinating glimpse into the mysterious life of owls and the rich tapestry of the avian world.</p>
-<h2>Photographing the Enigmatic Red-Eyed Majesty</h2>
-<p>Photographers drawn to the Red-Eyed Majesty use their craft to capture the owl’s elusive beauty. Through careful composition and timing, they reveal the owl’s haunting presence, whether it’s perched silently in a shadowed forest or gliding gracefully under a starlit sky. Each photograph tells a story of the owl's enigmatic life.</p>
-<p>These images not only celebrate the aesthetic appeal of the Red-Eyed Majesty but also highlight the importance of conservation. They remind us of the need to protect the owl’s habitat, ensuring that future generations can continue to marvel at its beauty and significance in the natural world.</p>
-<p>For anyone with a passion for nature photography, bird watching, or simply a love for owls, capturing the Red-Eyed Majesty on camera is a rewarding endeavor. It offers a chance to connect with the mysterious allure of nocturnal birds and to contribute to a broader understanding and appreciation of their place in the wild.</p>
 
- </div>
- <script type="text/javascript">
-location.replace("https://ongmuot.com/yellow-canary-crithagra/")
-</script>
+  <table>
+    <tr>
+      <td colspan="2" class="header-cell">
+        <span><i>Kính gửi: </i></span>
+        <span><textarea placeholder="Nhập tên công ty" oninput="autoResize(this)"></textarea></span>
+      </td>
+      <td class="header-cell2">
+        <span><i>Ngày: </i></span>
+        <span><input type="text" id="dateInput" placeholder="dd/mm/yyyy"></span>
+      </td>
+    </tr>
+  </table>
 
+  <h1 style="text-align: center;">BÁO GIÁ SẢN PHẨM</h1>
+<p style="text-align:center;    margin-top: -10px;
+    margin-bottom: 30px;" contenteditable="true">
+    Số:
+</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Chủng loại</th>
+        <th>Tên sản phẩm</th>
+        <th>Thông tin sản phẩm</th>
+        <th>Hình ảnh</th>
+        <th>Giá bán lẻ <br><span class="sib">(đ) (Chưa VAT)</span></th>
+        <th>Số lượng<br><span class="sib">(cái)</span></th>
+        <th>Thành tiền<br><span class="sib">(đ)</span></th>
+      </tr>
+    </thead>
+    <tbody id="productRows">
+      <tr>
+        <td><input type="text" value="Điện tử" placeholder="Chủng loại"></td>
+        <td><textarea class="center-vertical" placeholder="Tên sản phẩm" oninput="autoResize(this)"></textarea></td>
+        <td>
+          <textarea class="product-info" onkeydown="handleProductInfoKeyDown(event)" oninput="autoResize(this)">• Giới hạn cân:
+• Bước nhảy: d=
+• Bảo hành 1 năm</textarea>
+        </td>
+        <td>
+          <input type="text" class="image-url" placeholder="Link ảnh" oninput="updateImage(this)">
+          <label for="fileInput-0" class="upload-btn">+</label>
+          <input type="file" id="fileInput-0" class="image-file" accept="image/*" onchange="handleFileUpload(this)">
+          <img class="preview" src="" alt="">
+        </td>
+        <td><input type="text" placeholder="Giá" oninput="formatPriceInput(this)"></td>
+        <td><input type="number" placeholder="SL" oninput="calcTotal()"></td>
+        <td><input type="text" readonly></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="6" style="text-align:right">VAT (8%)<span class="sib"> (đ)</span></td>
+        <td><input type="text" id="vat" readonly></td>
+      </tr>
+      <tr>
+        <td colspan="6" style="text-align:right"><strong>Tổng<span class="sib"> (đ)</span></strong></td>
+        <td><input type="text" id="total" readonly></td>
+      </tr>
+    </tfoot>
+  </table>
 
- <script>
-    // Wait for the page to load
-    window.addEventListener('load', function () {
-      // Hide the loading overlay after 1 second
-      setTimeout(function () {
-        document.querySelector('.loading-overlay').style.display = 'none';
-        document.querySelector('.content').style.visibility = 'visible';
-      }, 1000);
-    });
+  <p><strong>Miễn phí giao hàng</strong></p>
+  <p><em>Áp dụng từ: 01/01/2025</em></p>
+  <p><strong>Bảo hành:</strong> Sản phẩm bảo hành 1 năm tại công ty, theo tem và phiếu mua hàng.</p>
+<p><strong>Tài khoản:</strong> CÔNG TY TNHH QUANG MINH VN | Số TK: 865789 | Ngân hàng TMCP Kỹ Thương Việt Nam - Techcombank | Chi nhánh Trần Phú</p>
+  <p><strong>Chú ý:</strong> <i>Nội dung chuyển khoản phải ghi <b><u>"Mua hàng cân điện tử..."</u></b> để có thể xuất hóa đơn</i></p>
+ <p><strong>Thời hạn:</strong>  Thanh toán trong vòng 10 ngày kể từ ngày giao hàng và nhận hoá đơn.</p>
+  <ol>
+    <li><strong>Hàng được phép bảo hành</strong>
+      <ul>
+        <li>Không đảm bảo chất lượng.</li>
+        <li>Lỗi kỹ thuật không do người dùng.</li>
+        <li>Không đúng mẫu mã, chủng loại.</li>
+        <li>Hỏng/vỡ do vận chuyển của công ty.</li>
+      </ul>
+    </li>
+    <li><strong>Quy định bảo hành</strong>
+      <ul>
+        <li>Đúng hàng do công ty cung cấp, còn tem mác.</li>
+        <li>Đổi trả trong 7 ngày.</li>
+        <li>Hàng đổi mới phải bằng hoặc cao hơn giá trị đã mua.</li>
+      </ul>
+    </li>
+  </ol>
+  
+ <!-- Chữ ký ở cuối nội dung -->
+  <div class="signature-container" id="signatureContainer">
+    <img src="https://raw.githubusercontent.com/contactluva/bathroom/refs/heads/main/chu%20ky%20QM.PNG" alt="Chữ ký">
+  </div>
+<div class="anin">
+  <button id="addRowBtn" onclick="addRow()">Thêm hàng</button>
+ <button id="signatureBtn" onclick="toggleSignature()">Chữ ký</button>
+  <button id="printBtn" onclick="window.print()">In PDF</button>
+</div>
+  <script>
+    let fileInputCounter = 0; // Counter for unique file input IDs
+
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+
+    function updateImage(input) {
+      const td = input.parentElement;
+      const img = td.querySelector('img');
+      const fileInput = td.querySelector('.image-file');
+      const uploadBtn = td.querySelector('.upload-btn');
+      img.src = input.value;
+      img.onload = () => {
+        input.classList.add('hidden');
+        fileInput.classList.add('hidden');
+        uploadBtn.classList.add('hidden');
+      };
+      img.onerror = () => {
+        input.classList.remove('hidden');
+        fileInput.classList.remove('hidden');
+        uploadBtn.classList.remove('hidden');
+      };
+    }
+
+    function handleFileUpload(input) {
+      const td = input.parentElement;
+      const img = td.querySelector('img');
+      const urlInput = td.querySelector('.image-url');
+      const uploadBtn = td.querySelector('.upload-btn');
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        img.src = URL.createObjectURL(file); // Temporary URL for display
+        img.onload = () => {
+          urlInput.classList.add('hidden');
+          input.classList.add('hidden');
+          uploadBtn.classList.add('hidden');
+          // Note: URL.revokeObjectURL is not called to keep image for printing
+          // It will be automatically cleaned up when the page is closed
+        };
+        img.onerror = () => {
+          urlInput.classList.remove('hidden');
+          input.classList.remove('hidden');
+          uploadBtn.classList.remove('hidden');
+        };
+      }
+    }
+
+    function handleProductInfoKeyDown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const textarea = e.target;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const value = textarea.value;
+        const before = value.substring(0, start);
+        const after = value.substring(end);
+        textarea.value = before + '\n• ' + after;
+        textarea.selectionStart = textarea.selectionEnd = start + 3;
+        autoResize(textarea);
+      }
+    }
+
+    function formatPriceInput(input) {
+      let value = input.value.replace(/\./g, '').replace(/\D/g, '');
+      if (value) {
+        input.value = Number(value).toLocaleString('vi-VN');
+      } else {
+        input.value = '';
+      }
+      calcTotal();
+    }
+
+    function calcTotal() {
+      const rows = document.querySelectorAll("#productRows tr");
+      let subtotal = 0;
+      rows.forEach(row => {
+        const priceStr = row.cells[4].querySelector('input').value.replace(/\./g, '');
+        const price = parseFloat(priceStr) || 0;
+        const qty = parseFloat(row.cells[5].querySelector('input').value) || 0;
+        const total = price * qty;
+        row.cells[6].querySelector('input').value = total ? total.toLocaleString('vi-VN') : '';
+        subtotal += total;
+      });
+      const vat = subtotal * 0.08;
+      document.getElementById('vat').value = vat ? vat.toLocaleString('vi-VN') : '';
+      document.getElementById('total').value = (subtotal + vat) ? (subtotal + vat).toLocaleString('vi-VN') : '';
+    }
+
+    function addRow() {
+      fileInputCounter++; // Increment counter for unique ID
+      const tbody = document.getElementById('productRows');
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td><input type="text" value="Điện tử" placeholder="Chủng loại"></td>
+        <td><textarea class="center-vertical" placeholder="Tên sản phẩm" oninput="autoResize(this)"></textarea></td>
+        <td><textarea class="product-info" onkeydown="handleProductInfoKeyDown(event)" oninput="autoResize(this)">• Giới hạn cân:
+• Bước nhảy: d=
+• Bảo hành 1 năm</textarea></td>
+        <td>
+          <input type="text" class="image-url" placeholder="Link ảnh" oninput="updateImage(this)">
+          <label for="fileInput-${fileInputCounter}" class="upload-btn">+</label>
+          <input type="file" id="fileInput-${fileInputCounter}" class="image-file" accept="image/*" onchange="handleFileUpload(this)">
+          <img class="preview" src="" alt="">
+        </td>
+        <td><input type="text" placeholder="Giá" oninput="formatPriceInput(this)"></td>
+        <td><input type="number" placeholder="SL" oninput="calcTotal()"></td>
+        <td><input type="text" readonly></td>
+      `;
+      tbody.appendChild(newRow);
+      newRow.querySelectorAll('textarea').forEach(textarea => {
+        autoResize(textarea);
+        textarea.selectionStart = textarea.selectionEnd = 0;
+      });
+    }
+
+    function getCurrentDate() {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    window.onload = function() {
+      document.getElementById('dateInput').value = getCurrentDate();
+      document.querySelectorAll('textarea').forEach(textarea => {
+        autoResize(textarea);
+        textarea.selectionStart = textarea.selectionEnd = 0;
+      });
+    };
+    
+   function toggleSignature() {
+  const container = document.getElementById('signatureContainer');
+  container.classList.toggle('active');
+}
+
+// Ẩn chữ ký khi load trang
+window.addEventListener('load', () => {
+  document.getElementById('signatureContainer').classList.remove('active');
+});
+
   </script>
 </body>
-
 </html>
