@@ -458,7 +458,7 @@
 
     // Danh sách URL quà sticker
     const giftImages = [
-        "https://static.vecteezy.com/system/resources/previews/039/093/647/non_2x/3d-medical-health-protection-shield-cross-protected-guard-concept-safety-badge-icon-privacy-banner-security-safeguard-label-presentation-sticker-shape-png.png"
+        "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-1.png", "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-2.png", "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-3.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-4.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-5.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-6.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-7.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-8.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-9.png","https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-10.png"
         // thêm URL quà khác tại đây
     ];
 
@@ -916,19 +916,20 @@
     /* ------------------------------------------------------------------
        PHÁO HOA FULL MÀN HÌNH KHI NHẬN QUÀ
        ------------------------------------------------------------------ */
-    function createFireworksBurst() {
-        const colors = ['#FFD700', '#FF69B4', '#87CEFA', '#FFFFFF'];
+   function createFireworksBurst() {
+    const colors = ['#FFD700', '#FF69B4', '#87CEFA', '#FFFFFF'];
 
-        // Tạo nhiều chùm pháo từ nhiều vị trí random trên toàn màn hình
-        for (let center = 0; center < 5; center++) {
+    const shoot = () => {
+        for (let center = 0; center < 8; center++) {
             const originX = Math.random() * window.innerWidth;
-            const originY = Math.random() * window.innerHeight * 0.8; // tránh quá sát mép dưới
+            const originY = Math.random() * window.innerHeight * 0.8;
 
-            for (let i = 0; i < 18; i++) {
+            for (let i = 0; i < 24; i++) {
                 const fw = document.createElement('div');
                 fw.className = 'firework';
+
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 60 + Math.random() * 120;
+                const distance = 80 + Math.random() * 160;
                 const dx = Math.cos(angle) * distance;
                 const dy = Math.sin(angle) * distance;
 
@@ -938,10 +939,16 @@
                 fw.style.setProperty('--dy', dy + 'px');
                 fw.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random()*colors.length)]}, transparent)`;
                 document.body.appendChild(fw);
-                setTimeout(() => fw.remove(), 900);
+
+                setTimeout(() => fw.remove(), 1200);
             }
         }
-    }
+    };
+
+    // 🔥 bắn liên tục trong 2 giây
+    const interval = setInterval(shoot, 150); // mỗi 250ms = 4 burst/s
+    setTimeout(() => clearInterval(interval), 2000);
+}
 
     /* ------------------------------------------------------------------
        POPUP UTILS (quà giữa màn hình + pháo hoa + âm thanh)
