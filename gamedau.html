@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Công Chúa Học Tiếng Anh</title>
+    <style>
+        /* --- CẤU HÌNH CHUNG --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background-color: #ffe6f2; /* Hồng phấn nhạt */
+            overflow: hidden; /* Tránh cuộn trang khi chơi */
+            touch-action: none; /* Tắt zoom trên mobile */
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* --- PHẦN NHẬP DỮ LIỆU --- */
+        #input-section {
+            background: #ffb3d9;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .input-row {
+            margin-bottom: 5px;
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 15px;
+            border: 2px solid #ff66b3;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        button.start-btn {
+            background-color: #ff3385;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px #cc0052;
+        }
+
+        button.start-btn:active {
+            box-shadow: 0 2px #cc0052;
+            transform: translateY(2px);
+        }
+
+        /* --- THANH TRẠNG THÁI (LUÔN ẨN) --- */
+        #info-bar {
+            display: none !important; /* luôn ẩn */
+            background: #fff0f5;
+            width: 100%;
+            padding: 5px 10px;
+            text-align: center;
+            border-bottom: 2px solid #ff99cc;
+            font-size: 14px;
+            color: #cc0066;
+            font-weight: bold;
+        }
+
+        /* --- KHUNG GAME --- */
+        #game-container {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA); /* Bầu trời */
+            overflow: hidden;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #fff;
+        }
+
+        /* --- CANVAS VÒNG 1 --- */
+        canvas {
+            display: block;
+        }
+
+        /* --- UI VÒNG 2 & 3 --- */
+        .sort-stage {
+            display: none; /* Ẩn mặc định */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            background: #fff5f8;
+        }
+
+        .stage-title {
+            font-size: 24px;
+            color: #d63384;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .sound-btn {
+            background: #66c2ff;
+            color: #fff;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .sentence-box {
+            min-height: 50px;
+            width: 80%;
+            background: white;
+            border: 3px dashed #ff99cc;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 30px;
+            font-size: 22px;
+            color: #333;
+            gap: 10px;
+        }
+
+        .word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 90%;
+        }
+
+        .word-btn {
+            background: #ffcce6;
+            border: 2px solid #ff66b3;
+            color: #cc0066;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+
+        .word-btn:active {
+            transform: scale(0.95);
+        }
+
+        .word-btn.used {
+            opacity: 0.3;
+            pointer-events: none;
+            background: #ccc;
+            border-color: #aaa;
+        }
+
+        .reset-stage-btn {
+            margin-top: 20px;
+            background: #ffad33;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none; /* Chỉ hiện khi sai */
+        }
+
+        /* --- POPUP THÔNG BÁO + QUÀ --- */
+        #popup {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            border: 5px solid #ff66b3;
+            text-align: center;
+            animation: popIn 0.3s ease-out;
+            max-width: 80%;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .popup-msg {
+            font-size: 24px;
+            color: #cc0066;
+            margin-bottom: 15px;
+        }
+
+        #popup-gift {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            display: none;
+            /* quay vòng + zoom to */
+            animation: giftSpinZoom 0.8s ease-out forwards, giftPulse 1.2s 0.8s infinite alternate;
+        }
+
+        @keyframes giftSpinZoom {
+            from {
+                transform: scale(0.3) rotate(0deg);
+                filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+            }
+            to {
+                transform: scale(1.3) rotate(360deg);
+                filter: drop-shadow(0 0 20px rgba(255,255,255,1));
+            }
+        }
+
+        @keyframes giftPulse {
+            from {
+                transform: scale(1.1) rotate(360deg);
+            }
+            to {
+                transform: scale(1.25) rotate(340deg);
+            }
+        }
+
+        .popup-btn {
+            background: #ff3385;
+            color: white;
+            font-size: 20px;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        /* --- MOBILE CONTROLS (Vòng 1) --- */
+        #mobile-controls {
+            display: none; /* Hiện bằng JS nếu cần thiết hoặc luôn hiện trên màn nhỏ */
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+            pointer-events: none; /* Để click xuyên qua vùng trống */
+        }
+
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid #fff;
+            border-radius: 50%;
+            pointer-events: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            user-select: none;
+            color: #ff3385;
+            font-weight: bold;
+        }
+        
+        .control-btn:active {
+            background: rgba(255, 102, 179, 0.6);
+            color: white;
+        }
+
+        .left-controls { display: flex; gap: 15px; }
+
+        /* --- BANNER CÂU MẪU --- */
+        #sentence-banner {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #ff66b3;
+            font-size: 32px;
+            color: #cc0066;
+            font-weight: bold;
+            display: none;
+            z-index: 50;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 102, 179, 0.5);
+        }
+
+        /* --- HIỆU ỨNG BOM ĐEN MÀN HÌNH + RUNG --- */
+        #bomb-effect {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 300;
+            transition: opacity 0.2s ease;
+        }
+
+        @keyframes shakeScreen {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-15px, 5px); }
+            40% { transform: translate(15px, -5px); }
+            60% { transform: translate(-10px, 5px); }
+            80% { transform: translate(10px, -5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        #game-container.shake {
+            animation: shakeScreen 0.5s linear;
+        }
+
+        /* --- PHÁO HOA KHI NHẬN QUÀ --- */
+        .firework {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff, transparent);
+            pointer-events: none;
+            z-index: 1000;
+            animation: fireworkBlast 800ms ease-out forwards;
+        }
+
+        @keyframes fireworkBlast {
+            from {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            #mobile-controls { display: flex; }
+            .stage-title { font-size: 20px; }
+            .word-btn { font-size: 16px; padding: 8px 12px; }
+            #sentence-banner { font-size: 24px; width: 80%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <!-- Input Section -->
+        <div id="input-section">
+            <div class="input-row">
+                <input type="text" id="inp-eng" placeholder="Câu Tiếng Anh (VD: I am happy)">
+            </div>
+            <div class="input-row">
+                <input type="text" id="inp-vie" placeholder="Nghĩa Tiếng Việt (VD: Tôi rất vui)">
+            </div>
+            <button class="start-btn" onclick="startGame()">Bắt đầu chơi!</button>
+        </div>
+
+        <!-- Info Bar (luôn ẩn) -->
+        <div id="info-bar">
+            <div>🇬🇧 <span id="info-eng">...</span></div>
+            <div>🇻🇳 <span id="info-vie">...</span></div>
+        </div>
+
+        <!-- Game Container -->
+        <div id="game-container">
+            <!-- Vòng 1: Canvas -->
+            <canvas id="gameCanvas"></canvas>
+            
+            <div id="sentence-banner"></div>
+
+            <!-- Hiệu ứng bom -->
+            <div id="bomb-effect"></div>
+
+            <div id="mobile-controls">
+                <div class="left-controls">
+                    <div class="control-btn" id="btn-left">⬅️</div>
+                    <div class="control-btn" id="btn-right">➡️</div>
+                </div>
+                <div class="control-btn" id="btn-jump">⬆️</div>
+            </div>
+
+            <!-- Vòng 2 UI -->
+            <div id="stage2" class="sort-stage">
+                <h2 class="stage-title">Vòng 2: Sắp xếp câu Tiếng Anh</h2>
+                <button class="sound-btn" id="s2-sound-btn">🔊 Nghe lại câu</button>
+                <div class="sentence-box" id="s2-box"></div>
+                <div class="word-pool" id="s2-pool"></div>
+                <button class="reset-stage-btn" id="s2-retry" onclick="setupStage2()">Thử lại</button>
+            </div>
+
+            <!-- Vòng 3 UI -->
+            <div id="stage3" class="sort-stage">
+                <h2 class="stage-title">Vòng 3: Sắp xếp câu Tiếng Việt</h2>
+                <div class="sentence-box" id="s3-box"></div>
+                <div class="word-pool" id="s3-pool"></div>
+                <button class="reset-stage-btn" id="s3-retry" onclick="setupStage3()">Thử lại</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div id="popup">
+        <div class="popup-content">
+            <div class="popup-msg" id="popup-msg"></div>
+            <img id="popup-gift" src="" alt="gift">
+            <button class="popup-btn" id="popup-btn">Tiếp tục</button>
+        </div>
+    </div>
+
+<script>
+    /**
+     * DỮ LIỆU GAME
+     */
+    const gameState = {
+        engSentence: "",
+        vieSentence: "",
+        engWords: [],
+        vieWords: [],
+        distractorWords: ["very", "bad", "sky", "dog", "cat", "run", "no", "yes", "big"],
+        currentStage: 0,
+        collectedIndices: [],
+    };
+
+    // DOM Elements
+    const inputSection = document.getElementById('input-section');
+    const gameContainer = document.getElementById('game-container');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const sentenceBanner = document.getElementById('sentence-banner');
+    const popup = document.getElementById('popup');
+    const popupMsg = document.getElementById('popup-msg');
+    const popupBtn = document.getElementById('popup-btn');
+    const popupGift = document.getElementById('popup-gift');
+    const bombOverlay = document.getElementById('bomb-effect');
+
+    // Danh sách URL quà sticker
+    const giftImages = [
+        "https://static.vecteezy.com/system/resources/previews/039/093/647/non_2x/3d-medical-health-protection-shield-cross-protected-guard-concept-safety-badge-icon-privacy-banner-security-safeguard-label-presentation-sticker-shape-png.png"
+        // thêm URL quà khác tại đây
+    ];
+
+    // Âm thanh quà tặng (random)
+    const rewardSounds = [
+        new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen.mp3"),
+        new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen2.mp3")
+    ];
+
+    function playRandomRewardSound() {
+        if (!rewardSounds.length) return;
+        const sound = rewardSounds[Math.floor(Math.random() * rewardSounds.length)];
+        try {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        } catch(e) {}
+    }
+
+    // Asset Công chúa (giữ tỉ lệ gốc, cao hơn 50%)
+    const princessImg = new Image();
+    princessImg.crossOrigin = "anonymous";
+    princessImg.src = "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/pmr.png";
+    let princessLoaded = false;
+    princessImg.onload = () => { princessLoaded = true; };
+
+    // Audio Speech (đọc câu tiếng Anh)
+    function speak(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    /**
+     * KHỞI TẠO GAME
+     */
+    function startGame() {
+        const rawEng = document.getElementById('inp-eng').value.trim() || "I am happy today";
+        const rawVie = document.getElementById('inp-vie').value.trim() || "Hôm nay em rất vui";
+
+        gameState.engSentence = rawEng;
+        gameState.vieSentence = rawVie;
+
+        gameState.engWords = rawEng.split(/\s+/).map(w => w.replace(/[.,?!]/g, ''));
+        gameState.vieWords = rawVie.split(/\s+/).map(w => w.replace(/[.,?!]/g, ''));
+
+        inputSection.style.display = 'none';
+
+        setupStage1();
+    }
+
+    /* ------------------------------------------------------------------
+       VÒNG 1: MARIO STYLE
+       ------------------------------------------------------------------ */
+    let animationFrameId;
+    const physics = {
+        gravity: 0.6,
+        friction: 0.8,
+        jumpPower: -12,
+        speed: 5
+    };
+
+    const player = {
+        x: 50, y: 0, 
+        vx: 0, vy: 0, 
+        width: 40, height: 60,
+        grounded: false,
+        color: '#ff66b3',
+        groundY: 0
+    };
+
+    const camera = { x: 0 };
+    let blocks = [];
+    let particles = [];
+    let showBannerTimeout;
+
+    const keys = { right: false, left: false, up: false };
+
+    function setupStage1() {
+        gameState.currentStage = 1;
+        gameState.collectedIndices = [];
+        document.getElementById('mobile-controls').style.display = 'flex';
+        canvas.style.display = 'block';
+        document.getElementById('stage2').style.display = 'none';
+        document.getElementById('stage3').style.display = 'none';
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        player.x = 50;
+        player.y = player.groundY - player.height;
+        player.vx = 0;
+        player.vy = 0;
+
+        createBlocks();
+
+        sentenceBanner.innerText = gameState.engSentence;
+        sentenceBanner.style.display = 'block';
+        clearTimeout(showBannerTimeout);
+        showBannerTimeout = setTimeout(() => {
+            sentenceBanner.style.display = 'none';
+        }, 5000);
+
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        gameLoop();
+    }
+
+    function resizeCanvas() {
+        if (gameState.currentStage === 1) {
+            canvas.width = gameContainer.clientWidth;
+            canvas.height = gameContainer.clientHeight;
+            // Nền đất khoảng 70% màn hình
+            player.groundY = Math.floor(canvas.height * 0.7);
+        }
+    }
+
+    function createBlocks() {
+        blocks = [];
+        const correctWords = gameState.engWords.map((w, i) => ({ text: w, type: 'correct', index: i }));
+        const wrongWords = [];
+        for(let i=0; i<3; i++) {
+            const randWord = gameState.distractorWords[Math.floor(Math.random() * gameState.distractorWords.length)];
+            wrongWords.push({ text: randWord, type: 'wrong', index: -1 });
+        }
+
+        const allItems = [...correctWords, ...wrongWords];
+        allItems.sort(() => Math.random() - 0.5);
+
+        let currentX = 200;
+        const blockH = 40;
+
+        allItems.forEach(item => {
+            // Nâng block lên cao hơn vì công chúa cao hơn
+            const jumpReach = 150; // trước là 140 → cao hơn
+            const y = player.groundY - jumpReach - (Math.random() * 60);
+            const w = Math.max(80, item.text.length * 12);
+
+            blocks.push({
+                x: currentX,
+                y: y,
+                width: w,
+                height: blockH,
+                word: item.text,
+                type: item.type,
+                index: item.index,
+                hit: false,
+                scale: 1
+            });
+            currentX += 200;
+        });
+    }
+
+    function update() {
+        if (keys.right) player.vx += 1;
+        if (keys.left) player.vx -= 1;
+        if (keys.up && player.grounded) {
+            player.vy = physics.jumpPower;
+            player.grounded = false;
+        }
+
+        player.vx *= physics.friction;
+        player.vy += physics.gravity;
+
+        player.x += player.vx;
+        player.y += player.vy;
+
+        if (player.y + player.height > player.groundY) {
+            player.y = player.groundY - player.height;
+            player.vy = 0;
+            player.grounded = true;
+        }
+
+        if (player.x < 0) { player.x = 0; player.vx = 0; }
+
+        let targetCamX = player.x - canvas.width / 3;
+        if (targetCamX < 0) targetCamX = 0;
+        camera.x += (targetCamX - camera.x) * 0.1;
+
+        blocks.forEach(block => {
+            if (block.hit) return;
+
+            if (player.x < block.x + block.width &&
+                player.x + player.width > block.x &&
+                player.y < block.y + block.height &&
+                player.y + player.height > block.y) {
+
+                const prevY = player.y - player.vy;
+                if (player.vy < 0 && prevY >= block.y + block.height - 10) {
+                    player.vy = 0;
+                    player.y = block.y + block.height;
+                    hitBlock(block);
+                }
+            }
+        });
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].life--;
+            particles[i].x += particles[i].vx;
+            particles[i].y += particles[i].vy;
+            if (particles[i].life <= 0) particles.splice(i, 1);
+        }
+    }
+
+    function hitBlock(block) {
+        block.hit = true;
+        block.scale = 1.2;
+
+        if (block.type === 'correct') {
+            createParticles(block.x + block.width/2, block.y + block.height/2, '#00ff00');
+            gameState.collectedIndices.push(block.index);
+            if (gameState.collectedIndices.length === gameState.engWords.length) {
+                setTimeout(() => {
+                    showPopup("Hoàn thành Vòng 1!<br>Bé được tặng một món quà!", () => {
+                        document.getElementById('mobile-controls').style.display = 'none';
+                        canvas.style.display = 'none';
+                        setupStage2();
+                    });
+                }, 500);
+            }
+        } else {
+            // BOM: màn hình đen + rung lắc dữ dội, rồi chơi lại vòng 1
+            createParticles(block.x + block.width/2, block.y + block.height/2, '#ff0000');
+            bombOverlay.style.opacity = '0.9';
+            gameContainer.classList.add('shake');
+            setTimeout(() => {
+                bombOverlay.style.opacity = '0';
+                gameContainer.classList.remove('shake');
+                setupStage1();
+            }, 700);
+        }
+    }
+
+    function createParticles(x, y, color) {
+        for(let i=0; i<10; i++) {
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.5) * 5,
+                life: 30,
+                color: color
+            });
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        ctx.translate(-camera.x, 0);
+
+        const groundWidth = 3000;
+        ctx.fillStyle = "#8B4513";
+        ctx.fillRect(0, player.groundY, groundWidth, canvas.height - player.groundY);
+        ctx.fillStyle = "#32CD32";
+        ctx.fillRect(0, player.groundY, groundWidth, 10);
+
+        blocks.forEach(block => {
+            if (block.hit && block.type === 'wrong') return;
+            if (block.hit && block.type === 'correct') {
+                ctx.globalAlpha = 0.5;
+            } else {
+                ctx.globalAlpha = 1;
+            }
+
+            ctx.fillStyle = "#FFD700";
+            ctx.fillRect(block.x, block.y, block.width, block.height);
+            ctx.strokeStyle = "#DAA520";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(block.x, block.y, block.width, block.height);
+
+            ctx.fillStyle = "#000";
+            ctx.font = "bold 16px Comic Sans MS";
+            ctx.textAlign = "center";
+            ctx.fillText(block.word, block.x + block.width/2, block.y + 25);
+            ctx.globalAlpha = 1;
+        });
+
+        // Vẽ công chúa giữ tỉ lệ, cao hơn 50%
+        if (princessLoaded) {
+            const baseHeight = player.height * 1.5;
+            const scale = baseHeight / princessImg.naturalHeight;
+            const drawHeight = princessImg.naturalHeight * scale;
+            const drawWidth = princessImg.naturalWidth * scale;
+
+            const drawX = player.x + (player.width - drawWidth) / 2;
+            const drawY = player.y + (player.height - drawHeight);
+
+            ctx.drawImage(princessImg, drawX, drawY, drawWidth, drawHeight);
+        } else {
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.arc(player.x + player.width/2, player.y + player.height/2, player.width/2, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = "#000";
+            ctx.fillText("👸", player.x + player.width/2, player.y + player.height/2 + 5);
+        }
+
+        particles.forEach(p => {
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+            ctx.fill();
+        });
+
+        ctx.restore();
+    }
+
+    function gameLoop() {
+        if (gameState.currentStage !== 1) return;
+        update();
+        draw();
+        animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    // Keyboard
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+        if (e.code === 'ArrowUp' || e.code === 'Space') keys.up = true;
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+        if (e.code === 'ArrowUp' || e.code === 'Space') keys.up = false;
+    });
+
+    // Mobile Buttons
+    function setupTouchBtn(id, keyProp) {
+        const btn = document.getElementById(id);
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyProp] = true; });
+        btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyProp] = false; });
+        btn.addEventListener('mousedown', () => { keys[keyProp] = true; });
+        btn.addEventListener('mouseup', () => { keys[keyProp] = false; });
+    }
+    setupTouchBtn('btn-left', 'left');
+    setupTouchBtn('btn-right', 'right');
+    setupTouchBtn('btn-jump', 'up');
+
+
+    /* ------------------------------------------------------------------
+       VÒNG 2: SẮP XẾP TIẾNG ANH
+       ------------------------------------------------------------------ */
+    let s2CurrentWords = [];
+
+    function setupStage2() {
+        gameState.currentStage = 2;
+        document.getElementById('stage2').style.display = 'flex';
+        document.getElementById('stage3').style.display = 'none';
+
+        const box = document.getElementById('s2-box');
+        const pool = document.getElementById('s2-pool');
+        const retryBtn = document.getElementById('s2-retry');
+
+        box.innerHTML = '';
+        pool.innerHTML = '';
+        retryBtn.style.display = 'none';
+        s2CurrentWords = [];
+
+        const soundBtn = document.getElementById('s2-sound-btn');
+        soundBtn.onclick = () => {
+            speak(gameState.engSentence);
+        };
+
+        const shuffled = [...gameState.engWords].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach((word) => {
+            const btn = document.createElement('div');
+            btn.className = 'word-btn';
+            btn.innerText = word;
+            btn.onclick = () => {
+                if (btn.classList.contains('used')) return;
+                const span = document.createElement('span');
+                span.innerText = word;
+                if (s2CurrentWords.length > 0) span.style.marginLeft = "5px";
+                box.appendChild(span);
+                s2CurrentWords.push(word);
+                btn.classList.add('used');
+                checkStage2();
+            };
+            pool.appendChild(btn);
+        });
+    }
+
+    function checkStage2() {
+        if (s2CurrentWords.length === gameState.engWords.length) {
+            const attempt = s2CurrentWords.join('').toLowerCase();
+            const target = gameState.engWords.join('').toLowerCase();
+
+            if (attempt === target) {
+                speak(gameState.engSentence);
+                showPopup("Hoàn thành Vòng 2!<br>Bé lại nhận thêm một món quà!", () => {
+                    setupStage3();
+                });
+            } else {
+                document.getElementById('s2-retry').style.display = 'block';
+            }
+        }
+    }
+
+    /* ------------------------------------------------------------------
+       VÒNG 3: SẮP XẾP TIẾNG VIỆT
+       ------------------------------------------------------------------ */
+    let s3CurrentWords = [];
+
+    function setupStage3() {
+        gameState.currentStage = 3;
+        document.getElementById('stage2').style.display = 'none';
+        document.getElementById('stage3').style.display = 'flex';
+
+        const box = document.getElementById('s3-box');
+        const pool = document.getElementById('s3-pool');
+        const retryBtn = document.getElementById('s3-retry');
+
+        box.innerHTML = 'Câu Tiếng Việt: ';
+        pool.innerHTML = '';
+        retryBtn.style.display = 'none';
+        s3CurrentWords = [];
+
+        const shuffled = [...gameState.vieWords].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach((word) => {
+            const btn = document.createElement('div');
+            btn.className = 'word-btn';
+            btn.innerText = word;
+            btn.onclick = () => {
+                if (btn.classList.contains('used')) return;
+                const span = document.createElement('span');
+                span.innerText = " " + word;
+                box.appendChild(span);
+                s3CurrentWords.push(word);
+                btn.classList.add('used');
+                checkStage3();
+            };
+            pool.appendChild(btn);
+        });
+    }
+
+    function checkStage3() {
+        if (s3CurrentWords.length === gameState.vieWords.length) {
+            const attempt = s3CurrentWords.join('').toLowerCase();
+            const target = gameState.vieWords.join('').toLowerCase();
+
+            if (attempt === target) {
+                showPopup("Chúc mừng! Bé đã hoàn thành cả 3 vòng!<br>Thêm một món quà lấp lánh nữa!", () => {
+                    location.reload();
+                });
+            } else {
+                document.getElementById('s3-retry').style.display = 'block';
+            }
+        }
+    }
+
+    /* ------------------------------------------------------------------
+       PHÁO HOA FULL MÀN HÌNH KHI NHẬN QUÀ
+       ------------------------------------------------------------------ */
+    function createFireworksBurst() {
+        const colors = ['#FFD700', '#FF69B4', '#87CEFA', '#FFFFFF'];
+
+        // Tạo nhiều chùm pháo từ nhiều vị trí random trên toàn màn hình
+        for (let center = 0; center < 5; center++) {
+            const originX = Math.random() * window.innerWidth;
+            const originY = Math.random() * window.innerHeight * 0.8; // tránh quá sát mép dưới
+
+            for (let i = 0; i < 18; i++) {
+                const fw = document.createElement('div');
+                fw.className = 'firework';
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 60 + Math.random() * 120;
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance;
+
+                fw.style.left = originX + 'px';
+                fw.style.top = originY + 'px';
+                fw.style.setProperty('--dx', dx + 'px');
+                fw.style.setProperty('--dy', dy + 'px');
+                fw.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random()*colors.length)]}, transparent)`;
+                document.body.appendChild(fw);
+                setTimeout(() => fw.remove(), 900);
+            }
+        }
+    }
+
+    /* ------------------------------------------------------------------
+       POPUP UTILS (quà giữa màn hình + pháo hoa + âm thanh)
+       ------------------------------------------------------------------ */
+    function showPopup(htmlMsg, callback) {
+        popupMsg.innerHTML = htmlMsg;
+
+        if (giftImages.length > 0) {
+            const imgUrl = giftImages[Math.floor(Math.random() * giftImages.length)];
+            popupGift.src = imgUrl;
+            popupGift.style.display = 'block';
+        } else {
+            popupGift.style.display = 'none';
+        }
+
+        popup.style.display = 'flex';
+        playRandomRewardSound();
+        createFireworksBurst();
+
+        popupBtn.onclick = null;
+        popupBtn.onclick = () => {
+            popup.style.display = 'none';
+            if (callback) callback();
+        };
+    }
+
+</script>
+</body>
+</html>
