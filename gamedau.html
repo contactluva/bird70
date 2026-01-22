@@ -541,6 +541,9 @@
         new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen.mp3"),
         new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen2.mp3")
     ];
+// Âm thanh nhảy
+const jumpSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/jump.mp3");
+jumpSound.volume = 1;
 
     function playRandomRewardSound() {
         if (!rewardSounds.length) return;
@@ -690,9 +693,16 @@
         if (keys.right) player.vx += 1;
         if (keys.left) player.vx -= 1;
         if (keys.up && player.grounded) {
-            player.vy = physics.jumpPower;
-            player.grounded = false;
-        }
+    player.vy = physics.jumpPower;
+    player.grounded = false;
+
+    // Phát âm thanh jump
+    try {
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(()=>{});
+    } catch(e){}
+}
+
 
         player.vx *= physics.friction;
         player.vy += physics.gravity;
@@ -809,7 +819,7 @@
             ctx.strokeRect(block.x, block.y, block.width, block.height);
 
             ctx.fillStyle = "#000";
-            ctx.font = "bold 16px Comic Sans MS";
+            ctx.font = "bold 23px Comic Sans MS";
             ctx.textAlign = "center";
             ctx.fillText(block.word, block.x + block.width/2, block.y + 25);
             ctx.globalAlpha = 1;
