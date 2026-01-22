@@ -750,7 +750,7 @@
             if (gameState.collectedIndices.length === gameState.engWords.length) {
                 setTimeout(() => {
                     showPopup(
-                        "Hoàn thành Vòng 1!<br>Bé được tặng một món quà!",
+                        "Hoàn thành Vòng 1!<br>Đậu được tặng một món quà!",
                         () => {
                             document.getElementById('mobile-controls').style.display = 'none';
                             canvas.style.display = 'none';
@@ -933,7 +933,7 @@
             if (attempt === target) {
                 speak(gameState.engSentence);
                 showPopup(
-                    "Hoàn thành Vòng 2!<br>Bé lại nhận thêm một món quà!",
+                    "Hoàn thành Vòng 2!<br>Đậu lại nhận thêm một món quà!",
                     () => {
                         setupStage3();
                     },
@@ -959,7 +959,7 @@
         const pool = document.getElementById('s3-pool');
         const retryBtn = document.getElementById('s3-retry');
 
-        box.innerHTML = 'Câu Tiếng Việt: ';
+        box.innerHTML = ' : ';
         pool.innerHTML = '';
         retryBtn.style.display = 'none';
         s3CurrentWords = [];
@@ -990,7 +990,7 @@
 
             if (attempt === target) {
                 showPopup(
-                    "Chúc mừng! Bé đã hoàn thành cả 3 vòng!<br>Thêm một món quà lấp lánh nữa!",
+                    "Chúc mừng! Đậu đã hoàn thành cả 3 vòng!<br>Thêm một món quà lấp lánh nữa!",
                     () => {
                         showFinalScreen();
                     },
