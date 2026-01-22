@@ -932,15 +932,21 @@ boomSound.volume = 1;
             btn.className = 'word-btn';
             btn.innerText = word;
             btn.onclick = () => {
-                if (btn.classList.contains('used')) return;
-                const span = document.createElement('span');
-                span.innerText = word;
-                if (s2CurrentWords.length > 0) span.style.marginLeft = "5px";
-                box.appendChild(span);
-                s2CurrentWords.push(word);
-                btn.classList.add('used');
-                checkStage2();
-            };
+    if (btn.classList.contains('used')) return;
+
+    // 🔊 đọc từ khi bấm
+    speakWord(word);
+
+    const span = document.createElement('span');
+    span.innerText = word;
+    if (s2CurrentWords.length > 0) span.style.marginLeft = "5px";
+    box.appendChild(span);
+    s2CurrentWords.push(word);
+    btn.classList.add('used');
+
+    checkStage2();
+};
+
             pool.appendChild(btn);
         });
     }
@@ -1121,6 +1127,14 @@ boomSound.volume = 1;
             if (callback) callback();
         };
     }
+function speakWord(word) {
+    if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(word);
+        u.lang = 'en-US';
+        u.rate = 1;  // tốc độ đọc
+        window.speechSynthesis.speak(u);
+    }
+}
 
 </script>
 </body>
