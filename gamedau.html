@@ -545,6 +545,11 @@
 const jumpSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/jump.mp3");
 jumpSound.volume = 1;
 
+    // Âm thanh bom nổ
+const boomSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/boom.mp3");
+boomSound.volume = 1;
+
+
     function playRandomRewardSound() {
         if (!rewardSounds.length) return;
         const sound = rewardSounds[Math.floor(Math.random() * rewardSounds.length)];
@@ -767,17 +772,25 @@ jumpSound.volume = 1;
                     );
                 }, 500);
             }
-        } else {
-            // BOM: màn hình đen + rung lắc dữ dội, rồi chơi lại vòng 1
-            createParticles(block.x + block.width/2, block.y + block.height/2, '#ff0000');
-            bombOverlay.style.opacity = '0.9';
-            gameContainer.classList.add('shake');
-            setTimeout(() => {
-                bombOverlay.style.opacity = '0';
-                gameContainer.classList.remove('shake');
-                setupStage1();
-            }, 700);
-        }
+       } else {
+    // Phát âm thanh bom
+    try {
+        boomSound.currentTime = 0;
+        boomSound.play().catch(()=>{});
+    } catch(e){}
+
+    // BOM: màn hình đen + rung lắc dữ dội
+    createParticles(block.x + block.width/2, block.y + block.height/2, '#ff0000');
+    bombOverlay.style.opacity = '0.9';
+    gameContainer.classList.add('shake');
+
+    setTimeout(() => {
+        bombOverlay.style.opacity = '0';
+        gameContainer.classList.remove('shake');
+        setupStage1();
+    }, 700);
+}
+
     }
 
     function createParticles(x, y, color) {
