@@ -33,6 +33,7 @@
         #input-section {
             background: #ffb3d9;
             padding: 10px;
+            margin-top: 60px;
             width: 100%;
             text-align: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -71,14 +72,7 @@
         /* --- THANH TRẠNG THÁI (LUÔN ẨN) --- */
         #info-bar {
             display: none !important; /* luôn ẩn */
-            background: #fff0f5;
-            width: 100%;
-            padding: 5px 10px;
-            text-align: center;
-            border-bottom: 2px solid #ff99cc;
-            font-size: 14px;
-            color: #cc0066;
-            font-weight: bold;
+            
         }
 
         /* --- KHUNG GAME --- */
@@ -261,7 +255,7 @@
 
         /* --- MOBILE CONTROLS (Vòng 1) --- */
         #mobile-controls {
-            display: none; /* Hiện bằng JS nếu cần thiết hoặc luôn hiện trên màn nhỏ */
+            /* Hiện bằng JS nếu cần thiết hoặc luôn hiện trên màn nhỏ */
             position: absolute;
             bottom: 40px;
             width: 100%;
@@ -408,7 +402,10 @@
 
         /* Responsive */
         @media (max-width: 600px) {
-            #mobile-controls { display: flex; }
+               #mobile-controls {
+        margin-bottom: 40px;
+        display: flex !important;
+    }
             .stage-title { font-size: 20px; }
             .word-btn { font-size: 16px; padding: 8px 12px; }
             #sentence-banner { font-size: 24px; width: 80%; }
