@@ -74,7 +74,6 @@
         /* --- THANH TRẠNG THÁI (LUÔN ẨN) --- */
         #info-bar {
             display: none !important; /* luôn ẩn */
-            
         }
 
         /* --- KHUNG GAME --- */
@@ -257,7 +256,6 @@
 
         /* --- MOBILE CONTROLS (Vòng 1) --- */
         #mobile-controls {
-            /* Hiện bằng JS nếu cần thiết hoặc luôn hiện trên màn nhỏ */
             position: absolute;
             bottom: 40px;
             width: 100%;
@@ -404,10 +402,10 @@
 
         /* Responsive */
         @media (max-width: 600px) {
-               #mobile-controls {
-        margin-bottom: 70px;
-        display: flex !important;
-    }
+            #mobile-controls {
+                margin-bottom: 70px;
+                display: flex !important;
+            }
             .stage-title { font-size: 20px; }
             .word-btn { font-size: 16px; padding: 8px 12px; }
             #sentence-banner { font-size: 24px; width: 80%; }
@@ -538,28 +536,45 @@
     // Lưu 3 món quà đã nhận ở 3 vòng
     const earnedGifts = [null, null, null];
 
-    // Âm thanh quà tặng (random)
+    // Âm thanh quà tặng (random, không trùng nhau trong 1 lượt chơi)
     const rewardSounds = [
         new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen.mp3"),
         new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen2.mp3")
+        // Nếu muốn thêm, cứ push thêm file vào đây
     ];
-// Âm thanh nhảy
-const jumpSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/jump.mp3");
-jumpSound.volume = 1;
 
-    // Âm thanh bom nổ
-const boomSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/boom.mp3");
-boomSound.volume = 1;
-
+    // Lưu index các âm thanh đã dùng trong 1 lượt (3 vòng)
+    let usedRewardSoundIndices = [];
 
     function playRandomRewardSound() {
         if (!rewardSounds.length) return;
-        const sound = rewardSounds[Math.floor(Math.random() * rewardSounds.length)];
+
+        const allIndices = rewardSounds.map((_, i) => i);
+        let available = allIndices.filter(i => !usedRewardSoundIndices.includes(i));
+
+        // Nếu đã dùng hết tất cả âm → reset để random lại
+        if (available.length === 0) {
+            usedRewardSoundIndices = [];
+            available = allIndices.slice();
+        }
+
+        const chosenIndex = available[Math.floor(Math.random() * available.length)];
+        usedRewardSoundIndices.push(chosenIndex);
+
+        const sound = rewardSounds[chosenIndex];
         try {
             sound.currentTime = 0;
             sound.play().catch(() => {});
         } catch(e) {}
     }
+
+    // Âm thanh nhảy
+    const jumpSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/jump.mp3");
+    jumpSound.volume = 1;
+
+    // Âm thanh bom nổ
+    const boomSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/boom.mp3");
+    boomSound.volume = 1;
 
     // Asset Công chúa (giữ tỉ lệ gốc, cao hơn 50%)
     const princessImg = new Image();
@@ -574,6 +589,15 @@ boomSound.volume = 1;
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
             window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function speakWord(word) {
+        if ('speechSynthesis' in window) {
+            const u = new SpeechSynthesisUtterance(word);
+            u.lang = 'en-US';
+            u.rate = 1;
+            window.speechSynthesis.speak(u);
         }
     }
 
@@ -700,16 +724,15 @@ boomSound.volume = 1;
         if (keys.right) player.vx += 1;
         if (keys.left) player.vx -= 1;
         if (keys.up && player.grounded) {
-    player.vy = physics.jumpPower;
-    player.grounded = false;
+            player.vy = physics.jumpPower;
+            player.grounded = false;
 
-    // Phát âm thanh jump
-    try {
-        jumpSound.currentTime = 0;
-        jumpSound.play().catch(()=>{});
-    } catch(e){}
-}
-
+            // Phát âm thanh jump
+            try {
+                jumpSound.currentTime = 0;
+                jumpSound.play().catch(()=>{});
+            } catch(e){}
+        }
 
         player.vx *= physics.friction;
         player.vy += physics.gravity;
@@ -774,25 +797,24 @@ boomSound.volume = 1;
                     );
                 }, 500);
             }
-       } else {
-    // Phát âm thanh bom
-    try {
-        boomSound.currentTime = 0;
-        boomSound.play().catch(()=>{});
-    } catch(e){}
+        } else {
+            // Phát âm thanh bom
+            try {
+                boomSound.currentTime = 0;
+                boomSound.play().catch(()=>{});
+            } catch(e){}
 
-    // BOM: màn hình đen + rung lắc dữ dội
-    createParticles(block.x + block.width/2, block.y + block.height/2, '#ff0000');
-    bombOverlay.style.opacity = '0.9';
-    gameContainer.classList.add('shake');
+            // BOM: màn hình đen + rung lắc dữ dội
+            createParticles(block.x + block.width/2, block.y + block.height/2, '#ff0000');
+            bombOverlay.style.opacity = '0.9';
+            gameContainer.classList.add('shake');
 
-    setTimeout(() => {
-        bombOverlay.style.opacity = '0';
-        gameContainer.classList.remove('shake');
-        setupStage1();
-    }, 700);
-}
-
+            setTimeout(() => {
+                bombOverlay.style.opacity = '0';
+                gameContainer.classList.remove('shake');
+                setupStage1();
+            }, 700);
+        }
     }
 
     function createParticles(x, y, color) {
@@ -880,7 +902,7 @@ boomSound.volume = 1;
     // Keyboard
     window.addEventListener('keydown', (e) => {
         if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
-        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
         if (e.code === 'ArrowUp' || e.code === 'Space') keys.up = true;
     });
 
@@ -934,20 +956,20 @@ boomSound.volume = 1;
             btn.className = 'word-btn';
             btn.innerText = word;
             btn.onclick = () => {
-    if (btn.classList.contains('used')) return;
+                if (btn.classList.contains('used')) return;
 
-    // 🔊 đọc từ khi bấm
-    speakWord(word);
+                // 🔊 đọc từ khi bấm
+                speakWord(word);
 
-    const span = document.createElement('span');
-    span.innerText = word;
-    if (s2CurrentWords.length > 0) span.style.marginLeft = "5px";
-    box.appendChild(span);
-    s2CurrentWords.push(word);
-    btn.classList.add('used');
+                const span = document.createElement('span');
+                span.innerText = word;
+                if (s2CurrentWords.length > 0) span.style.marginLeft = "5px";
+                box.appendChild(span);
+                s2CurrentWords.push(word);
+                btn.classList.add('used');
 
-    checkStage2();
-};
+                checkStage2();
+            };
 
             pool.appendChild(btn);
         });
@@ -1120,7 +1142,11 @@ boomSound.volume = 1;
         }
 
         popup.style.display = 'flex';
+
+        // 🔊 âm thanh khen random, không trùng nhau trong 1 lượt chơi
         playRandomRewardSound();
+
+        // Pháo hoa full màn hình
         createFireworksBurst();
 
         popupBtn.onclick = null;
@@ -1129,15 +1155,6 @@ boomSound.volume = 1;
             if (callback) callback();
         };
     }
-function speakWord(word) {
-    if ('speechSynthesis' in window) {
-        const u = new SpeechSynthesisUtterance(word);
-        u.lang = 'en-US';
-        u.rate = 1;  // tốc độ đọc
-        window.speechSynthesis.speak(u);
-    }
-}
-
 </script>
 </body>
 </html>
