@@ -1,0 +1,506 @@
+
+====================
+[SECTION: BASIC_ENGLISH]
+[TYPE: ENGLISH]
+[TOTAL: 100]
+====================
+
+### Câu 1
+EN: What is your name?
+VI: Tên bạn là gì?
+---
+
+### Câu 2
+EN: How are you?
+VI: Bạn khỏe không?
+---
+
+### Câu 3
+EN: I am fine, thank you.
+VI: Tôi khỏe, cảm ơn bạn.
+---
+
+### Câu 4
+EN: Nice to meet you.
+VI: Rất vui được gặp bạn.
+---
+
+### Câu 5
+EN: Where are you from?
+VI: Bạn đến từ đâu?
+---
+
+### Câu 6
+EN: Do you speak English?
+VI: Bạn có nói tiếng Anh không?
+---
+
+### Câu 7
+EN: I don't understand.
+VI: Tôi không hiểu.
+---
+
+### Câu 8
+EN: Can you help me?
+VI: Bạn có thể giúp tôi không?
+---
+
+### Câu 9
+EN: How much is this?
+VI: Cái này giá bao nhiêu?
+---
+
+### Câu 10
+EN: Sorry, I'm late.
+VI: Xin lỗi, tôi đến muộn.
+---
+
+### Câu 11
+EN: What time is it?
+VI: Bây giờ là mấy giờ?
+---
+
+### Câu 12
+EN: Have a nice day.
+VI: Chúc một ngày tốt lành.
+---
+
+### Câu 13
+EN: See you later.
+VI: Hẹn gặp lại sau.
+---
+
+### Câu 14
+EN: Where is the restroom?
+VI: Nhà vệ sinh ở đâu?
+---
+
+### Câu 15
+EN: What do you do?
+VI: Bạn làm nghề gì?
+---
+
+### Câu 16
+EN: I am a student.
+VI: Tôi là sinh viên.
+---
+
+### Câu 17
+EN: I like it very much.
+VI: Tôi rất thích nó.
+---
+
+### Câu 18
+EN: Can you repeat that, please?
+VI: Bạn có thể nhắc lại được không?
+---
+
+### Câu 19
+EN: Please speak more slowly.
+VI: Làm ơn nói chậm hơn một chút.
+---
+
+### Câu 20
+EN: What does this mean?
+VI: Điều này nghĩa là gì?
+---
+
+### Câu 21
+EN: Excuse me.
+VI: Xin lỗi (khi muốn thu hút sự chú ý hoặc đi qua).
+---
+
+### Câu 22
+EN: Good morning.
+VI: Chào buổi sáng.
+---
+
+### Câu 23
+EN: Good night.
+VI: Chúc ngủ ngon.
+---
+
+### Câu 24
+EN: I'm hungry.
+VI: Tôi đói.
+---
+
+### Câu 25
+EN: I'm thirsty.
+VI: Tôi khát.
+---
+
+### Câu 26
+EN: Let's go.
+VI: Chúng ta đi thôi.
+---
+
+### Câu 27
+EN: Wait a minute.
+VI: Đợi một chút.
+---
+
+### Câu 28
+EN: Be careful.
+VI: Cẩn thận nhé.
+---
+
+### Câu 29
+EN: Don't worry.
+VI: Đừng lo lắng.
+---
+
+### Câu 30
+EN: It doesn't matter.
+VI: Không sao đâu / Không quan trọng đâu.
+---
+
+### Câu 31
+EN: Could you give me a hand?
+VI: Bạn có thể giúp tôi một tay không?
+---
+
+### Câu 32
+EN: What's up?
+VI: Có chuyện gì thế? / Dạo này thế nào?
+---
+
+### Câu 33
+EN: Nothing much.
+VI: Không có gì đặc biệt cả.
+---
+
+### Câu 34
+EN: Are you sure?
+VI: Bạn có chắc không?
+---
+
+### Câu 35
+EN: Believe me.
+VI: Tin tôi đi.
+---
+
+### Câu 36
+EN: It's up to you.
+VI: Tùy bạn thôi.
+---
+
+### Câu 37
+EN: I think so.
+VI: Tôi nghĩ vậy.
+---
+
+### Câu 38
+EN: I don't think so.
+VI: Tôi không nghĩ vậy.
+---
+
+### Câu 39
+EN: No problem.
+VI: Không vấn đề gì.
+---
+
+### Câu 40
+EN: Good job!
+VI: Làm tốt lắm!
+---
+
+### Câu 41
+EN: Cheer up!
+VI: Vui lên đi!
+---
+
+### Câu 42
+EN: Calm down.
+VI: Bình tĩnh nào.
+---
+
+### Câu 43
+EN: Shut up.
+VI: Im miệng lại. (Lưu ý: Thô lỗ)
+---
+
+### Câu 44
+EN: Stop it.
+VI: Dừng lại đi.
+---
+
+### Câu 45
+EN: Let me see.
+VI: Để tôi xem nào.
+---
+
+### Câu 46
+EN: Come here.
+VI: Lại đây.
+---
+
+### Câu 47
+EN: Get out.
+VI: Ra ngoài.
+---
+
+### Câu 48
+EN: Go away.
+VI: Đi chỗ khác đi.
+---
+
+### Câu 49
+EN: I'm lost.
+VI: Tôi bị lạc đường.
+---
+
+### Câu 50
+EN: Call the police.
+VI: Gọi cảnh sát đi.
+---
+
+### Câu 51
+EN: Are you busy?
+VI: Bạn có bận không?
+---
+
+### Câu 52
+EN: I'm free.
+VI: Tôi rảnh.
+---
+
+### Câu 53
+EN: Are you ready?
+VI: Bạn sẵn sàng chưa?
+---
+
+### Câu 54
+EN: Almost done.
+VI: Sắp xong rồi.
+---
+
+### Câu 55
+EN: Good luck.
+VI: Chúc may mắn.
+---
+
+### Câu 56
+EN: Happy birthday.
+VI: Chúc mừng sinh nhật.
+---
+
+### Câu 57
+EN: Congratulations.
+VI: Chúc mừng nhé.
+---
+
+### Câu 58
+EN: Bless you.
+VI: Chúa phù hộ cho bạn (thường dùng khi ai đó hắt hơi).
+---
+
+### Câu 59
+EN: Take care.
+VI: Bảo trọng nhé.
+---
+
+### Câu 60
+EN: Keep in touch.
+VI: Giữ liên lạc nhé.
+---
+
+### Câu 61
+EN: Long time no see.
+VI: Lâu rồi không gặp.
+---
+
+### Câu 62
+EN: How was your day?
+VI: Ngày hôm nay của bạn thế nào?
+---
+
+### Câu 63
+EN: It's raining.
+VI: Trời đang mưa.
+---
+
+### Câu 64
+EN: It's very hot today.
+VI: Hôm nay trời rất nóng.
+---
+
+### Câu 65
+EN: I feel sick.
+VI: Tôi cảm thấy không khỏe.
+---
+
+### Câu 66
+EN: I need a doctor.
+VI: Tôi cần gặp bác sĩ.
+---
+
+### Câu 67
+EN: Do you have a pen?
+VI: Bạn có cái bút nào không?
+---
+
+### Câu 68
+EN: May I open the window?
+VI: Tôi có thể mở cửa sổ được không?
+---
+
+### Câu 69
+EN: Of course.
+VI: Tất nhiên rồi.
+---
+
+### Câu 70
+EN: Not yet.
+VI: Vẫn chưa.
+---
+
+### Câu 71
+EN: Me too.
+VI: Tôi cũng vậy.
+---
+
+### Câu 72
+EN: Why not?
+VI: Tại sao không?
+---
+
+### Câu 73
+EN: What happened?
+VI: Chuyện gì đã xảy ra vậy?
+---
+
+### Câu 74
+EN: Just kidding.
+VI: Đùa thôi mà.
+---
+
+### Câu 75
+EN: I'm serious.
+VI: Tôi nghiêm túc đấy.
+---
+
+### Câu 76
+EN: That's funny.
+VI: Buồn cười thật.
+---
+
+### Câu 77
+EN: That's interesting.
+VI: Thú vị thật.
+---
+
+### Câu 78
+EN: That's right.
+VI: Đúng rồi.
+---
+
+### Câu 79
+EN: That's wrong.
+VI: Sai rồi.
+---
+
+### Câu 80
+EN: Absolutely.
+VI: Chắc chắn rồi / Hoàn toàn đúng.
+---
+
+### Câu 81
+EN: Definitely.
+VI: Nhất định rồi.
+---
+
+### Câu 82
+EN: Impossible.
+VI: Không thể nào.
+---
+
+### Câu 83
+EN: It's too expensive.
+VI: Đắt quá.
+---
+
+### Câu 84
+EN: Can you give me a discount?
+VI: Bạn có thể giảm giá cho tôi không?
+---
+
+### Câu 85
+EN: I'll take it.
+VI: Tôi sẽ mua cái này.
+---
+
+### Câu 86
+EN: Can I pay by credit card?
+VI: Tôi có thể trả bằng thẻ tín dụng không?
+---
+
+### Câu 87
+EN: Where is the nearest ATM?
+VI: Cây ATM gần nhất ở đâu?
+---
+
+### Câu 88
+EN: Turn left.
+VI: Rẽ trái.
+---
+
+### Câu 89
+EN: Turn right.
+VI: Rẽ phải.
+---
+
+### Câu 90
+EN: Go straight.
+VI: Đi thẳng.
+---
+
+### Câu 91
+EN: Please sit down.
+VI: Mời ngồi.
+---
+
+### Câu 92
+EN: What are you doing?
+VI: Bạn đang làm gì đấy?
+---
+
+### Câu 93
+EN: Where are you going?
+VI: Bạn đang đi đâu đấy?
+---
+
+### Câu 94
+EN: I have to go now.
+VI: Tôi phải đi bây giờ.
+---
+
+### Câu 95
+EN: I love you.
+VI: Tôi yêu bạn.
+---
+
+### Câu 96
+EN: I miss you.
+VI: Tôi nhớ bạn.
+---
+
+### Câu 97
+EN: Happy New Year.
+VI: Chúc mừng năm mới.
+---
+
+### Câu 98
+EN: Merry Christmas.
+VI: Giáng sinh vui vẻ.
+---
+
+### Câu 99
+EN: Enjoy your meal.
+VI: Chúc ngon miệng.
+---
+
+### Câu 100
+EN: Thank you for your help.
+VI: Cảm ơn sự giúp đỡ của bạn.
+---
