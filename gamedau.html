@@ -647,6 +647,8 @@
     const codePopup = document.getElementById('code-popup');
     const codeValueEl = document.getElementById('code-value');
     const codePopupClose = document.getElementById('code-popup-close');
+   let codeIntervalId = null; // interval cập nhật mật mã
+let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
 
     // Bảng điểm
     const scoreEl = document.getElementById('score-value');
@@ -958,7 +960,6 @@
     let showBannerTimeout;
 
     const keys = { right: false, left: false, up: false };
-
     function setupStage1() {
         gameState.currentStage = 1;
         gameState.collectedIndices = [];
@@ -1497,11 +1498,42 @@
         return hhStr + mmStr;
     }
 
-    function showCodePopup() {
-        const code = generateCode();
-        if (codeValueEl) codeValueEl.textContent = code;
-        if (codePopup) codePopup.style.display = 'flex';
+   function showCodePopup() {
+    if (!codePopup || !codeValueEl) return;
+
+    // Clear interval/timeout cũ nếu có
+    if (codeIntervalId) {
+        clearInterval(codeIntervalId);
+        codeIntervalId = null;
     }
+    if (codeTimeoutId) {
+        clearTimeout(codeTimeoutId);
+        codeTimeoutId = null;
+    }
+
+    const updateCode = () => {
+        codeValueEl.textContent = generateCode();
+    };
+
+    // Cập nhật ngay khi mở popup
+    updateCode();
+
+    // Hiện popup
+    codePopup.style.display = 'flex';
+
+    // Tính thời gian còn lại tới đầu phút tiếp theo (00 giây)
+    const now = new Date();
+    const msTillNextMinute =
+        (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+    // Đến đúng đầu phút tiếp theo thì cập nhật, rồi sau đó mỗi 60 giây
+    codeTimeoutId = setTimeout(() => {
+        updateCode(); // cập nhật lần nữa đúng lúc sang phút mới
+
+        codeIntervalId = setInterval(updateCode, 60000); // sau đó mỗi 60s
+    }, msTillNextMinute);
+}
+
 
     finalCollectBtn.onclick = () => {
         // Cộng điểm + đánh dấu đã hoàn thành câu
@@ -1512,7 +1544,18 @@
         showCodePopup();
     };
 
-    codePopupClose.onclick = () => {
+   codePopupClose.onclick = () => {
+    // Dừng interval cập nhật mật mã
+    if (codeIntervalId) {
+        clearInterval(codeIntervalId);
+        codeIntervalId = null;
+    }
+    // Dừng luôn timeout chờ tới phút mới (nếu còn)
+    if (codeTimeoutId) {
+        clearTimeout(codeTimeoutId);
+        codeTimeoutId = null;
+    }
+
     if (codePopup) codePopup.style.display = 'none';
 
     // Ẩn màn hình cuối (nếu còn)
@@ -1523,8 +1566,8 @@
 
     // Không cần nghe lại intro, cho bấm BẮT ĐẦU luôn
     if (startOverlay) startOverlay.style.display = 'none';
-    introPlayed = true;      // để overlay không dùng lại
-    unlockStartButton();     // mở khóa nút BẮT ĐẦU
+    introPlayed = true;
+    unlockStartButton();
 };
 
 
@@ -1581,7 +1624,6 @@
     }
 
     lockStartButton(); // lúc đầu không bấm được
-
     if (startOverlay) {
         startOverlay.addEventListener('click', () => {
             if (introPlayed) return; // tránh play nhiều lần
@@ -1617,5 +1659,6 @@
         });
     }
 </script>
+
 </body>
 </html>
