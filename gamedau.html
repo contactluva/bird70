@@ -12,9 +12,9 @@
             margin: 0;
             padding: 0;
             font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            background-color: #ffe6f2; /* Hồng phấn nhạt */
-            overflow: hidden; /* Tránh cuộn trang khi chơi */
-            touch-action: none; /* Tắt zoom trên mobile */
+            background-color: #ffe6f2;
+            overflow: hidden;
+            touch-action: none;
         }
 
         #app {
@@ -31,8 +31,50 @@
             padding-bottom: 20px !important;
         }
 
-        /* --- PHẦN NHẬP DỮ LIỆU --- */
+        /* --- MÀN HÌNH BẮT ĐẦU --- */
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/daudau.jpg');
+            background-size: cover;
+            background-position: top right; /* giữ góc trên phải */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        #start-main-btn {
+            background: rgba(255, 51, 133, 0.95);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px 0 rgba(204, 0, 82, 0.9);
+            transition: transform 0.1s, box-shadow 0.1s, opacity 0.1s;
+        }
+        #start-main-btn:active {
+            box-shadow: 0 3px 0 rgba(204, 0, 82, 0.9);
+            transform: translateY(3px);
+        }
+
+        /* overlay vô hình để click nghe intro */
+        #start-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 3100;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* --- PHẦN NHẬP DỮ LIỆU (ẨN LUÔN) --- */
         #input-section {
+            display: none;
             background: #ffb3d9;
             padding: 10px;
             margin-top: 120px;
@@ -41,11 +83,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 100;
         }
-        
-        .input-row {
-            margin-bottom: 5px;
-        }
-
+        .input-row { margin-bottom: 5px; }
         input {
             padding: 8px;
             border-radius: 15px;
@@ -53,7 +91,6 @@
             width: 250px;
             font-size: 16px;
         }
-
         button.start-btn {
             background-color: #ff3385;
             color: white;
@@ -65,7 +102,6 @@
             font-weight: bold;
             box-shadow: 0 4px #cc0052;
         }
-
         button.start-btn:active {
             box-shadow: 0 2px #cc0052;
             transform: translateY(2px);
@@ -73,7 +109,7 @@
 
         /* --- THANH TRẠNG THÁI (LUÔN ẨN) --- */
         #info-bar {
-            display: none !important; /* luôn ẩn */
+            display: none !important;
         }
 
         /* --- KHUNG GAME --- */
@@ -82,7 +118,7 @@
             flex-grow: 1;
             width: 100%;
             max-width: 1000px;
-            background: linear-gradient(to bottom, #87CEEB, #E0F7FA); /* Bầu trời */
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
             overflow: hidden;
             border-left: 2px solid #fff;
             border-right: 2px solid #fff;
@@ -102,6 +138,21 @@
             z-index: 150;
         }
 
+        /* --- NÚT NGHE CÂU (VÒNG 1) --- */
+        #listen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 10px;
+            border-radius: 50%;
+            border: 2px solid #ff66b3;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 151;
+            display: none; /* chỉ hiện ở vòng 1 */
+        }
+
         /* --- CANVAS VÒNG 1 --- */
         canvas {
             display: block;
@@ -109,7 +160,7 @@
 
         /* --- UI VÒNG 2 & 3 --- */
         .sort-stage {
-            display: none; /* Ẩn mặc định */
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -173,9 +224,7 @@
             transition: transform 0.1s;
         }
 
-        .word-btn:active {
-            transform: scale(0.95);
-        }
+        .word-btn:active { transform: scale(0.95); }
 
         .word-btn.used {
             opacity: 0.3;
@@ -193,7 +242,7 @@
             border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
-            display: none; /* Chỉ hiện khi sai */
+            display: none;
         }
 
         /* --- POPUP THÔNG BÁO + QUÀ --- */
@@ -221,10 +270,6 @@
             from { transform: scale(0); }
             to { transform: scale(1); }
         }
-        
-        .input-row {
-    display: none;
-}
 
         .popup-msg {
             font-size: 24px;
@@ -238,7 +283,6 @@
             object-fit: contain;
             margin-bottom: 15px;
             display: none;
-            /* quay vòng + zoom to */
             animation: giftSpinZoom 0.8s ease-out forwards, giftPulse 1.2s 0.8s infinite alternate;
         }
 
@@ -254,12 +298,8 @@
         }
 
         @keyframes giftPulse {
-            from {
-                transform: scale(1.1) rotate(360deg);
-            }
-            to {
-                transform: scale(1.25) rotate(340deg);
-            }
+            from { transform: scale(1.1) rotate(360deg); }
+            to { transform: scale(1.25) rotate(340deg); }
         }
 
         .popup-btn {
@@ -280,7 +320,7 @@
             justify-content: space-between;
             padding: 0 20px;
             box-sizing: border-box;
-            pointer-events: none; /* Để click xuyên qua vùng trống */
+            pointer-events: none;
         }
 
         .control-btn {
@@ -325,7 +365,7 @@
             box-shadow: 0 0 20px rgba(255, 102, 179, 0.5);
         }
 
-        /* --- HIỆU ỨNG BOM ĐEN MÀN HÌNH + RUNG --- */
+        /* --- HIỆU ỨNG BOM --- */
         #bomb-effect {
             position: absolute;
             top: 0; left: 0;
@@ -346,11 +386,9 @@
             100% { transform: translate(0, 0); }
         }
 
-        #game-container.shake {
-            animation: shakeScreen 0.5s linear;
-        }
+        #game-container.shake { animation: shakeScreen 0.5s linear; }
 
-        /* --- PHÁO HOA KHI NHẬN QUÀ --- */
+        /* --- PHÁO HOA --- */
         .firework {
             position: fixed;
             width: 8px;
@@ -363,14 +401,8 @@
         }
 
         @keyframes fireworkBlast {
-            from {
-                opacity: 1;
-                transform: translate(0, 0) scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: translate(var(--dx), var(--dy)) scale(0);
-            }
+            from { opacity: 1; transform: translate(0, 0) scale(1); }
+            to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
         }
 
         /* --- MÀN HÌNH CUỐI GAME --- */
@@ -381,7 +413,7 @@
             background: linear-gradient(to bottom, #ffe6f2, #ffd1ec);
             display: none;
             justify-content: center;
-            align-items: flex-end;   /* nhân vật + nút gần đáy */
+            align-items: flex-end;
             z-index: 2000;
         }
 
@@ -389,7 +421,7 @@
             width: 100%;
             max-width: 600px;
             text-align: center;
-            padding-bottom: 60px;    /* cách bottom 60px */
+            padding-bottom: 60px;
             margin: 0 auto;
         }
 
@@ -408,7 +440,6 @@
             animation: giftPulse 1.2s infinite alternate;
         }
 
-        /* Ảnh cuối full chiều ngang */
         #final-princess {
             width: 100%;
             height: auto;
@@ -416,9 +447,7 @@
             margin-bottom: 20px;
         }
 
-        #final-collect-btn {
-            margin-top: 5px;
-        }
+        #final-collect-btn { margin-top: 5px; }
 
         /* Responsive */
         @media (max-width: 600px) {
@@ -434,8 +463,15 @@
 </head>
 <body>
 
+    <!-- Màn hình bắt đầu -->
+    <div id="start-screen">
+        <button id="start-main-btn">BẮT ĐẦU</button>
+        <!-- overlay vô hình để click phát intro -->
+        <div id="start-overlay"></div>
+    </div>
+
     <div id="app">
-        <!-- Input Section -->
+        <!-- Input Section (ẩn, giữ lại fallback) -->
         <div id="input-section">
             <div class="input-row">
                 <input type="text" id="inp-eng" placeholder="Câu Tiếng Anh (VD: I am happy)">
@@ -456,6 +492,9 @@
         <div id="game-container">
             <!-- Bảng điểm -->
             <div id="score-board">Điểm: <span id="score-value">0</span></div>
+
+            <!-- Nút nghe lại câu (chỉ vòng 1) -->
+            <button id="listen-btn">🔊</button>
 
             <!-- Vòng 1: Canvas -->
             <canvas id="gameCanvas"></canvas>
@@ -536,6 +575,13 @@
     const popupGift = document.getElementById('popup-gift');
     const bombOverlay = document.getElementById('bomb-effect');
 
+    const startScreen = document.getElementById('start-screen');
+    const startMainBtn = document.getElementById('start-main-btn');
+    const startOverlay = document.getElementById('start-overlay');
+
+    // Nút nghe câu vòng 1
+    const listenBtn = document.getElementById('listen-btn');
+
     // Màn hình cuối game
     const finalScreen = document.getElementById('final-screen');
     const finalGiftsRow = document.getElementById('final-gifts-row');
@@ -543,13 +589,14 @@
 
     // Bảng điểm
     const scoreEl = document.getElementById('score-value');
-    const STORAGE_KEY = 'princess_eng_state_v1';
+    const STORAGE_KEY = 'princess_eng_state_v2';
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
+    // Trạng thái lưu lâu dài
     let persistentState = {
         score: 0,
-        sentenceIndex: 0,
-        learned: []
+        currentSentenceIndex: 0,
+        completed: []
     };
 
     function loadPersistentState() {
@@ -561,14 +608,14 @@
             }
             const data = JSON.parse(raw);
             if (!data || !data.timestamp || (Date.now() - data.timestamp) > THIRTY_DAYS_MS) {
-                // Quá 30 ngày => reset
                 localStorage.removeItem(STORAGE_KEY);
                 updateScoreUI();
                 return;
             }
             persistentState.score = data.score || 0;
-            persistentState.sentenceIndex = data.sentenceIndex || 0;
-            persistentState.learned = Array.isArray(data.learned) ? data.learned : [];
+            persistentState.currentSentenceIndex =
+                typeof data.currentSentenceIndex === 'number' ? data.currentSentenceIndex : 0;
+            persistentState.completed = Array.isArray(data.completed) ? data.completed : [];
         } catch (e) {
             console.error(e);
         }
@@ -579,8 +626,9 @@
         try {
             const data = {
                 score: persistentState.score || 0,
-                sentenceIndex: persistentState.sentenceIndex || 0,
-                learned: Array.isArray(persistentState.learned) ? persistentState.learned : [],
+                currentSentenceIndex: typeof persistentState.currentSentenceIndex === 'number'
+                    ? persistentState.currentSentenceIndex : 0,
+                completed: Array.isArray(persistentState.completed) ? persistentState.completed : [],
                 timestamp: Date.now()
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -615,20 +663,16 @@
         "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-8.png",
         "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-9.png",
         "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/a-10.png"
-        // thêm URL quà khác tại đây
     ];
 
     // Lưu 3 món quà đã nhận ở 3 vòng
     const earnedGifts = [null, null, null];
 
-    // Âm thanh quà tặng (random, không trùng nhau trong 1 lượt chơi)
+    // Âm thanh quà tặng
     const rewardSounds = [
         new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen.mp3"),
         new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/daukhen2.mp3")
-        // Nếu muốn thêm, cứ push thêm file vào đây
     ];
-
-    // Lưu index các âm thanh đã dùng trong 1 lượt (3 vòng)
     let usedRewardSoundIndices = [];
 
     function playRandomRewardSound() {
@@ -637,7 +681,6 @@
         const allIndices = rewardSounds.map((_, i) => i);
         let available = allIndices.filter(i => !usedRewardSoundIndices.includes(i));
 
-        // Nếu đã dùng hết tất cả âm → reset để random lại
         if (available.length === 0) {
             usedRewardSoundIndices = [];
             available = allIndices.slice();
@@ -653,28 +696,50 @@
         } catch(e) {}
     }
 
-    // Âm thanh nhảy
+    // Âm thanh intro (click overlay)
+    const introVoice = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/dauvoice.mp3");
+
+    // Âm thanh nhảy (volume 0.3)
     const jumpSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/jump.mp3");
-    jumpSound.volume = 1;
+    jumpSound.volume = 0.3;
 
     // Âm thanh bom nổ
     const boomSound = new Audio("https://github.com/contactluva/bird70/raw/refs/heads/main/boom.mp3");
     boomSound.volume = 1;
 
-    // Asset Công chúa (giữ tỉ lệ gốc, cao hơn 50%)
+    // Ảnh công chúa
     const princessImg = new Image();
     princessImg.crossOrigin = "anonymous";
     princessImg.src = "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/pmr.png";
     let princessLoaded = false;
     princessImg.onload = () => { princessLoaded = true; };
 
-    // Audio Speech (đọc câu tiếng Anh)
+    /* ----------------- QUẢN LÝ GIỌNG NÓI (EN) ----------------- */
+    let allVoices = [];
+
+    function loadVoices() {
+        if (!('speechSynthesis' in window)) return;
+        allVoices = window.speechSynthesis.getVoices();
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }
+
+    function getVoiceByLangPrefix(prefix) {
+        if (!allVoices || !allVoices.length) return null;
+        prefix = prefix.toLowerCase();
+        return allVoices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix)) || null;
+    }
+
+    // đọc câu tiếng Anh
     function speak(text) {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
-        }
+        if (!('speechSynthesis' in window)) return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        const v = getVoiceByLangPrefix('en');
+        if (v) u.voice = v;
+        window.speechSynthesis.speak(u);
     }
 
     function speakThen(text, callback) {
@@ -682,30 +747,29 @@
             if (callback) setTimeout(callback, 500);
             return;
         }
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 1;
-        utterance.onend = function() {
-            if (callback) callback();
-        };
-        utterance.onerror = function() {
-            if (callback) callback();
-        };
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        const v = getVoiceByLangPrefix('en');
+        if (v) u.voice = v;
+        u.rate = 1;
+        u.onend = () => { if (callback) callback(); };
+        u.onerror = () => { if (callback) callback(); };
         try {
             window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.speak(u);
         } catch (e) {
             if (callback) callback();
         }
     }
 
     function speakWord(word) {
-        if ('speechSynthesis' in window) {
-            const u = new SpeechSynthesisUtterance(word);
-            u.lang = 'en-US';
-            u.rate = 1;
-            window.speechSynthesis.speak(u);
-        }
+        if (!('speechSynthesis' in window)) return;
+        const u = new SpeechSynthesisUtterance(word);
+        u.lang = 'en-US';
+        const v = getVoiceByLangPrefix('en');
+        if (v) u.voice = v;
+        u.rate = 1;
+        window.speechSynthesis.speak(u);
     }
 
     /**
@@ -751,44 +815,49 @@
         }
     }
 
-    function getNextSentenceFromList() {
+    function getCurrentSentenceFromList() {
         if (!sentenceListLoaded || !sentenceList.length) return null;
-        let idx = persistentState.sentenceIndex || 0;
+        let idx = persistentState.currentSentenceIndex;
+        if (typeof idx !== 'number' || idx < 0) idx = 0;
         if (idx >= sentenceList.length) idx = 0;
-        const sentence = sentenceList[idx];
-
-        if (!Array.isArray(persistentState.learned)) {
-            persistentState.learned = [];
-        }
-        if (!persistentState.learned.includes(idx)) {
-            persistentState.learned.push(idx);
-        }
-
-        persistentState.sentenceIndex = idx + 1;
+        persistentState.currentSentenceIndex = idx;
         savePersistentState();
-        return sentence;
+        return sentenceList[idx];
+    }
+
+    function markSentenceCompleted() {
+        if (!sentenceListLoaded || !sentenceList.length) return;
+        let idx = persistentState.currentSentenceIndex;
+        if (typeof idx !== 'number' || idx < 0 || idx >= sentenceList.length) return;
+
+        if (!Array.isArray(persistentState.completed)) {
+            persistentState.completed = [];
+        }
+        if (!persistentState.completed.includes(idx)) {
+            persistentState.completed.push(idx);
+            addScore(1);
+        }
+        persistentState.currentSentenceIndex = idx + 1;
+        savePersistentState();
     }
 
     /**
      * KHỞI TẠO GAME
      */
     async function startGame() {
-        // Cố gắng lấy câu từ file eng.txt
         await loadSentenceList();
         let chosenSentence = null;
 
         if (sentenceListLoaded && sentenceList.length) {
-            chosenSentence = getNextSentenceFromList();
+            chosenSentence = getCurrentSentenceFromList();
         }
 
         if (chosenSentence) {
             gameState.engSentence = chosenSentence.en;
             gameState.vieSentence = chosenSentence.vi;
         } else {
-            // fallback dùng input nếu không tải được file
-            const rawEng = document.getElementById('inp-eng').value.trim() || "I am happy today";
-            const rawVie = document.getElementById('inp-vie').value.trim() || "Hôm nay em rất vui";
-
+            const rawEng = document.getElementById('inp-eng')?.value.trim() || "I am happy today";
+            const rawVie = document.getElementById('inp-vie')?.value.trim() || "Hôm nay em rất vui";
             gameState.engSentence = rawEng;
             gameState.vieSentence = rawVie;
         }
@@ -796,7 +865,7 @@
         gameState.engWords = gameState.engSentence.split(/\s+/).map(w => w.replace(/[.,?!]/g, ''));
         gameState.vieWords = gameState.vieSentence.split(/\s+/).map(w => w.replace(/[.,?!]/g, ''));
 
-        inputSection.style.display = 'none';
+        if (inputSection) inputSection.style.display = 'none';
 
         setupStage1();
     }
@@ -819,7 +888,7 @@
         grounded: false,
         color: '#ff66b3',
         groundY: 0,
-        facing: 1 // 1: phải, -1: trái
+        facing: 1
     };
 
     const camera = { x: 0 };
@@ -832,10 +901,16 @@
     function setupStage1() {
         gameState.currentStage = 1;
         gameState.collectedIndices = [];
-        document.getElementById('mobile-controls').style.display = 'flex';
-        canvas.style.display = 'block';
         document.getElementById('stage2').style.display = 'none';
         document.getElementById('stage3').style.display = 'none';
+        canvas.style.display = 'block';
+
+        if (listenBtn) {
+            listenBtn.style.display = 'block';
+            listenBtn.onclick = () => {
+                speak(gameState.engSentence);
+            };
+        }
 
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
@@ -848,13 +923,15 @@
 
         createBlocks();
 
-        // Mỗi lần bắt đầu lại Vòng 1 đều hiện câu tiếng Anh 5s
         sentenceBanner.innerText = gameState.engSentence;
         sentenceBanner.style.display = 'block';
         clearTimeout(showBannerTimeout);
         showBannerTimeout = setTimeout(() => {
             sentenceBanner.style.display = 'none';
         }, 5000);
+
+        // Đọc câu tiếng Anh khi bắt đầu vòng 1
+        speak(gameState.engSentence);
 
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         gameLoop();
@@ -864,7 +941,6 @@
         if (gameState.currentStage === 1) {
             canvas.width = gameContainer.clientWidth;
             canvas.height = gameContainer.clientHeight;
-            // Nền đất khoảng 70% màn hình
             player.groundY = Math.floor(canvas.height * 0.7);
         }
     }
@@ -885,7 +961,6 @@
         const blockH = 40;
 
         allItems.forEach(item => {
-            // Nâng block lên cao hơn vì công chúa cao hơn
             const jumpReach = 150;
             const y = player.groundY - jumpReach - (Math.random() * 60);
             const w = Math.max(80, item.text.length * 12);
@@ -911,8 +986,6 @@
         if (keys.up && player.grounded) {
             player.vy = physics.jumpPower;
             player.grounded = false;
-
-            // Phát âm thanh jump
             try {
                 jumpSound.currentTime = 0;
                 jumpSound.play().catch(()=>{});
@@ -966,6 +1039,13 @@
         block.hit = true;
         block.scale = 1.2;
 
+        // Sau khi nhảy đập block, đọc từ đó trễ 300ms
+        if (block.word) {
+            setTimeout(() => {
+                speakWord(block.word);
+            }, 300);
+        }
+
         if (block.type === 'correct') {
             createParticles(block.x + block.width/2, block.y + block.height/2, '#00ff00');
             gameState.collectedIndices.push(block.index);
@@ -974,22 +1054,20 @@
                     showPopup(
                         "Hoàn thành Vòng 1!<br>Đậu được tặng một món quà!",
                         () => {
-                            document.getElementById('mobile-controls').style.display = 'none';
                             canvas.style.display = 'none';
+                            if (listenBtn) listenBtn.style.display = 'none';
                             setupStage2();
                         },
-                        1 // vòng 1
+                        1
                     );
                 }, 500);
             }
         } else {
-            // Phát âm thanh bom
             try {
                 boomSound.currentTime = 0;
                 boomSound.play().catch(()=>{});
             } catch(e){}
 
-            // BOM: màn hình đen + rung lắc dữ dội
             createParticles(block.x + block.width/2, block.y + block.height/2, '#ff0000');
             bombOverlay.style.opacity = '0.9';
             gameContainer.classList.add('shake');
@@ -1028,11 +1106,7 @@
 
         blocks.forEach(block => {
             if (block.hit && block.type === 'wrong') return;
-            if (block.hit && block.type === 'correct') {
-                ctx.globalAlpha = 0.5;
-            } else {
-                ctx.globalAlpha = 1;
-            }
+            ctx.globalAlpha = (block.hit && block.type === 'correct') ? 0.5 : 1;
 
             ctx.fillStyle = "#FFD700";
             ctx.fillRect(block.x, block.y, block.width, block.height);
@@ -1047,7 +1121,6 @@
             ctx.globalAlpha = 1;
         });
 
-        // Vẽ công chúa giữ tỉ lệ, cao hơn 50%, có flip trái/phải
         if (princessLoaded) {
             const baseHeight = player.height * 1.5;
             const scale = baseHeight / princessImg.naturalHeight;
@@ -1137,9 +1210,8 @@
     setupTouchBtn('btn-right', 'right');
     setupTouchBtn('btn-jump', 'up');
 
-
     /* ------------------------------------------------------------------
-       VÒNG 2: SẮP XẾP TIẾNG ANH
+       VÒNG 2
        ------------------------------------------------------------------ */
     function getStage2CurrentWords() {
         const box = document.getElementById('s2-box');
@@ -1175,14 +1247,12 @@
             btn.onclick = () => {
                 if (btn.classList.contains('used')) return;
 
-                // 🔊 đọc từ khi bấm
                 speakWord(word);
 
                 const span = document.createElement('span');
                 span.innerText = word;
                 span.style.cursor = 'pointer';
 
-                // Bấm vào chữ đã chọn trong câu sẽ bỏ chọn
                 span.onclick = () => {
                     box.removeChild(span);
                     btn.classList.remove('used');
@@ -1209,14 +1279,11 @@
             const target = gameState.engWords.join('').toLowerCase();
 
             if (attempt === target) {
-                // Đọc lại cả câu xong mới bật popup khen
                 speakThen(gameState.engSentence, () => {
                     showPopup(
                         "Hoàn thành Vòng 2!<br>Đậu lại nhận thêm một món quà!",
-                        () => {
-                            setupStage3();
-                        },
-                        2 // vòng 2
+                        () => { setupStage3(); },
+                        2
                     );
                 });
             } else {
@@ -1228,7 +1295,7 @@
     }
 
     /* ------------------------------------------------------------------
-       VÒNG 3: SẮP XẾP TIẾNG VIỆT
+       VÒNG 3
        ------------------------------------------------------------------ */
     let s3CurrentWords = [];
 
@@ -1252,15 +1319,29 @@
             const btn = document.createElement('div');
             btn.className = 'word-btn';
             btn.innerText = word;
+
             btn.onclick = () => {
                 if (btn.classList.contains('used')) return;
+
                 const span = document.createElement('span');
                 span.innerText = " " + word;
+                span.style.cursor = 'pointer';
+
+                span.onclick = () => {
+                    box.removeChild(span);
+                    btn.classList.remove('used');
+                    const idx = s3CurrentWords.lastIndexOf(word);
+                    if (idx !== -1) s3CurrentWords.splice(idx, 1);
+                    document.getElementById('s3-retry').style.display = 'none';
+                    checkStage3();
+                };
+
                 box.appendChild(span);
                 s3CurrentWords.push(word);
                 btn.classList.add('used');
                 checkStage3();
             };
+
             pool.appendChild(btn);
         });
     }
@@ -1271,15 +1352,10 @@
             const target = gameState.vieWords.join('').toLowerCase();
 
             if (attempt === target) {
-                // Hoàn thành 3 vòng => cộng 1 điểm
-                addScore(1);
-
                 showPopup(
                     "Chúc mừng! Đậu đã hoàn thành cả 3 vòng!<br>Thêm một món quà lấp lánh nữa!",
-                    () => {
-                        showFinalScreen();
-                    },
-                    3 // vòng 3
+                    () => { showFinalScreen(); },
+                    3
                 );
             } else {
                 document.getElementById('s3-retry').style.display = 'block';
@@ -1288,7 +1364,7 @@
     }
 
     /* ------------------------------------------------------------------
-       PHÁO HOA FULL MÀN HÌNH KHI NHẬN QUÀ
+       PHÁO HOA
        ------------------------------------------------------------------ */
     function createFireworksBurst() {
         const colors = ['#FFD700', '#FF69B4', '#87CEFA', '#FFFFFF'];
@@ -1319,7 +1395,6 @@
             }
         };
 
-        // 🔥 bắn liên tục trong 2 giây
         const interval = setInterval(shoot, 150);
         setTimeout(() => clearInterval(interval), 2000);
     }
@@ -1328,20 +1403,14 @@
        MÀN HÌNH CUỐI + NÚT THU THẬP
        ------------------------------------------------------------------ */
     function showFinalScreen() {
-        // Ẩn popup nếu đang mở
         popup.style.display = 'none';
-
-        // Xóa quà cũ nếu có
         finalGiftsRow.innerHTML = '';
 
-        // Tạo đủ 3 quà
         for (let i = 0; i < 3; i++) {
             const img = document.createElement('img');
             img.className = 'final-gift';
-
             const url = earnedGifts[i] || giftImages[Math.floor(Math.random() * giftImages.length)];
             img.src = url;
-
             finalGiftsRow.appendChild(img);
         }
 
@@ -1349,12 +1418,13 @@
     }
 
     finalCollectBtn.onclick = () => {
+        markSentenceCompleted();
         finalScreen.style.display = 'none';
         location.reload();
     };
 
     /* ------------------------------------------------------------------
-       POPUP UTILS (quà giữa màn hình + pháo hoa + âm thanh)
+       POPUP
        ------------------------------------------------------------------ */
     function showPopup(htmlMsg, callback, stageIndex) {
         popupMsg.innerHTML = htmlMsg;
@@ -1368,7 +1438,6 @@
             popupGift.style.display = 'none';
         }
 
-        // Lưu quà theo vòng (1,2,3)
         if (stageIndex != null && chosenUrl) {
             const idx = stageIndex - 1;
             if (idx >= 0 && idx < earnedGifts.length) {
@@ -1377,11 +1446,7 @@
         }
 
         popup.style.display = 'flex';
-
-        // 🔊 âm thanh khen random, không trùng nhau trong 1 lượt chơi
         playRandomRewardSound();
-
-        // Pháo hoa full màn hình
         createFireworksBurst();
 
         popupBtn.onclick = null;
@@ -1389,6 +1454,62 @@
             popup.style.display = 'none';
             if (callback) callback();
         };
+    }
+
+    /* ------------------------------------------------------------------
+       START OVERLAY + NÚT BẮT ĐẦU
+       ------------------------------------------------------------------ */
+    let introPlayed = false;
+
+    function lockStartButton() {
+        if (!startMainBtn) return;
+        startMainBtn.disabled = true;
+        startMainBtn.style.opacity = 0.6;
+        startMainBtn.style.pointerEvents = 'none';
+    }
+
+    function unlockStartButton() {
+        if (!startMainBtn) return;
+        startMainBtn.disabled = false;
+        startMainBtn.style.opacity = 1;
+        startMainBtn.style.pointerEvents = 'auto';
+    }
+
+    lockStartButton(); // lúc đầu không bấm được
+
+    if (startOverlay) {
+        startOverlay.addEventListener('click', () => {
+            if (introPlayed) return; // tránh play nhiều lần
+
+            introPlayed = true;
+            try {
+                introVoice.currentTime = 0;
+                introVoice.play()
+                    .then(() => {
+                        // chỉ sau khi nghe xong mới cho bấm BẮT ĐẦU
+                        introVoice.onended = () => {
+                            unlockStartButton();
+                            if (startOverlay) startOverlay.style.display = 'none';
+                        };
+                    })
+                    .catch(() => {
+                        // nếu bị chặn, vẫn cho chơi
+                        unlockStartButton();
+                        if (startOverlay) startOverlay.style.display = 'none';
+                    });
+            } catch (e) {
+                unlockStartButton();
+                if (startOverlay) startOverlay.style.display = 'none';
+            }
+        });
+    }
+
+    if (startMainBtn) {
+        startMainBtn.addEventListener('click', () => {
+            if (startMainBtn.disabled) return; // chưa nghe xong intro thì không cho bấm
+            if (startScreen) startScreen.style.display = 'none';
+            startGame();
+        });
     }
 </script>
 </body>
