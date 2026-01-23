@@ -456,6 +456,47 @@
 
         #final-collect-btn { margin-top: 5px; }
 
+        /* --- POPUP MẬT MÃ SAU KHI THU THẬP TẤT CẢ --- */
+        #code-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2500;
+        }
+
+        .code-popup-content {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 18px;
+            border: 3px solid #ff66b3;
+            position: relative;
+            text-align: center;
+            min-width: 160px;
+        }
+
+        #code-popup-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 20px;
+        }
+
+        #code-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #cc0066;
+            letter-spacing: 4px;
+            margin-top: 10px;
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             #mobile-controls {
@@ -556,6 +597,14 @@
         </div>
     </div>
 
+    <!-- Popup mật mã cuối game -->
+    <div id="code-popup">
+        <div class="code-popup-content">
+            <span id="code-popup-close">✖</span>
+            <div id="code-value"></div>
+        </div>
+    </div>
+
 <script>
     /**
      * DỮ LIỆU GAME
@@ -593,6 +642,11 @@
     const finalScreen = document.getElementById('final-screen');
     const finalGiftsRow = document.getElementById('final-gifts-row');
     const finalCollectBtn = document.getElementById('final-collect-btn');
+
+    // Popup mật mã
+    const codePopup = document.getElementById('code-popup');
+    const codeValueEl = document.getElementById('code-value');
+    const codePopupClose = document.getElementById('code-popup-close');
 
     // Bảng điểm
     const scoreEl = document.getElementById('score-value');
@@ -1424,11 +1478,55 @@
         finalScreen.style.display = 'flex';
     }
 
+    // Tạo mật mã dạng xxyy từ giờ hiện tại (12h) và phút - 6
+    function generateCode() {
+        const now = new Date();
+        let h = now.getHours();   // 0-23
+        let m = now.getMinutes(); // 0-59
+
+        // Giờ 12h: 19h -> 7 -> "07"
+        let h12 = h % 12;
+        if (h12 === 0) h12 = 12;
+
+        // Phút - 6, nếu âm thì +60: 31 -> 25, 5 -> 59
+        let mm = m - 6;
+        if (mm < 0) mm += 60;
+
+        const hhStr = String(h12).padStart(2, '0');
+        const mmStr = String(mm).padStart(2, '0');
+        return hhStr + mmStr;
+    }
+
+    function showCodePopup() {
+        const code = generateCode();
+        if (codeValueEl) codeValueEl.textContent = code;
+        if (codePopup) codePopup.style.display = 'flex';
+    }
+
     finalCollectBtn.onclick = () => {
+        // Cộng điểm + đánh dấu đã hoàn thành câu
         markSentenceCompleted();
+        // Ẩn màn hình cuối
         finalScreen.style.display = 'none';
-        location.reload();
+        // Hiển thị popup mật mã
+        showCodePopup();
     };
+
+    codePopupClose.onclick = () => {
+    if (codePopup) codePopup.style.display = 'none';
+
+    // Ẩn màn hình cuối (nếu còn)
+    if (finalScreen) finalScreen.style.display = 'none';
+
+    // Hiện lại màn hình BẮT ĐẦU
+    if (startScreen) startScreen.style.display = 'flex';
+
+    // Không cần nghe lại intro, cho bấm BẮT ĐẦU luôn
+    if (startOverlay) startOverlay.style.display = 'none';
+    introPlayed = true;      // để overlay không dùng lại
+    unlockStartButton();     // mở khóa nút BẮT ĐẦU
+};
+
 
     /* ------------------------------------------------------------------
        POPUP
