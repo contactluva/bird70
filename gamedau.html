@@ -289,7 +289,7 @@
             object-fit: contain;
             margin-bottom: 15px;
             display: none;
-            animation: giftSpinZoom 0.8s ease-out forwards, giftPulse 1.2s 0.8s infinite alternate;
+            animation: giftSpinZoom 0.8s ease-out forwards, giftPulse 1.2s 0.8s alternate;
         }
 
         @keyframes giftSpinZoom {
@@ -1470,7 +1470,7 @@
     function lockStartButton() {
         if (!startMainBtn) return;
         startMainBtn.disabled = true;
-        startMainBtn.style.opacity = 0.6;
+        startMainBtn.style.opacity = 0.9;
         startMainBtn.style.pointerEvents = 'none';
     }
 
