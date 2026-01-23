@@ -31,19 +31,25 @@
             padding-bottom: 20px !important;
         }
 
-        /* --- MÀN HÌNH BẮT ĐẦU --- */
-        #start-screen {
-            position: fixed;
-            top: -5%; right: -5%;
-            width: 110%; height: 110%;
-            background-image: url('https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/daudau.jpg');
-            background-size: cover;
-            background-position: top right; /* giữ góc trên phải */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-        }
+      /* --- MÀN HÌNH BẮT ĐẦU --- */
+#start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url('https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/daudau.jpg');
+    background-size: cover;        /* phủ kín màn hình */
+    background-position: center;   /* ảnh nằm giữa */
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
 
         #start-main-btn {
             background: rgba(255, 51, 133, 0.95);
