@@ -8,499 +8,1001 @@
 ### Câu 1
 EN: What is your name?
 VI: Tên bạn là gì?
+DIST: watch, same, blue, jump
 ---
-
 ### Câu 2
 EN: How are you?
 VI: Bạn khỏe không?
+DIST: cow, far, pen, sky
 ---
-
 ### Câu 3
 EN: I am fine, thank you.
 VI: Tôi khỏe, cảm ơn bạn.
+DIST: find, tank, door, cat
 ---
-
 ### Câu 4
 EN: Nice to meet you.
 VI: Rất vui được gặp bạn.
+DIST: rice, meat, car, run
 ---
-
 ### Câu 5
 EN: Where are you from?
 VI: Bạn đến từ đâu?
+DIST: wear, room, apple, book
 ---
-
 ### Câu 6
 EN: Do you speak English?
 VI: Bạn có nói tiếng Anh không?
+DIST: go, peak, tree, dog
 ---
-
 ### Câu 7
 EN: I don't understand.
 VI: Tôi không hiểu.
+DIST: won't, stand, water, cup
 ---
-
 ### Câu 8
 EN: Can you help me?
 VI: Bạn có thể giúp tôi không?
+DIST: fan, held, red, box
 ---
-
 ### Câu 9
 EN: How much is this?
 VI: Cái này giá bao nhiêu?
+DIST: now, such, sun, hot
 ---
-
 ### Câu 10
 EN: Sorry, I'm late.
 VI: Xin lỗi, tôi đến muộn.
+DIST: worry, date, eye, lip
 ---
-
 ### Câu 11
 EN: What time is it?
 VI: Bây giờ là mấy giờ?
+DIST: hat, lime, big, sad
 ---
-
 ### Câu 12
 EN: Have a nice day.
 VI: Chúc một ngày tốt lành.
+DIST: save, way, one, two
 ---
-
 ### Câu 13
 EN: See you later.
 VI: Hẹn gặp lại sau.
+DIST: sea, letter, boy, girl
 ---
-
 ### Câu 14
 EN: Where is the restroom?
 VI: Nhà vệ sinh ở đâu?
+DIST: there, room, map, key
 ---
-
 ### Câu 15
 EN: What do you do?
 VI: Bạn làm nghề gì?
+DIST: hat, go, yes, no
 ---
-
 ### Câu 16
 EN: I am a student.
 VI: Tôi là sinh viên.
+DIST: eye, dent, red, wall
 ---
-
 ### Câu 17
 EN: I like it very much.
 VI: Tôi rất thích nó.
+DIST: bike, touch, open, close
 ---
-
 ### Câu 18
 EN: Can you repeat that, please?
 VI: Bạn có thể nhắc lại được không?
+DIST: ran, heat, bird, fish
 ---
-
 ### Câu 19
 EN: Please speak more slowly.
 VI: Làm ơn nói chậm hơn một chút.
+DIST: peak, low, up, down
 ---
-
 ### Câu 20
 EN: What does this mean?
 VI: Điều này nghĩa là gì?
+DIST: cut, bean, milk, tea
 ---
-
 ### Câu 21
 EN: Excuse me.
-VI: Xin lỗi (khi muốn thu hút sự chú ý hoặc đi qua).
+VI: Xin lỗi
+DIST: use, see, black, white
 ---
-
 ### Câu 22
 EN: Good morning.
 VI: Chào buổi sáng.
+DIST: wood, ring, hand, foot
 ---
-
 ### Câu 23
 EN: Good night.
 VI: Chúc ngủ ngon.
+DIST: hood, light, sun, moon
 ---
-
 ### Câu 24
 EN: I'm hungry.
 VI: Tôi đói.
+DIST: time, angry, cat, dog
 ---
-
 ### Câu 25
 EN: I'm thirsty.
 VI: Tôi khát.
+DIST: time, thirty, one, two
 ---
-
 ### Câu 26
 EN: Let's go.
 VI: Chúng ta đi thôi.
+DIST: set, so, big, small
 ---
-
 ### Câu 27
 EN: Wait a minute.
 VI: Đợi một chút.
+DIST: weight, nut, green, yellow
 ---
-
 ### Câu 28
 EN: Be careful.
 VI: Cẩn thận nhé.
+DIST: bee, full, run, walk
 ---
-
 ### Câu 29
 EN: Don't worry.
 VI: Đừng lo lắng.
+DIST: won't, sorry, eat, drink
 ---
-
 ### Câu 30
 EN: It doesn't matter.
-VI: Không sao đâu / Không quan trọng đâu.
+VI: Không sao đâu
+DIST: hit, water, rain, snow
 ---
-
 ### Câu 31
 EN: Could you give me a hand?
 VI: Bạn có thể giúp tôi một tay không?
+DIST: wood, band, left, right
 ---
-
 ### Câu 32
 EN: What's up?
-VI: Có chuyện gì thế? / Dạo này thế nào?
+VI: Có chuyện gì thế?
+DIST: wash, cup, bird, fly
 ---
-
 ### Câu 33
 EN: Nothing much.
 VI: Không có gì đặc biệt cả.
+DIST: thing, such, hot, cold
 ---
-
 ### Câu 34
 EN: Are you sure?
 VI: Bạn có chắc không?
+DIST: far, tour, old, new
 ---
-
 ### Câu 35
 EN: Believe me.
 VI: Tin tôi đi.
+DIST: leave, sea, red, blue
 ---
-
 ### Câu 36
 EN: It's up to you.
 VI: Tùy bạn thôi.
+DIST: cup, two, day, night
 ---
-
 ### Câu 37
 EN: I think so.
 VI: Tôi nghĩ vậy.
+DIST: sink, go, yes, no
 ---
-
 ### Câu 38
 EN: I don't think so.
 VI: Tôi không nghĩ vậy.
+DIST: won't, go, high, low
 ---
-
 ### Câu 39
 EN: No problem.
 VI: Không vấn đề gì.
+DIST: know, them, boy, girl
 ---
-
 ### Câu 40
 EN: Good job!
 VI: Làm tốt lắm!
+DIST: wood, rob, fast, slow
 ---
-
 ### Câu 41
 EN: Cheer up!
 VI: Vui lên đi!
+DIST: beer, cup, sit, stand
 ---
-
 ### Câu 42
 EN: Calm down.
 VI: Bình tĩnh nào.
+DIST: palm, town, city, farm
 ---
-
 ### Câu 43
 EN: Shut up.
-VI: Im miệng lại. (Lưu ý: Thô lỗ)
+VI: Im miệng lại.
+DIST: cut, cup, door, window
 ---
-
 ### Câu 44
 EN: Stop it.
 VI: Dừng lại đi.
+DIST: top, sit, pen, pencil
 ---
-
 ### Câu 45
 EN: Let me see.
 VI: Để tôi xem nào.
+DIST: set, sea, look, watch
 ---
-
 ### Câu 46
 EN: Come here.
 VI: Lại đây.
+DIST: some, ear, nose, mouth
 ---
-
 ### Câu 47
 EN: Get out.
 VI: Ra ngoài.
+DIST: set, loud, in, on
 ---
-
 ### Câu 48
 EN: Go away.
 VI: Đi chỗ khác đi.
+DIST: so, way, come, stay
 ---
-
 ### Câu 49
 EN: I'm lost.
 VI: Tôi bị lạc đường.
+DIST: time, cost, map, road
 ---
-
 ### Câu 50
 EN: Call the police.
 VI: Gọi cảnh sát đi.
+DIST: tall, please, run, sit
 ---
-
 ### Câu 51
 EN: Are you busy?
 VI: Bạn có bận không?
+DIST: car, easy, good, bad
 ---
-
 ### Câu 52
 EN: I'm free.
 VI: Tôi rảnh.
+DIST: time, tree, lock, key
 ---
-
 ### Câu 53
 EN: Are you ready?
 VI: Bạn sẵn sàng chưa?
+DIST: far, read, book, pen
 ---
-
 ### Câu 54
 EN: Almost done.
 VI: Sắp xong rồi.
+DIST: most, one, two, three
 ---
-
 ### Câu 55
 EN: Good luck.
 VI: Chúc may mắn.
+DIST: wood, duck, cat, dog
 ---
-
 ### Câu 56
 EN: Happy birthday.
 VI: Chúc mừng sinh nhật.
+DIST: map, day, cake, gift
 ---
-
 ### Câu 57
 EN: Congratulations.
 VI: Chúc mừng nhé.
+DIST: station, nation, sad, happy
 ---
-
 ### Câu 58
 EN: Bless you.
-VI: Chúa phù hộ cho bạn (thường dùng khi ai đó hắt hơi).
+VI: Chúa phù hộ cho bạn.
+DIST: less, new, old, young
 ---
-
 ### Câu 59
 EN: Take care.
 VI: Bảo trọng nhé.
+DIST: lake, hair, eye, hand
 ---
-
 ### Câu 60
 EN: Keep in touch.
 VI: Giữ liên lạc nhé.
+DIST: sheep, much, phone, email
 ---
-
 ### Câu 61
 EN: Long time no see.
 VI: Lâu rồi không gặp.
+DIST: song, sea, run, walk
 ---
-
 ### Câu 62
 EN: How was your day?
 VI: Ngày hôm nay của bạn thế nào?
+DIST: cow, way, sun, moon
 ---
-
 ### Câu 63
 EN: It's raining.
 VI: Trời đang mưa.
+DIST: hit, train, dry, wet
 ---
-
 ### Câu 64
 EN: It's very hot today.
 VI: Hôm nay trời rất nóng.
+DIST: hit, not, cold, snow
 ---
-
 ### Câu 65
 EN: I feel sick.
 VI: Tôi cảm thấy không khỏe.
+DIST: peel, kick, ball, game
 ---
-
 ### Câu 66
 EN: I need a doctor.
 VI: Tôi cần gặp bác sĩ.
+DIST: feed, door, nurse, bed
 ---
-
 ### Câu 67
 EN: Do you have a pen?
 VI: Bạn có cái bút nào không?
+DIST: go, ten, paper, book
 ---
-
 ### Câu 68
 EN: May I open the window?
 VI: Tôi có thể mở cửa sổ được không?
+DIST: day, pen, door, wall
 ---
-
 ### Câu 69
 EN: Of course.
 VI: Tất nhiên rồi.
+DIST: off, horse, yes, no
 ---
-
 ### Câu 70
 EN: Not yet.
 VI: Vẫn chưa.
+DIST: hot, get, now, later
 ---
-
 ### Câu 71
 EN: Me too.
 VI: Tôi cũng vậy.
+DIST: see, two, one, three
 ---
-
 ### Câu 72
 EN: Why not?
 VI: Tại sao không?
+DIST: sky, hot, yes, no
 ---
-
 ### Câu 73
 EN: What happened?
 VI: Chuyện gì đã xảy ra vậy?
+DIST: hat, pen, sad, happy
 ---
-
 ### Câu 74
 EN: Just kidding.
 VI: Đùa thôi mà.
+DIST: must, hiding, run, jump
 ---
-
 ### Câu 75
 EN: I'm serious.
 VI: Tôi nghiêm túc đấy.
+DIST: time, us, laugh, cry
 ---
-
 ### Câu 76
 EN: That's funny.
 VI: Buồn cười thật.
+DIST: hat, money, rich, poor
 ---
-
 ### Câu 77
 EN: That's interesting.
 VI: Thú vị thật.
+DIST: hat, rest, bore, tire
 ---
-
 ### Câu 78
 EN: That's right.
 VI: Đúng rồi.
+DIST: hat, light, left, wrong
 ---
-
 ### Câu 79
 EN: That's wrong.
 VI: Sai rồi.
+DIST: hat, long, right, true
 ---
-
 ### Câu 80
 EN: Absolutely.
-VI: Chắc chắn rồi / Hoàn toàn đúng.
+VI: Chắc chắn rồi.
+DIST: lute, ly, yes, maybe
 ---
-
 ### Câu 81
 EN: Definitely.
 VI: Nhất định rồi.
+DIST: deaf, night, day, sun
 ---
-
 ### Câu 82
 EN: Impossible.
 VI: Không thể nào.
+DIST: him, pass, easy, hard
 ---
-
 ### Câu 83
 EN: It's too expensive.
 VI: Đắt quá.
+DIST: hit, pen, cheap, free
 ---
-
 ### Câu 84
 EN: Can you give me a discount?
 VI: Bạn có thể giảm giá cho tôi không?
+DIST: fan, count, buy, sell
 ---
-
 ### Câu 85
 EN: I'll take it.
 VI: Tôi sẽ mua cái này.
+DIST: fill, cake, give, keep
 ---
-
 ### Câu 86
 EN: Can I pay by credit card?
 VI: Tôi có thể trả bằng thẻ tín dụng không?
+DIST: fan, hard, cash, coin
 ---
-
 ### Câu 87
 EN: Where is the nearest ATM?
 VI: Cây ATM gần nhất ở đâu?
+DIST: there, near, bank, money
 ---
-
 ### Câu 88
 EN: Turn left.
 VI: Rẽ trái.
+DIST: burn, lift, right, straight
 ---
-
 ### Câu 89
 EN: Turn right.
 VI: Rẽ phải.
+DIST: burn, light, left, stop
 ---
-
 ### Câu 90
 EN: Go straight.
 VI: Đi thẳng.
+DIST: so, gate, turn, back
 ---
-
 ### Câu 91
 EN: Please sit down.
 VI: Mời ngồi.
+DIST: ease, town, stand, up
 ---
-
 ### Câu 92
 EN: What are you doing?
 VI: Bạn đang làm gì đấy?
+DIST: hat, ring, sing, dance
 ---
-
 ### Câu 93
 EN: Where are you going?
 VI: Bạn đang đi đâu đấy?
+DIST: wear, ring, stay, sleep
 ---
-
 ### Câu 94
 EN: I have to go now.
 VI: Tôi phải đi bây giờ.
+DIST: save, cow, later, soon
 ---
-
 ### Câu 95
 EN: I love you.
 VI: Tôi yêu bạn.
+DIST: live, your, sun, moon
 ---
-
 ### Câu 96
 EN: I miss you.
 VI: Tôi nhớ bạn.
+DIST: kiss, your, hate, like
 ---
-
 ### Câu 97
 EN: Happy New Year.
 VI: Chúc mừng năm mới.
+DIST: map, ear, old, time
 ---
-
 ### Câu 98
 EN: Merry Christmas.
 VI: Giáng sinh vui vẻ.
+DIST: berry, mass, tree, gift
 ---
-
 ### Câu 99
 EN: Enjoy your meal.
 VI: Chúc ngon miệng.
+DIST: toy, real, eat, drink
 ---
-
 ### Câu 100
 EN: Thank you for your help.
 VI: Cảm ơn sự giúp đỡ của bạn.
+DIST: tank, four, no, yes
+---
+
+### Câu 101
+EN: Keep up the good work.
+VI: Hãy tiếp tục làm tốt nhé.
+DIST: sheep, word, fast, slow
+---
+### Câu 102
+EN: I have no idea.
+VI: Tôi không biết.
+DIST: save, dear, cat, dog
+---
+### Câu 103
+EN: It's none of your business.
+VI: Không phải việc của bạn.
+DIST: one, bus, rain, snow
+---
+### Câu 104
+EN: Make yourself at home.
+VI: Cứ tự nhiên như ở nhà nhé.
+DIST: lake, dome, read, write
+---
+### Câu 105
+EN: Think about it.
+VI: Hãy suy nghĩ về điều đó.
+DIST: sink, out, left, right
+---
+### Câu 106
+EN: Are you kidding me?
+VI: Bạn đang đùa tôi à?
+DIST: car, hiding, up, down
+---
+### Câu 107
+EN: Better late than never.
+VI: Muộn còn hơn không.
+DIST: letter, river, hot, cold
+---
+### Câu 108
+EN: Don't take it personally.
+VI: Đừng để bụng nhé.
+DIST: won't, person, black, white
+---
+### Câu 109
+EN: Let me know.
+VI: Hãy cho tôi biết nhé.
+DIST: set, no, high, low
+---
+### Câu 110
+EN: Sounds good.
+VI: Nghe hay đấy.
+DIST: round, wood, eat, drink
+---
+### Câu 111
+EN: Take it easy.
+VI: Cứ từ từ / Bình tĩnh thôi.
+DIST: bake, sea, run, jump
+---
+### Câu 112
+EN: I'm on my way.
+VI: Tôi đang trên đường tới.
+DIST: arm, say, stop, go
+---
+### Câu 113
+EN: Piece of cake.
+VI: Dễ như ăn kẹo.
+DIST: peace, lake, hard, easy
+---
+### Câu 114
+EN: It's not a big deal.
+VI: Không phải chuyện lớn đâu.
+DIST: hit, meal, small, tiny
+---
+### Câu 115
+EN: Don't give up.
+VI: Đừng bỏ cuộc.
+DIST: won't, cup, try, win
+---
+### Câu 116
+EN: Time flies.
+VI: Thời gian trôi nhanh quá.
+DIST: lime, lie, slow, fast
+---
+### Câu 117
+EN: Keep it simple.
+VI: Hãy đơn giản hóa mọi việc.
+DIST: sheep, apple, hard, complex
+---
+### Câu 118
+EN: Trust me.
+VI: Tin tôi đi.
+DIST: dust, see, lie, truth
+---
+### Câu 119
+EN: Look at that.
+VI: Nhìn kia kìa.
+DIST: book, hat, hear, listen
+---
+### Câu 120
+EN: Watch out!
+VI: Coi chừng!
+DIST: wash, out, safe, danger
+---
+### Câu 121
+EN: Guess what?
+VI: Đoán xem gì nào?
+DIST: less, hat, know, tell
+---
+### Câu 122
+EN: So far so good.
+VI: Mọi thứ vẫn ổn.
+DIST: car, hood, bad, worse
+---
+### Câu 123
+EN: Stay safe.
+VI: Giữ an toàn nhé.
+DIST: say, save, sick, well
+---
+### Câu 124
+EN: Who knows?
+VI: Ai mà biết được?
+DIST: shoe, nose, ask, answer
+---
+### Câu 125
+EN: Why so serious?
+VI: Sao nghiêm trọng thế?
+DIST: fly, us, funny, joke
+---
+### Câu 126
+EN: Don't panic.
+VI: Đừng hoảng loạn.
+DIST: bone, picnic, calm, cool
+---
+### Câu 127
+EN: Take a break.
+VI: Nghỉ giải lao chút đi.
+DIST: lake, bake, work, job
+---
+### Câu 128
+EN: Leave me alone.
+VI: Để tôi yên.
+DIST: leaf, bone, with, stay
+---
+### Câu 129
+EN: Shame on you.
+VI: Thật đáng xấu hổ cho bạn.
+DIST: same, zoo, proud, good
+---
+### Câu 130
+EN: Mind your step.
+VI: Đi đứng cẩn thận.
+DIST: find, stop, walk, run
+---
+### Câu 131
+EN: First come, first served.
+VI: Đến trước phục vụ trước.
+DIST: thirst, bird, last, end
+---
+### Câu 132
+EN: Break a leg.
+VI: Chúc may mắn.
+DIST: bake, egg, hurt, pain
+---
+### Câu 133
+EN: Keep quiet.
+VI: Giữ im lặng.
+DIST: sheep, diet, loud, noise
+---
+### Câu 134
+EN: Any questions?
+VI: Có câu hỏi nào không?
+DIST: many, rest, ask, tell
+---
+### Câu 135
+EN: Check this out.
+VI: Xem cái này này.
+DIST: neck, shout, blind, see
+---
+### Câu 136
+EN: Forget it.
+VI: Quên nó đi.
+DIST: get, sit, remember, mind
+---
+### Câu 137
+EN: Hurry up.
+VI: Nhanh lên.
+DIST: fury, cup, slow, wait
+---
+### Câu 138
+EN: I suppose so.
+VI: Tôi cho là vậy.
+DIST: rose, go, no, never
+---
+### Câu 139
+EN: It depends.
+VI: Còn tùy nữa.
+DIST: hit, pen, sure, fix
+---
+### Câu 140
+EN: Let me guess.
+VI: Để tôi đoán xem.
+DIST: set, mess, know, think
+---
+### Câu 141
+EN: No way.
+VI: Không đời nào.
+DIST: go, say, yes, sure
+---
+### Câu 142
+EN: Pull yourself together.
+VI: Bình tĩnh lại đi
+DIST: full, weather, fall, apart
+---
+### Câu 143
+EN: Speak up.
+VI: Nói to lên.
+DIST: peak, cup, quiet, low
+---
+### Câu 144
+EN: That makes sense.
+VI: Có lý đấy.
+DIST: hat, fence, crazy, silly
+---
+### Câu 145
+EN: Time is up.
+VI: Hết giờ rồi.
+DIST: lime, cup, start, begin
+---
+### Câu 146
+EN: What a pity.
+VI: Thật đáng tiếc.
+DIST: hot, city, good, great
+---
+### Câu 147
+EN: You can do it.
+VI: Bạn làm được mà.
+DIST: fan, sit, fail, lose
+---
+### Câu 148
+EN: You look great.
+VI: Trông bạn tuyệt lắm.
+DIST: book, late, ugly, bad
+---
+### Câu 149
+EN: Be my guest.
+VI: Cứ tự nhiên.
+DIST: bee, best, host, home
+---
+### Câu 150
+EN: Count me in.
+VI: Cho tôi tham gia với.
+DIST: mount, bin, out, leave
+---
+### Câu 151
+EN: Don't be shy.
+VI: Đừng ngại.
+DIST: bone, sky, bold, brave
+---
+### Câu 152
+EN: Give me a break.
+VI: Thôi đi.
+DIST: live, cake, hold, keep
+---
+### Câu 153
+EN: Go ahead.
+VI: Cứ làm đi
+DIST: so, bed, stop, back
+---
+### Câu 154
+EN: Hang on.
+VI: Chờ chút
+DIST: sang, one, drop, fall
+---
+### Câu 155
+EN: I doubt it.
+VI: Tôi nghi ngờ điều đó.
+DIST: eye, out, sure, trust
+---
+### Câu 156
+EN: Keep going.
+VI: Tiếp tục đi.
+DIST: sheep, rowing, stop, quit
+---
+### Câu 157
+EN: Make a wish.
+VI: Ước một điều đi.
+DIST: lake, fish, hope, dream
+---
+### Câu 158
+EN: Not bad.
+VI: Không tệ.
+DIST: hot, dad, good, great
+---
+### Câu 159
+EN: Stay here.
+VI: Ở lại đây.
+DIST: say, ear, go, leave
+---
+### Câu 160
+EN: Take your time.
+VI: Cứ từ từ.
+DIST: bake, lime, rush, fast
+---
+### Câu 161
+EN: Too bad.
+VI: Tiếc quá.
+DIST: zoo, dad, good, nice
+---
+### Câu 162
+EN: Try again.
+VI: Thử lại đi.
+DIST: cry, pen, quit, stop
+---
+### Câu 163
+EN: Well done.
+VI: Làm tốt lắm.
+DIST: bell, one, bad, fail
+---
+### Câu 164
+EN: What a mess.
+VI: Bừa bộn quá.
+DIST: hot, dress, clean, neat
+---
+### Câu 165
+EN: Who cares?
+VI: Ai quan tâm chứ?
+DIST: shoe, bear, love, like
+---
+### Câu 166
+EN: You're welcome.
+VI: Không có chi.
+DIST: your, come, thanks, bye
+---
+### Câu 167
+EN: Be quiet.
+VI: Trật tự nào.
+DIST: bee, diet, loud, talk
+---
+### Câu 168
+EN: Catch you later.
+VI: Gặp lại sau nhé.
+DIST: match, letter, hello, hi
+---
+### Câu 169
+EN: Don't move.
+VI: Đừng cử động.
+DIST: bone, love, run, walk
+---
+### Câu 170
+EN: Enjoy yourself.
+VI: Chơi vui nhé.
+DIST: toy, shelf, sad, bore
+---
+### Câu 171
+EN: Follow me.
+VI: Đi theo tôi.
+DIST: hollow, sea, lead, guide
+---
+### Câu 172
+EN: Get well soon.
+VI: Mau khỏe nhé.
+DIST: set, moon, sick, ill
+---
+### Câu 173
+EN: Good point.
+VI: Ý hay đấy
+DIST: wood, coin, bad, wrong
+---
+### Câu 174
+EN: Have fun.
+VI: Chơi vui nhé.
+DIST: save, run, sad, work
+---
+### Câu 175
+EN: I promise.
+VI: Tôi hứa.
+DIST: eye, miss, lie, cheat
+---
+### Câu 176
+EN: Just a moment.
+VI: Chờ một lát.
+DIST: must, tent, hour, day
+---
+### Câu 177
+EN: Let's eat.
+VI: Ăn thôi.
+DIST: set, feet, drink, sleep
+---
+### Câu 178
+EN: Nice try.
+VI: Cố gắng tốt đấy
+DIST: rice, cry, bad, fail
+---
+### Câu 179
+EN: No thanks.
+VI: Không, cảm ơn.
+DIST: go, tank, yes, please
+---
+### Câu 180
+EN: See you tomorrow.
+VI: Hẹn gặp ngày mai.
+DIST: sea, borrow, today, now
+---
+### Câu 181
+EN: Sleep well.
+VI: Ngủ ngon.
+DIST: sheep, bell, wake, up
+---
+### Câu 182
+EN: Stop talking.
+VI: Ngừng nói chuyện.
+DIST: top, walking, speak, say
+---
+### Câu 183
+EN: Take a seat.
+VI: Mời ngồi.
+DIST: lake, feet, stand, walk
+---
+### Câu 184
+EN: That's enough.
+VI: Đủ rồi đấy.
+DIST: hat, rough, more, less
+---
+### Câu 185
+EN: Wait for me.
+VI: Đợi tôi với.
+DIST: late, sea, go, leave
+---
+### Câu 186
+EN: Watch your mouth.
+VI: Cẩn thận lời nói đấy.
+DIST: wash, mouse, speak, talk
+---
+### Câu 187
+EN: Welcome home.
+VI: Chào mừng về nhà.
+DIST: well, dome, go, away
+---
+### Câu 188
+EN: You are wrong.
+VI: Bạn sai rồi.
+DIST: far, long, right, true
+---
+### Câu 189
+EN: Any ideas?
+VI: Có ý kiến gì không?
+DIST: many, dear, know, think
+---
+### Câu 190
+EN: Call me back.
+VI: Gọi lại cho tôi nhé.
+DIST: tall, pack, text, write
+---
+### Câu 191
+EN: Don't be late.
+VI: Đừng đến muộn.
+DIST: bone, date, early, time
+---
+### Câu 192
+EN: Everything is fine.
+VI: Mọi thứ đều ổn.
+DIST: every, line, bad, wrong
+---
+### Câu 193
+EN: Forgive me.
+VI: Tha thứ cho tôi.
+DIST: four, see, hate, love
+---
+### Câu 194
+EN: Get ready.
+VI: Chuẩn bị đi.
+DIST: set, teddy, wait, stop
+---
+### Câu 195
+EN: Hold on.
+VI: Chờ chút.
+DIST: cold, one, go, drop
+---
+### Câu 196
+EN: I agree.
+VI: Tôi đồng ý.
+DIST: eye, tree, no, deny
+---
+### Câu 197
+EN: It's my turn.
+VI: Đến lượt tôi.
+DIST: hit, burn, you, him
+---
+### Câu 198
+EN: Keep it up.
+VI: Cứ phát huy nhé.
+DIST: sheep, cup, stop, down
+---
+### Câu 199
+EN: Let it go.
+VI: Hãy cho qua đi.
+DIST: set, so, hold, keep
+---
+### Câu 200
+EN: What a surprise.
+VI: Thật bất ngờ.
+DIST: hot, rise, know, plan
 ---
