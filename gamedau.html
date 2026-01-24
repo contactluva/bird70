@@ -1592,24 +1592,16 @@
         finalScreen.style.display = 'flex';
     }
 
-    // Tạo mật mã dạng xxyy từ giờ hiện tại (12h) và phút - 6
-    function generateCode() {
-        const now = new Date();
-        let h = now.getHours();   // 0-23
-        let m = now.getMinutes(); // 0-59
+   
+   // Tạo mật mã dạng ddmm: ngày trong tháng + phút hiện tại
+function generateCode() {
+    const now = new Date();
 
-        // Giờ 12h: 19h -> 7 -> "07"
-        let h12 = h % 12;
-        if (h12 === 0) h12 = 12;
+    const ddStr = String(now.getDate()).padStart(2, '0');      // 01–31
+    const mmStr = String(now.getMinutes()).padStart(2, '0');   // 00–59
 
-        // Phút - 6, nếu âm thì +60
-        let mm = m - 6;
-        if (mm < 0) mm += 60;
-
-        const hhStr = String(h12).padStart(2, '0');
-        const mmStr = String(mm).padStart(2, '0');
-        return hhStr + mmStr;
-    }
+    return ddStr + mmStr;  // ví dụ ngày 09, phút 07 -> "0907"
+}
 
     function showCodePopup() {
         if (!codePopup || !codeValueEl) return;
