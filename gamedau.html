@@ -614,7 +614,7 @@
         vieSentence: "",
         engWords: [],
         vieWords: [],
-        distractorWords: ["very", "bad", "sky", "dog", "cat", "run", "no", "yes", "big"],
+        distractorWords: [], // sẽ được set theo từng câu từ DIST
         currentStage: 0,
         collectedIndices: [],
     };
@@ -647,8 +647,8 @@
     const codePopup = document.getElementById('code-popup');
     const codeValueEl = document.getElementById('code-value');
     const codePopupClose = document.getElementById('code-popup-close');
-   let codeIntervalId = null; // interval cập nhật mật mã
-let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
+    let codeIntervalId = null; // interval cập nhật mật mã
+    let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
 
     // Bảng điểm
     const scoreEl = document.getElementById('score-value');
@@ -658,7 +658,7 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
     // Trạng thái lưu lâu dài
     let persistentState = {
         score: 0,
-        currentSentenceIndex: 0,
+        currentSentenceIndex: 0, // đếm số lần chơi (0,1,2,3,...)
         completed: []
     };
 
@@ -837,6 +837,12 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
 
     /**
      * LOAD DANH SÁCH CÂU TỪ FILE eng.txt
+     * Định dạng:
+     * ### Câu 1
+     * EN: ...
+     * VI: ...
+     * DIST: w1, w2, w3,...
+     * ---
      */
     const SENTENCE_URL = "https://raw.githubusercontent.com/contactluva/bird70/refs/heads/main/eng.txt";
     let sentenceList = [];
@@ -844,18 +850,35 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
     let sentenceListLoading = false;
 
     function parseSentenceFile(text) {
-        const blocks = text.split(/###\s*Câu\s+\d+/).map(b => b.trim()).filter(b => b);
+        const blocks = text
+            .split(/###\s*Câu\s+\d+/)
+            .map(b => b.trim())
+            .filter(b => b);
+
         const list = [];
+
         blocks.forEach(block => {
             const enMatch = block.match(/EN:\s*(.+)/i);
             const viMatch = block.match(/VI:\s*(.+)/i);
+            const distMatch = block.match(/DIST:\s*(.+)/i);
+
             if (enMatch && viMatch) {
+                let distractors = [];
+                if (distMatch && distMatch[1]) {
+                    distractors = distMatch[1]
+                        .split(',')
+                        .map(s => s.trim())
+                        .filter(Boolean);
+                }
+
                 list.push({
                     en: enMatch[1].trim(),
-                    vi: viMatch[1].trim()
+                    vi: viMatch[1].trim(),
+                    dist: distractors
                 });
             }
         });
+
         return list;
     }
 
@@ -878,28 +901,85 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
         }
     }
 
+    /**
+     * LỊCH HỌC:
+     * 1-2-3-4-5-1-6-2-7-3-8-4-9-5-10-6-11-7-...
+     *
+     * playCount: 0,1,2,3,4,5,6,7,...
+     * index (1-based): 1,2,3,4,5,1,6,2,7,...
+     */
+    function getScheduledSentenceIndex(playCount, total) {
+        if (total <= 0) return 0;
+
+        // Nếu tổng câu <= 5: lặp vòng đơn giản 1..total,1..total...
+        if (total <= 5) {
+            return playCount % total; // 0-based
+        }
+
+        // total > 5
+        if (playCount < 5) {
+            // 0..4 -> câu 1..5
+            return playCount; // 0-based
+        }
+
+        const k = playCount - 5; // offset sau 5 lượt đầu
+        let index1based;
+
+        if (k % 2 === 0) {
+            // k chẵn: câu ôn lại
+            // k=0 -> 1, k=2 -> 2, k=4 -> 3,...
+            index1based = (k / 2) + 1;
+        } else {
+            // k lẻ: câu mới
+            // k=1 -> 6, k=3 -> 7, k=5 -> 8,...
+            index1based = 5 + Math.floor((k + 1) / 2);
+        }
+
+        // Nếu vượt quá tổng số câu, cho quay vòng lại
+        if (index1based > total) {
+            index1based = ((index1based - 1) % total) + 1;
+        }
+
+        return index1based - 1; // trả về 0-based
+    }
+
     function getCurrentSentenceFromList() {
         if (!sentenceListLoaded || !sentenceList.length) return null;
-        let idx = persistentState.currentSentenceIndex;
-        if (typeof idx !== 'number' || idx < 0) idx = 0;
-        if (idx >= sentenceList.length) idx = 0;
-        persistentState.currentSentenceIndex = idx;
+
+        let playCount = persistentState.currentSentenceIndex;
+        if (typeof playCount !== 'number' || playCount < 0) playCount = 0;
+
+        const total = sentenceList.length;
+        const realIndex = getScheduledSentenceIndex(playCount, total);
+
+        // đảm bảo trong range
+        const safeIndex = Math.min(Math.max(realIndex, 0), total - 1);
+
+        persistentState.currentSentenceIndex = playCount; // giữ số lần chơi
         savePersistentState();
-        return sentenceList[idx];
+
+        return sentenceList[safeIndex];
     }
 
     function markSentenceCompleted() {
         if (!sentenceListLoaded || !sentenceList.length) return;
-        let idx = persistentState.currentSentenceIndex;
-        if (typeof idx !== 'number' || idx < 0 || idx >= sentenceList.length) return;
 
         if (!Array.isArray(persistentState.completed)) {
             persistentState.completed = [];
         }
+
+        let idx = persistentState.currentSentenceIndex;
+        if (typeof idx !== 'number' || idx < 0) idx = 0;
+
+        // lưu lại lần chơi đã hoàn thành (để sau này nếu cần xem lịch sử)
         if (!persistentState.completed.includes(idx)) {
             persistentState.completed.push(idx);
-            addScore(1);
         }
+
+        // mỗi lần hoàn thành vẫn cộng điểm như thường
+        addScore(1);
+
+        // sang lần chơi tiếp theo
         persistentState.currentSentenceIndex = idx + 1;
         savePersistentState();
     }
@@ -918,11 +998,15 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
         if (chosenSentence) {
             gameState.engSentence = chosenSentence.en;
             gameState.vieSentence = chosenSentence.vi;
+            gameState.distractorWords = Array.isArray(chosenSentence.dist)
+                ? chosenSentence.dist
+                : [];
         } else {
             const rawEng = document.getElementById('inp-eng')?.value.trim() || "I am happy today";
             const rawVie = document.getElementById('inp-vie')?.value.trim() || "Hôm nay em rất vui";
             gameState.engSentence = rawEng;
             gameState.vieSentence = rawVie;
+            gameState.distractorWords = ["blue", "cat", "dog", "sky", "run", "no", "yes", "big"];
         }
 
         gameState.engWords = gameState.engSentence.split(/\s+/).map(w => w.replace(/[.,?!]/g, ''));
@@ -945,8 +1029,8 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
     };
 
     const player = {
-        x: 50, y: 0, 
-        vx: 0, vy: 0, 
+        x: 50, y: 0,
+        vx: 0, vy: 0,
         width: 40, height: 60,
         grounded: false,
         color: '#ff66b3',
@@ -960,6 +1044,7 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
     let showBannerTimeout;
 
     const keys = { right: false, left: false, up: false };
+
     function setupStage1() {
         gameState.currentStage = 1;
         gameState.collectedIndices = [];
@@ -1008,39 +1093,67 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
     }
 
     function createBlocks() {
-        blocks = [];
-        const correctWords = gameState.engWords.map((w, i) => ({ text: w, type: 'correct', index: i }));
-        const wrongWords = [];
-        for(let i=0; i<3; i++) {
-            const randWord = gameState.distractorWords[Math.floor(Math.random() * gameState.distractorWords.length)];
-            wrongWords.push({ text: randWord, type: 'wrong', index: -1 });
-        }
+    blocks = [];
 
-        const allItems = [...correctWords, ...wrongWords];
-        allItems.sort(() => Math.random() - 0.5);
+    const correctWords = gameState.engWords.map((w, i) => ({
+        text: w,
+        type: 'correct',
+        index: i
+    }));
 
-        let currentX = 200;
-        const blockH = 40;
+    // Lấy từ gây nhiễu từ DIST
+    let pool = Array.isArray(gameState.distractorWords)
+        ? [...gameState.distractorWords]
+        : [];
 
-        allItems.forEach(item => {
-            const jumpReach = 150;
-            const y = player.groundY - jumpReach - (Math.random() * 60);
-            const w = Math.max(80, item.text.length * 12);
+    // loại bỏ từ trùng với từ trong câu
+    const engLower = gameState.engWords.map(w => w.toLowerCase());
+    pool = pool.filter(w => w && !engLower.includes(w.toLowerCase()));
 
-            blocks.push({
-                x: currentX,
-                y: y,
-                width: w,
-                height: blockH,
-                word: item.text,
-                type: item.type,
-                index: item.index,
-                hit: false,
-                scale: 1
-            });
-            currentX += 200;
+    // fallback nếu không có DIST hoặc ít quá
+    if (pool.length === 0) {
+        pool = ["blue", "cat", "dog", "sky", "run", "no", "yes", "big"];
+    }
+
+    // trộn và lấy tối đa 3 từ gây nhiễu
+    pool.sort(() => Math.random() - 0.5);
+    const wrongWords = [];
+    const count = Math.min(3, pool.length);
+    for (let i = 0; i < count; i++) {
+        wrongWords.push({
+            text: pool[i],
+            type: 'wrong',
+            index: -1
         });
     }
+
+    // GỘP LẠI RỒI TRỘN NGẪU NHIÊN
+    const allItems = [...correctWords, ...wrongWords];
+    allItems.sort(() => Math.random() - 0.5); // 👈 thêm dòng này
+
+    let currentX = 200;
+    const blockH = 40;
+
+    allItems.forEach(item => {
+        const jumpReach = 150;
+        const y = player.groundY - jumpReach - (Math.random() * 60);
+        const w = Math.max(80, item.text.length * 12);
+
+        blocks.push({
+            x: currentX,
+            y: y,
+            width: w,
+            height: blockH,
+            word: item.text,
+            type: item.type,
+            index: item.index,
+            hit: false,
+            scale: 1
+        });
+        currentX += 200;
+    });
+}
+
 
     function update() {
         if (keys.right) player.vx += 1;
@@ -1249,23 +1362,23 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
     // Mobile Buttons
     function setupTouchBtn(id, keyProp) {
         const btn = document.getElementById(id);
-        btn.addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-            keys[keyProp] = true; 
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys[keyProp] = true;
             if (keyProp === 'left') player.facing = -1;
             if (keyProp === 'right') player.facing = 1;
         });
-        btn.addEventListener('touchend', (e) => { 
-            e.preventDefault(); 
-            keys[keyProp] = false; 
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys[keyProp] = false;
         });
-        btn.addEventListener('mousedown', () => { 
-            keys[keyProp] = true; 
+        btn.addEventListener('mousedown', () => {
+            keys[keyProp] = true;
             if (keyProp === 'left') player.facing = -1;
             if (keyProp === 'right') player.facing = 1;
         });
-        btn.addEventListener('mouseup', () => { 
-            keys[keyProp] = false; 
+        btn.addEventListener('mouseup', () => {
+            keys[keyProp] = false;
         });
     }
     setupTouchBtn('btn-left', 'left');
@@ -1489,7 +1602,7 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
         let h12 = h % 12;
         if (h12 === 0) h12 = 12;
 
-        // Phút - 6, nếu âm thì +60: 31 -> 25, 5 -> 59
+        // Phút - 6, nếu âm thì +60
         let mm = m - 6;
         if (mm < 0) mm += 60;
 
@@ -1498,42 +1611,41 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
         return hhStr + mmStr;
     }
 
-   function showCodePopup() {
-    if (!codePopup || !codeValueEl) return;
+    function showCodePopup() {
+        if (!codePopup || !codeValueEl) return;
 
-    // Clear interval/timeout cũ nếu có
-    if (codeIntervalId) {
-        clearInterval(codeIntervalId);
-        codeIntervalId = null;
+        // Clear interval/timeout cũ nếu có
+        if (codeIntervalId) {
+            clearInterval(codeIntervalId);
+            codeIntervalId = null;
+        }
+        if (codeTimeoutId) {
+            clearTimeout(codeTimeoutId);
+            codeTimeoutId = null;
+        }
+
+        const updateCode = () => {
+            codeValueEl.textContent = generateCode();
+        };
+
+        // Cập nhật ngay khi mở popup
+        updateCode();
+
+        // Hiện popup
+        codePopup.style.display = 'flex';
+
+        // Tính thời gian còn lại tới đầu phút tiếp theo (00 giây)
+        const now = new Date();
+        const msTillNextMinute =
+            (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+        // Đến đúng đầu phút tiếp theo thì cập nhật, rồi sau đó mỗi 60 giây
+        codeTimeoutId = setTimeout(() => {
+            updateCode(); // cập nhật lần nữa đúng lúc sang phút mới
+
+            codeIntervalId = setInterval(updateCode, 60000); // sau đó mỗi 60s
+        }, msTillNextMinute);
     }
-    if (codeTimeoutId) {
-        clearTimeout(codeTimeoutId);
-        codeTimeoutId = null;
-    }
-
-    const updateCode = () => {
-        codeValueEl.textContent = generateCode();
-    };
-
-    // Cập nhật ngay khi mở popup
-    updateCode();
-
-    // Hiện popup
-    codePopup.style.display = 'flex';
-
-    // Tính thời gian còn lại tới đầu phút tiếp theo (00 giây)
-    const now = new Date();
-    const msTillNextMinute =
-        (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-
-    // Đến đúng đầu phút tiếp theo thì cập nhật, rồi sau đó mỗi 60 giây
-    codeTimeoutId = setTimeout(() => {
-        updateCode(); // cập nhật lần nữa đúng lúc sang phút mới
-
-        codeIntervalId = setInterval(updateCode, 60000); // sau đó mỗi 60s
-    }, msTillNextMinute);
-}
-
 
     finalCollectBtn.onclick = () => {
         // Cộng điểm + đánh dấu đã hoàn thành câu
@@ -1544,32 +1656,31 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
         showCodePopup();
     };
 
-   codePopupClose.onclick = () => {
-    // Dừng interval cập nhật mật mã
-    if (codeIntervalId) {
-        clearInterval(codeIntervalId);
-        codeIntervalId = null;
-    }
-    // Dừng luôn timeout chờ tới phút mới (nếu còn)
-    if (codeTimeoutId) {
-        clearTimeout(codeTimeoutId);
-        codeTimeoutId = null;
-    }
+    codePopupClose.onclick = () => {
+        // Dừng interval cập nhật mật mã
+        if (codeIntervalId) {
+            clearInterval(codeIntervalId);
+            codeIntervalId = null;
+        }
+        // Dừng luôn timeout chờ tới phút mới (nếu còn)
+        if (codeTimeoutId) {
+            clearTimeout(codeTimeoutId);
+            codeTimeoutId = null;
+        }
 
-    if (codePopup) codePopup.style.display = 'none';
+        if (codePopup) codePopup.style.display = 'none';
 
-    // Ẩn màn hình cuối (nếu còn)
-    if (finalScreen) finalScreen.style.display = 'none';
+        // Ẩn màn hình cuối (nếu còn)
+        if (finalScreen) finalScreen.style.display = 'none';
 
-    // Hiện lại màn hình BẮT ĐẦU
-    if (startScreen) startScreen.style.display = 'flex';
+        // Hiện lại màn hình BẮT ĐẦU
+        if (startScreen) startScreen.style.display = 'flex';
 
-    // Không cần nghe lại intro, cho bấm BẮT ĐẦU luôn
-    if (startOverlay) startOverlay.style.display = 'none';
-    introPlayed = true;
-    unlockStartButton();
-};
-
+        // Không cần nghe lại intro, cho bấm BẮT ĐẦU luôn
+        if (startOverlay) startOverlay.style.display = 'none';
+        introPlayed = true;
+        unlockStartButton();
+    };
 
     /* ------------------------------------------------------------------
        POPUP
@@ -1659,6 +1770,7 @@ let codeTimeoutId = null;  // timeout chờ tới đầu phút tiếp theo
         });
     }
 </script>
+
 
 </body>
 </html>
