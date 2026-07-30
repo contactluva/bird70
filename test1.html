@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Ý tưởng Thiết kế Phòng ngủ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 30px 15px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .feed-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .feed-list {
+            list-style-type: none; /* Ẩn số thứ tự mặc định để dùng custom CSS */
+            counter-reset: post-counter;
+            padding: 0;
+            margin: 0;
+        }
+        .feed-item {
+            background: #ffffff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+        }
+        .feed-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #ff5722; /* Màu nhấn mang phong cách Blogspot */
+        }
+        .feed-item::before {
+            counter-increment: post-counter;
+            content: counter(post-counter);
+            background: #ff5722;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            min-width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(255, 87, 34, 0.3);
+        }
+        .feed-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 1.15rem;
+            font-weight: 600;
+            width: 100%;
+            display: block;
+        }
+        .feed-link:hover {
+            color: #ff5722;
+        }
+        .feed-meta {
+            display: block;
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div class="feed-container">
+    <h1>Khám Phá Các Ý Tưởng Thiết Kế Phòng Ngủ</h1>
+    <ul class="feed-list">
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-kids-bedroom-ideas/" target="_blank">30 Kids Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-toddler-bedroom-ideas/" target="_blank">30 Toddler Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-preschooler-bedroom-ideas/" target="_blank">30 Preschooler Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-elementary-age-bedroom-ideas/" target="_blank">30 Elementary Age Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-baby-bedroom-ideas/" target="_blank">30 Baby Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-infant-bedroom-ideas/" target="_blank">30 Infant Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-newborn-bedroom-ideas/" target="_blank">30 Newborn Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-boys-bedroom-ideas/" target="_blank">30 Boys Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-girls-bedroom-ideas/" target="_blank">30 Girls Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-twin-siblings-bedroom-ideas/" target="_blank">30 Twin Siblings Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-siblings-bedroom-ideas/" target="_blank">30 Siblings Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-multi-kid-bedroom-ideas/" target="_blank">30 Multi Kid Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-bedroom-bunk-bed-ideas/" target="_blank">30 Bedroom Bunk Bed Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-bedroom-loft-bed-ideas/" target="_blank">30 Bedroom Loft Bed Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-bedroom-built-in-beds/" target="_blank">30 Bedroom Built In Beds<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/boy-and-girl-shared-small-room-ideas/" target="_blank">Boy And Girl Shared Small Room Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-train-bedroom-ideas/" target="_blank">30 Train Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-unicorn-bedroom-ideas/" target="_blank">30 Unicorn Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-superhero-bedroom-ideas/" target="_blank">30 Superhero Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-truck-bedroom-ideas/" target="_blank">30 Truck Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-princess-bedroom-ideas/" target="_blank">30 Princess Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-race-car-bedroom-ideas/" target="_blank">30 Race Car Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-dinosaur-bedroom-ideas/" target="_blank">30 Dinosaur Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-solar-system-bedroom-ideas/" target="_blank">30 Solar System Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-planet-bedroom-ideas/" target="_blank">30 Planet Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-astronaut-bedroom-ideas/" target="_blank">30 Astronaut Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-sports-themed-bedroom-ideas/" target="_blank">30 Sports Themed Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-fairy-tale-bedroom-ideas/" target="_blank">30 Fairy Tale Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-underwater-bedroom-ideas/" target="_blank">30 Underwater Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-safari-bedroom-ideas/" target="_blank">30 Safari Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-soccer-bedroom-ideas/" target="_blank">30 Soccer Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-gymnastics-bedroom-ideas/" target="_blank">30 Gymnastics Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-mermaid-bedroom-ideas/" target="_blank">30 Mermaid Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/hello-kitty-bedroom-ideas/" target="_blank">Hello Kitty Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/marvel-bedroom-ideas/" target="_blank">Marvel Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/pirate-themed-bedroom-ideas/" target="_blank">Pirate Themed Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/disney-bedroom-ideas/" target="_blank">Disney Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/lego-bedroom-ideas/" target="_blank">Lego Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/underwater-mermaid-bedroom-ideas/" target="_blank">Underwater Mermaid Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/space-themed-nursery-ideas/" target="_blank">Space Themed Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/princess-nursery-ideas/" target="_blank">Princess Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/cloud-themed-nursery-ideas/" target="_blank">Cloud Themed Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/ocean-themed-nursery-ideas/" target="_blank">Ocean Themed Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-tween-bedroom-ideas/" target="_blank">30 Tween Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-teen-bedroom-ideas/" target="_blank">30 Teen Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-teenage-boy-bedroom-ideas/" target="_blank">30 Teenage Boy Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-teenager-bedroom-decor-ideas/" target="_blank">30 Teenager Bedroom Decor Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-teenage-girl-bedroom-ideas/" target="_blank">30 Teenage Girl Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-galaxy-bedroom-ideas/" target="_blank">30 Galaxy Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/tween-bedroom-ideas/" target="_blank">Tween Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/teen-bedroom-ideas/" target="_blank">Teen Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-shared-bedroom-ideas/" target="_blank">30 Shared Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/unicorn-bedroom-ideas/" target="_blank">Unicorn Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-bedroom-transition-ideas/" target="_blank">30 Bedroom Transition Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/boho-toddler-room-ideas/" target="_blank">Boho Toddler Room Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/black-nursery-ideas/" target="_blank">Black Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/farmhouse-nursery-ideas/" target="_blank">Farmhouse Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-pink-bedroom-ideas/" target="_blank">30 Pink Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-quadruple-bedroom-ideas/" target="_blank">30 Quadruple Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-baseball-bedroom-ideas/" target="_blank">30 Baseball Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-bedroom-wall-bed-ideas/" target="_blank">30 Bedroom Wall Bed Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/teen-girl-bedroom-ideas/" target="_blank">Teen Girl Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/boho-teen-bedroom-ideas/" target="_blank">Boho Teen Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/girl-room-ideas-for-10-year-olds/" target="_blank">Girl Room Ideas For 10 Year Olds<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/clean-girl-room-ideas/" target="_blank">Clean Girl Room Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/girls-blue-bedroom-ideas/" target="_blank">Girls Blue Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/baby-room-ideas/" target="_blank">Baby Room Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-pink-and-blue-bedroom-color-combo/" target="_blank">30 Pink And Blue Bedroom Color Combo<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/30-cool-blue-bedroom-ideas/" target="_blank">30 Cool Blue Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/shared-bedroom-ideas-for-small-rooms/" target="_blank">Shared Bedroom Ideas For Small Rooms<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/nursery-wall-decor-ideas/" target="_blank">Nursery Wall Decor Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/vintage-nursery-ideas/" target="_blank">Vintage Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/giraffe-nursery-ideas/" target="_blank">Giraffe Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://www.lostateminor.com/baby-girl-nursery-ideas/" target="_blank">Baby Girl Nursery Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+    </ul>
+</div>
+
+</body>
+</html>
