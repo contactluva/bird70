@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMood - Ý Tưởng Trang Trí Phòng & Nội Thất</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 30px 15px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .feed-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .feed-list {
+            list-style-type: none;
+            counter-reset: post-counter;
+            padding: 0;
+            margin: 0;
+        }
+        .feed-item {
+            background: #ffffff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+        }
+        .feed-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #ff5722;
+        }
+        .feed-item::before {
+            counter-increment: post-counter;
+            content: counter(post-counter);
+            background: #ff5722;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            min-width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(255, 87, 34, 0.3);
+        }
+        .feed-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 1.15rem;
+            font-weight: 600;
+            width: 100%;
+            display: block;
+        }
+        .feed-link:hover {
+            color: #ff5722;
+        }
+        .feed-meta {
+            display: block;
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div class="feed-container">
+    <h1>NestMood - Ý Tưởng Thiết Kế Phòng Ngủ</h1>
+    <ul class="feed-list">
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/kids-bedroom-inspiration-ideas/" target="_blank">Kids Bedroom Inspiration Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/teen-bedroom-ideas/" target="_blank">Teen Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/teen-girl-bedroom-ideas/" target="_blank">Teen Girl Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/teenage-boys-bedroom-ideas/" target="_blank">Teenage Boys Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/harry-potter-bedroom-ideas/" target="_blank">Harry Potter Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/loft-bed-ideas/" target="_blank">Loft Bed Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/jungle-theme-bedroom-ideas/" target="_blank">Jungle Theme Bedroom Ideas<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/category/interior-design/kids-teen-rooms/" target="_blank">Category: Kids & Teen Rooms<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/27-jaw-dropping-baby-nursery-ideas-for-2026-that-will-inspire-your-dream-decor/" target="_blank">27 Jaw-Dropping Baby Nursery Ideas for 2026 That Will Inspire Your Dream Decor<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/30-shared-bedroom-ideas-for-siblings-parents-and-kids-in-small-or-stylish-spaces/" target="_blank">30 Shared Bedroom Ideas for Siblings, Parents and Kids in Small or Stylish Spaces<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/33-country-bedroom-ideas-2025-for-cozy-farmhouse-rustic-french-western-and-teen-styles/" target="_blank">33 Country Bedroom Ideas 2025 for Cozy Farmhouse, Rustic, French, Western and Teen Styles<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/boys-bedroom-ideas-2026-21-inspiring-themes-for-two-boys-toddlers-and-teens/" target="_blank">Boys Bedroom Ideas 2026: 21 Inspiring Themes for Two Boys, Toddlers and Teens<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/christmas-room-decor-2025-ideas-for-cozy-aesthetic-bedrooms-teens-diy-and-easy-crafts/" target="_blank">Christmas Room Decor 2025 Ideas for Cozy Aesthetic Bedrooms, Teens, DIY and Easy Crafts<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/dorm-room-inspiration-2025-with-cozy-aesthetic-ideas-color-schemes-loft-beds-and-more/" target="_blank">Dorm Room Inspiration 2025 with Cozy Aesthetic Ideas, Color Schemes, Loft Beds and More<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/teen-girl-bedroom-ideas-2026-27-modern-aesthetic-designs-decor-trends-and-style-tips-for-small-and-large-rooms/" target="_blank">Teen Girl Bedroom Ideas 2026: 27 Modern Aesthetic Designs, Decor Trends and Style Tips<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/teen-girl-bedrooms-2026-34-creative-designs-and-ideas-for-aesthetic-and-stylish-rooms/" target="_blank">Teen Girl Bedrooms 2026: 34 Creative Designs and Ideas for Aesthetic and Stylish Rooms<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/29-jaw-dropping-teen-room-decor-ideas-for-2026-that-will-transform-your-space-into-a-dreamy-retreat/" target="_blank">29 Jaw-Dropping Teen Room Decor Ideas for 2026 That Will Transform Your Space<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/kids-room-ideas-2026-22-fresh-designs-for-modern-stylish-childrens-spaces/" target="_blank">Kids Room Ideas 2026: 22 Fresh Designs for Modern, Stylish Children's Spaces<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/baby-boy-nursery-2026-21-inspiring-room-ideas-from-teddy-bear-to-boho-beach-and-vintage-styles/" target="_blank">Baby Boy Nursery 2026: 21 Inspiring Room Ideas from Teddy Bear to Boho, Beach and Vintage Styles<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/reading-corner-2026-ideas-for-cozy-home-kids-classroom-and-small-spaces-reading-nook-design/" target="_blank">Reading Corner 2026 Ideas for Cozy Home, Kids, Classroom and Small Spaces Reading Nook Design<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/29-baby-nursery-ideas-2025-with-neutral-pastel-whimsical-gothic-vintage-and-more/" target="_blank">29 Baby Nursery Ideas 2025 with Neutral, Pastel, Whimsical, Gothic, Vintage and More<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+        <li class="feed-item"><a class="feed-link" href="https://nestmood.com/nursery-decor-ideas-for-every-style-including-boho-safari-vintage-and-gender-neutral-themes/" target="_blank">Nursery Decor Ideas for Every Style Including Boho, Safari, Vintage and Gender-Neutral Themes<span class="feed-meta">Đọc tiếp &rarr;</span></a></li>
+    </ul>
+</div>
+
+</body>
+</html>
