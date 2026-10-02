@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sudoku 4x4 - iOS Style</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-gray: #8E8E93;
+            --ios-bg: #F2F2F7;
+            --ios-card: rgba(255, 255, 255, 0.92);
+            --border-thick: #3A3A3C;
+            --border-thin: #D1D1D6;
+            --success: #34C759;
+            --error: #FF3B30;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background-color: var(--ios-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #000;
+            padding-bottom: 40px;
+        }
+
+        header {
+            width: min(95vw, 500px);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            background: var(--ios-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 18px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ios-blue);
+            margin-top: 2px;
+        }
+
+        .level-scroll {
+            width: min(95vw, 500px);
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 4px 2px 10px;
+            margin-bottom: 14px;
+            scrollbar-width: none;
+        }
+
+        .level-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .lvl-pill {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: white;
+            color: var(--ios-gray);
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 8px;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+            transition: all 0.2s ease;
+        }
+
+        .lvl-pill.active {
+            background: var(--ios-blue);
+            color: white;
+            transform: scale(1.12);
+            box-shadow: 0 4px 12px rgba(0,122,255,0.30);
+        }
+
+        .lvl-pill.done {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Bàn cờ: rộng 95% màn hình, tối đa 500px */
+        .board-wrapper {
+            width: min(95vw, 500px);
+            aspect-ratio: 1 / 1;
+            background: var(--border-thick);
+            border-radius: 14px;
+            padding: 3px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .cell {
+font-size: 60px !important;
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            min-height: 0;
+            border: none;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            border-radius: 0;
+            padding: 0;
+            margin: 0;
+            background: #fff;
+            text-align: center;
+            font-size: clamp(22px, 7vw, 34px);
+            font-weight: 600;
+            color: #000;
+            caret-color: var(--ios-blue);
+
+            /* Đường kẻ mảnh mặc định */
+            border-right: 1px solid var(--border-thin);
+            border-bottom: 1px solid var(--border-thin);
+        }
+
+        /* Bỏ viền ngoài cùng bên phải và dưới cùng */
+        .cell:nth-child(4n) {
+            border-right: none;
+        }
+
+        .cell:nth-child(n+13) {
+            border-bottom: none;
+        }
+
+        /* Đường đậm dọc chia khối 2x2: giữa cột 2 và 3 */
+        .cell:nth-child(4n+2) {
+            border-right: 3px solid var(--border-thick);
+        }
+
+        /* Đường đậm ngang chia khối 2x2: giữa hàng 2 và 3 */
+        .cell:nth-child(n+5):nth-child(-n+8) {
+            border-bottom: 3px solid var(--border-thick);
+        }
+
+        .cell.fixed {
+               background: #F9F9F9;
+    color: #108615;
+    font-weight: 700;
+    pointer-events: none;
+    font-size: 60px;
+        }
+
+        .cell:focus {
+            background: #E5F1FF;
+        }
+
+        .cell.same-num {
+            background: #F2F2F7;
+        }
+
+        .cell.wrong,
+        .cell.wrong:focus {
+            background: #FFE5E5;
+            color: var(--error);
+            animation: shake 0.35s;
+        }
+
+        .controls {
+            margin-top: 24px;
+            display: flex;
+            gap: 14px;
+            width: min(95vw, 500px);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+            opacity: 0.85;
+        }
+
+        .btn-primary {
+            background: var(--ios-blue);
+            color: white;
+        }
+
+        .btn-primary:disabled {
+            background: #C6C6C8;
+            cursor: default;
+            transform: none;
+            opacity: 1;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--ios-blue);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Modal kiểu iOS */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .ios-alert {
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            width: 280px;
+            border-radius: 14px;
+            text-align: center;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.show .ios-alert {
+            transform: scale(1);
+        }
+
+        .alert-body {
+            padding: 20px 16px 16px;
+        }
+
+        .alert-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .alert-msg {
+            font-size: 13px;
+            color: var(--ios-gray);
+            line-height: 1.4;
+        }
+
+        .record-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 12px;
+            background: #FFF8E1;
+            color: #FF9500;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .alert-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-top: 0.5px solid var(--border-thin);
+            background: none;
+            font-size: 17px;
+            color: var(--ios-blue);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .alert-btn:active {
+            background: rgba(0,0,0,0.05);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sudoku 4×4</h1>
+
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-label">Level</div>
+                <div class="stat-val" id="ui-level">1/20</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-label">Score</div>
+                <div class="stat-val" id="ui-score">0</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-label">Best</div>
+                <div class="stat-val" id="ui-best">0</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="level-scroll" id="level-list"></div>
+
+    <div class="board-wrapper">
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-secondary" onclick="game.reset()">Làm lại</button>
+        <button class="btn btn-primary" id="btn-check" onclick="game.check()" disabled>Kiểm tra</button>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="ios-alert">
+            <div class="alert-body">
+                <div class="alert-title" id="m-title">Hoàn thành!</div>
+                <div class="alert-msg" id="m-msg">Bạn nhận được +150 điểm</div>
+                <div class="record-badge" id="m-badge" style="display:none">🏆 KỶ LỤC MỚI</div>
+            </div>
+            <button class="alert-btn" id="m-btn" onclick="game.next()">Tiếp tục</button>
+        </div>
+    </div>
+
+<script>
+    /**
+     * Seeded RNG - giúp 20 ván cố định như nhau giữa các lần tải trang
+     */
+    class RNG {
+        constructor(seed) {
+            this.s = seed >>> 0;
+        }
+
+        next() {
+            let t = this.s = (this.s + 0x6D2B79F5) >>> 0;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        }
+
+        shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(this.next() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+    }
+
+    class Game {
+        constructor() {
+            this.LVLS = 20;
+            this.lvl = 1;
+
+            // Có lưu điểm hiện tại và high score
+            this.score = +localStorage.getItem("s4_ios_score") || 0;
+            this.best = +localStorage.getItem("s4_ios_best") || 0;
+            this.done = JSON.parse(localStorage.getItem("s4_ios_done") || "[]");
+
+            if (this.score > this.best) {
+                this.best = this.score;
+                localStorage.setItem("s4_ios_best", this.best);
+            }
+
+            this.cache = {};
+            this.sol = [];
+            this.puz = [];
+            this.user = [];
+
+            this.ui = {
+                grid: document.getElementById("grid"),
+                lvls: document.getElementById("level-list"),
+                score: document.getElementById("ui-score"),
+                best: document.getElementById("ui-best"),
+                lvl: document.getElementById("ui-level"),
+                checkBtn: document.getElementById("btn-check"),
+                modal: document.getElementById("modal")
+            };
+
+            this.init();
+        }
+
+        init() {
+            this.updateStats();
+            this.renderLevels();
+            this.load(1);
+        }
+
+        // =========================
+        // SINH BÀN CỜ + LOGIC SOLVER
+        // =========================
+
+        genBoard(rng) {
+            let b = [
+                [1, 2, 3, 4],
+                [3, 4, 1, 2],
+                [2, 1, 4, 3],
+                [4, 3, 2, 1]
+            ];
+
+            const map = rng.shuffle([1, 2, 3, 4]);
+            b = b.map(row => row.map(v => map[v - 1]));
+
+            if (rng.next() > 0.5) [b[0], b[1]] = [b[1], b[0]];
+            if (rng.next() > 0.5) [b[2], b[3]] = [b[3], b[2]];
+
+            return b;
+        }
+
+        canDeduce(board, r, c) {
+            if (board[r][c] !== 0) return false;
+
+            const used = new Set();
+
+            for (let k = 0; k < 4; k++) {
+                if (board[r][k]) used.add(board[r][k]);
+                if (board[k][c]) used.add(board[k][c]);
+            }
+
+            const br = Math.floor(r / 2) * 2;
+            const bc = Math.floor(c / 2) * 2;
+
+            for (let i = br; i < br + 2; i++) {
+                for (let j = bc; j < bc + 2; j++) {
+                    if (board[i][j]) used.add(board[i][j]);
+                }
+            }
+
+            return used.size === 3;
+        }
+
+        solveLogic(board) {
+            let changed = true;
+
+            while (changed) {
+                changed = false;
+
+                for (let r = 0; r < 4; r++) {
+                    for (let c = 0; c < 4; c++) {
+                        if (board[r][c] === 0 && this.canDeduce(board, r, c)) {
+                            const used = new Set();
+
+                            for (let k = 0; k < 4; k++) {
+                                if (board[r][k]) used.add(board[r][k]);
+                                if (board[k][c]) used.add(board[k][c]);
+                            }
+
+                            const br = Math.floor(r / 2) * 2;
+                            const bc = Math.floor(c / 2) * 2;
+
+                            for (let i = br; i < br + 2; i++) {
+                                for (let j = bc; j < bc + 2; j++) {
+                                    if (board[i][j]) used.add(board[i][j]);
+                                }
+                            }
+
+                            for (let n = 1; n <= 4; n++) {
+                                if (!used.has(n)) {
+                                    board[r][c] = n;
+                                    break;
+                                }
+                            }
+
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            return board.every(row => row.every(cell => cell !== 0));
+        }
+
+        getHints(level) {
+            return Math.max(4, Math.round(10 - (level - 1) * (6 / 19)));
+        }
+
+        makePuzzle(solution, hints, rng) {
+            const maxRemove = 16 - hints;
+
+            let bestPuzzle = solution.map(row => [...row]);
+            let bestRemoved = 0;
+
+            // Thử nhiều thứ tự xóa để đạt số gợi ý thấp nhất có thể
+            for (let attempt = 0; attempt < 80 && bestRemoved < maxRemove; attempt++) {
+                const p = solution.map(row => [...row]);
+                let positions = [];
+
+                for (let r = 0; r < 4; r++) {
+                    for (let c = 0; c < 4; c++) {
+                        positions.push([r, c]);
+                    }
+                }
+
+                positions = rng.shuffle(positions);
+                let removed = 0;
+
+                for (const [r, c] of positions) {
+                    if (removed >= maxRemove) break;
+
+                    const backup = p[r][c];
+                    p[r][c] = 0;
+
+                    const testBoard = p.map(row => [...row]);
+
+                    if (this.solveLogic(testBoard)) {
+                        removed++;
+                    } else {
+                        p[r][c] = backup;
+                    }
+                }
+
+                if (removed > bestRemoved) {
+                    bestRemoved = removed;
+                    bestPuzzle = p.map(row => [...row]);
+                }
+            }
+
+            return bestPuzzle;
+        }
+
+        // =========================
+        // ĐIỀU KHIỂN LEVEL
+        // =========================
+
+        load(level) {
+            this.lvl = level;
+
+            if (!this.cache[level]) {
+                const rng = new RNG(level * 7919 + 42);
+                const sol = this.genBoard(rng);
+                const hints = this.getHints(level);
+                const puz = this.makePuzzle(sol, hints, rng);
+
+                this.cache[level] = { sol, puz };
+            }
+
+            this.sol = this.cache[level].sol;
+            this.puz = this.cache[level].puz.map(row => [...row]);
+            this.user = this.puz.map(row => [...row]);
+
+            this.renderGrid();
+            this.renderLevels();
+            this.updateStats();
+            this.updateCheckBtn();
+        }
+
+        reset() {
+            this.user = this.puz.map(row => [...row]);
+            this.renderGrid();
+            this.updateCheckBtn();
+        }
+
+        renderGrid() {
+            this.ui.grid.innerHTML = "";
+
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const input = document.createElement("input");
+
+                    input.type = "text";
+                    input.inputMode = "numeric";
+                    input.autocomplete = "off";
+                    input.autocapitalize = "off";
+                    input.autocorrect = "off";
+                    input.spellcheck = false;
+                    input.className = "cell";
+
+                    if (this.puz[r][c] !== 0) {
+                        input.value = this.puz[r][c];
+                        input.readOnly = true;
+                        input.tabIndex = -1;
+                        input.classList.add("fixed");
+                    } else {
+                        if (this.user[r][c] !== 0) {
+                            input.value = this.user[r][c];
+                        }
+
+                        input.addEventListener("input", (e) => this.onInput(e, r, c));
+                        input.addEventListener("focus", (e) => this.applyHighlights(e.target));
+                        input.addEventListener("blur", () => this.clearHighlights());
+                    }
+
+                    this.ui.grid.appendChild(input);
+                }
+            }
+        }
+
+        renderLevels() {
+            this.ui.lvls.innerHTML = "";
+
+            for (let i = 1; i <= this.LVLS; i++) {
+                const btn = document.createElement("button");
+                btn.className = "lvl-pill";
+                btn.textContent = i;
+
+                if (i === this.lvl) btn.classList.add("active");
+                if (this.done.includes(i)) btn.classList.add("done");
+
+                btn.onclick = () => this.load(i);
+
+                this.ui.lvls.appendChild(btn);
+            }
+
+            setTimeout(() => {
+                const active = this.ui.lvls.querySelector(".active");
+                if (active) {
+                    active.scrollIntoView({
+                        behavior: "smooth",
+                        inline: "center",
+                        block: "nearest"
+                    });
+                }
+            }, 50);
+        }
+
+        // =========================
+        // NHẬP LIỆU
+        // =========================
+
+        onInput(e, r, c) {
+            const el = e.target;
+
+            let value = el.value.replace(/[^1-4]/g, "");
+
+            if (value.length > 1) {
+                value = value[value.length - 1];
+            }
+
+            if (el.value !== value) {
+                el.value = value;
+            }
+
+            this.user[r][c] = value ? +value : 0;
+            el.classList.remove("wrong");
+
+            this.updateCheckBtn();
+            this.applyHighlights(el);
+        }
+
+        applyHighlights(activeEl) {
+            document.querySelectorAll(".cell").forEach(el => {
+                el.classList.remove("selected", "same-num");
+            });
+
+            if (!activeEl) return;
+
+            activeEl.classList.add("selected");
+
+            const value = activeEl.value;
+
+            if (value) {
+                document.querySelectorAll(".cell").forEach(el => {
+                    if (el !== activeEl && el.value === value) {
+                        el.classList.add("same-num");
+                    }
+                });
+            }
+        }
+
+        clearHighlights() {
+            document.querySelectorAll(".cell").forEach(el => {
+                el.classList.remove("selected", "same-num");
+            });
+        }
+
+        updateCheckBtn() {
+            const filled = this.user.flat().filter(v => v !== 0).length;
+            this.ui.checkBtn.disabled = filled < 16;
+        }
+
+        // =========================
+        // KIỂM TRA / CHIẾN THẮNG
+        // =========================
+
+        check() {
+            let allCorrect = true;
+            const cells = document.querySelectorAll(".cell");
+
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const idx = r * 4 + c;
+
+                    if (this.user[r][c] !== this.sol[r][c]) {
+                        allCorrect = false;
+
+                        if (!this.puz[r][c]) {
+                            cells[idx].classList.add("wrong");
+                        }
+                    }
+                }
+            }
+
+            if (allCorrect) {
+                this.win();
+            }
+        }
+
+        win() {
+            const points = 100 + this.lvl * 50;
+
+            this.score += points;
+
+            let isRecord = false;
+
+            if (this.score > this.best) {
+                this.best = this.score;
+                isRecord = true;
+            }
+
+            if (!this.done.includes(this.lvl)) {
+                this.done.push(this.lvl);
+            }
+
+            this.saveData();
+            this.updateStats();
+            this.renderLevels();
+
+            document.getElementById("m-title").textContent = isRecord ? "Xuất sắc!" : "Hoàn thành!";
+            document.getElementById("m-msg").textContent = `Bạn nhận được +${points} điểm`;
+            document.getElementById("m-badge").style.display = isRecord ? "inline-block" : "none";
+            document.getElementById("m-btn").textContent = this.lvl < this.LVLS ? "Màn tiếp theo" : "Hoàn tất";
+
+            const modal = this.ui.modal;
+            modal.style.display = "flex";
+
+            requestAnimationFrame(() => {
+                modal.classList.add("show");
+            });
+        }
+
+        next() {
+            const modal = this.ui.modal;
+            modal.classList.remove("show");
+
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 250);
+
+            if (this.lvl < this.LVLS) {
+                this.load(this.lvl + 1);
+            }
+        }
+
+        // =========================
+        // LƯU DỮ LIỆU
+        // =========================
+
+        saveData() {
+            localStorage.setItem("s4_ios_score", this.score);
+            localStorage.setItem("s4_ios_best", this.best);
+            localStorage.setItem("s4_ios_done", JSON.stringify(this.done));
+        }
+
+        updateStats() {
+            this.ui.score.textContent = this.score;
+            this.ui.best.textContent = this.best;
+            this.ui.lvl.textContent = `${this.lvl}/${this.LVLS}`;
+        }
+    }
+
+    const game = new Game();
+</script>
+</body>
+</html>
