@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sudoku 4x4 - iOS Style</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --ios-blue: #007AFF;
@@ -31,6 +32,7 @@
             min-height: 100vh;
             color: #000;
             padding-bottom: 40px;
+            overflow-x: hidden;
         }
 
         header {
@@ -120,7 +122,6 @@
             color: white;
         }
 
-        /* Bàn cờ: rộng 95% màn hình, tối đa 500px */
         .board-wrapper {
             width: min(95vw, 500px);
             aspect-ratio: 1 / 1;
@@ -142,31 +143,32 @@
         }
 
         .cell {
-font-size: 40px !important;
             width: 100%;
             height: 100%;
             min-width: 0;
             min-height: 0;
             border: none;
             outline: none;
-            appearance: none;
-            -webkit-appearance: none;
             border-radius: 0;
             padding: 0;
             margin: 0;
             background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            font-size: clamp(22px, 7vw, 34px);
+            font-size: clamp(24px, 7vw, 38px);
             font-weight: 600;
             color: #000;
-            caret-color: var(--ios-blue);
+            user-select: none;
+            -webkit-user-select: none;
 
-            /* Đường kẻ mảnh mặc định */
             border-right: 1px solid var(--border-thin);
             border-bottom: 1px solid var(--border-thin);
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
 
-        /* Bỏ viền ngoài cùng bên phải và dưới cùng */
         .cell:nth-child(4n) {
             border-right: none;
         }
@@ -175,34 +177,30 @@ font-size: 40px !important;
             border-bottom: none;
         }
 
-        /* Đường đậm dọc chia khối 2x2: giữa cột 2 và 3 */
         .cell:nth-child(4n+2) {
             border-right: 3px solid var(--border-thick);
         }
 
-        /* Đường đậm ngang chia khối 2x2: giữa hàng 2 và 3 */
         .cell:nth-child(n+5):nth-child(-n+8) {
             border-bottom: 3px solid var(--border-thick);
         }
 
         .cell.fixed {
-               background: #F9F9F9;
-    color: #108615;
-    font-weight: 700;
-    pointer-events: none;
-    font-size: 40px;
+            background: #F9F9F9;
+            color: #108615;
+            font-weight: 700;
+            cursor: default;
         }
 
-        .cell:focus {
-            background: #E5F1FF;
+        .cell.selected {
+            background: #D6EAFF;
         }
 
         .cell.same-num {
             background: #F2F2F7;
         }
 
-        .cell.wrong,
-        .cell.wrong:focus {
+        .cell.wrong {
             background: #FFE5E5;
             color: var(--error);
             animation: shake 0.35s;
@@ -224,6 +222,7 @@ font-size: 40px !important;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.1s ease, opacity 0.2s ease;
+            font-family: inherit;
         }
 
         .btn:active {
@@ -249,7 +248,68 @@ font-size: 40px !important;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        /* Modal kiểu iOS */
+        /* ====== POPUP CHỌN SỐ ====== */
+        .num-popup {
+            position: fixed;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 32px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.08);
+            z-index: 500;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .num-popup.show {
+            display: flex;
+            animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .num-option {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: #F2F2F7;
+            color: #000;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s ease, background 0.15s ease;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .num-option:active {
+            transform: scale(0.86);
+            background: #D1D1D6;
+        }
+
+.num-option.close-btn {
+    background: #E5E5EA;
+    color: #3A3A3C;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.num-option.close-btn:active {
+    background: #D1D1D6;
+}
+
+        @keyframes popIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ====== MODAL ====== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -308,13 +368,13 @@ font-size: 40px !important;
             background: #FFF8E1;
             color: #FF9500;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 19px;
             font-weight: 700;
         }
 
         .alert-btn {
             display: block;
-            width: 100%;
+            flex: 1;
             padding: 14px;
             border: none;
             border-top: 0.5px solid var(--border-thin);
@@ -323,10 +383,30 @@ font-size: 40px !important;
             color: var(--ios-blue);
             font-weight: 600;
             cursor: pointer;
+            font-family: inherit;
         }
 
         .alert-btn:active {
             background: rgba(0,0,0,0.05);
+        }
+
+        .alert-btn.danger {
+            color: var(--error);
+            font-weight: 700;
+        }
+
+        .alert-row {
+            display: flex;
+        }
+
+        .alert-row .alert-btn:first-child {
+            border-right: 0.5px solid var(--border-thin);
+        }
+
+        /* ====== CONFETTI BUTTON (optional, kept from reference) ====== */
+        @keyframes movingRainbowBorder {
+            0% { background-position: 0 0, 0% 50%; }
+            100% { background-position: 0 0, 100% 50%; }
         }
 
         @keyframes shake {
@@ -346,12 +426,10 @@ font-size: 40px !important;
                 <div class="stat-label">Level</div>
                 <div class="stat-val" id="ui-level">1/20</div>
             </div>
-
             <div class="stat-item">
                 <div class="stat-label">Score</div>
                 <div class="stat-val" id="ui-score">0</div>
             </div>
-
             <div class="stat-item">
                 <div class="stat-label">Best</div>
                 <div class="stat-val" id="ui-best">0</div>
@@ -366,10 +444,34 @@ font-size: 40px !important;
     </div>
 
     <div class="controls">
-        <button class="btn btn-secondary" onclick="game.reset()">Làm lại</button>
+        <button class="btn btn-secondary" onclick="game.askReset()">Reset</button>
         <button class="btn btn-primary" id="btn-check" onclick="game.check()" disabled>Kiểm tra</button>
     </div>
 
+    <!-- Popup chọn số -->
+    <div class="num-popup" id="numPopup">
+        <button class="num-option close-btn" data-action="close">×</button>
+        <button class="num-option" data-val="1">1</button>
+        <button class="num-option" data-val="2">2</button>
+        <button class="num-option" data-val="3">3</button>
+        <button class="num-option" data-val="4">4</button>
+    </div>
+
+    <!-- Modal xác nhận reset -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="ios-alert">
+            <div class="alert-body">
+                <div class="alert-title">Xác nhận Reset</div>
+                <div class="alert-msg">Toàn bộ điểm, kỷ lục và các màn đã hoàn thành sẽ bị xóa. Bạn chắc chắn chứ?</div>
+            </div>
+            <div class="alert-row">
+                <button class="alert-btn" onclick="game.closeConfirm()">Hủy</button>
+                <button class="alert-btn danger" onclick="game.doReset()">Xóa hết</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chiến thắng -->
     <div class="modal-overlay" id="modal">
         <div class="ios-alert">
             <div class="alert-body">
@@ -382,21 +484,15 @@ font-size: 40px !important;
     </div>
 
 <script>
-    /**
-     * Seeded RNG - giúp 20 ván cố định như nhau giữa các lần tải trang
-     */
+    /* ====== Seeded RNG ====== */
     class RNG {
-        constructor(seed) {
-            this.s = seed >>> 0;
-        }
-
+        constructor(seed) { this.s = seed >>> 0; }
         next() {
             let t = this.s = (this.s + 0x6D2B79F5) >>> 0;
             t = Math.imul(t ^ (t >>> 15), t | 1);
             t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
             return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
         }
-
         shuffle(arr) {
             const a = [...arr];
             for (let i = a.length - 1; i > 0; i--) {
@@ -407,12 +503,81 @@ font-size: 40px !important;
         }
     }
 
+    /* ====== Confetti Launcher ====== */
+    class ConfettiLauncher {
+        constructor() {
+            this.rainbowColors = [
+                '#ff0000', // Red
+                '#ffa500', // Orange
+                '#ffff00', // Yellow
+                '#008000', // Green
+                '#00b0ff', // Blue
+                '#7c4dff', // Indigo
+                '#ff2d95'  // Pink
+            ];
+        }
+
+        celebrate() {
+            if (typeof confetti !== 'function') return;
+
+            const duration = 2500;
+            const end = Date.now() + duration;
+
+            // Chạy vòng lặp bắn liên tục từ 2 bên
+            const frame = () => {
+                // Bắn từ bên trái
+                confetti({
+                    particleCount: 6,
+                    angle: 60,
+                    spread: 65,
+                    startVelocity: 55,
+                    origin: { x: 0, y: 0.65 },
+                    colors: this.rainbowColors,
+                    zIndex: 9999
+                });
+
+                // Bắn từ bên phải
+                confetti({
+                    particleCount: 6,
+                    angle: 120,
+                    spread: 65,
+                    startVelocity: 55,
+                    origin: { x: 1, y: 0.65 },
+                    colors: this.rainbowColors,
+                    zIndex: 9999
+                });
+
+                // Thêm vài chùm ở giữa cho rực rỡ
+                if (Math.random() > 0.5) {
+                    confetti({
+                        particleCount: 3,
+                        angle: 90,
+                        spread: 90,
+                        startVelocity: 40,
+                        origin: { x: Math.random(), y: 0.3 + Math.random() * 0.3 },
+                        colors: this.rainbowColors,
+                        zIndex: 9999
+                    });
+                }
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            };
+
+            // Xóa canvas cũ (nếu có) để không chồng lên nhau
+            try { confetti.reset(); } catch(e) {}
+
+            frame();
+        }
+    }
+
+    /* ====== Game Controller ====== */
     class Game {
         constructor() {
             this.LVLS = 20;
             this.lvl = 1;
 
-            // Có lưu điểm hiện tại và high score
             this.score = +localStorage.getItem("s4_ios_score") || 0;
             this.best = +localStorage.getItem("s4_ios_best") || 0;
             this.done = JSON.parse(localStorage.getItem("s4_ios_done") || "[]");
@@ -426,6 +591,7 @@ font-size: 40px !important;
             this.sol = [];
             this.puz = [];
             this.user = [];
+            this.currentRC = null;
 
             this.ui = {
                 grid: document.getElementById("grid"),
@@ -434,8 +600,34 @@ font-size: 40px !important;
                 best: document.getElementById("ui-best"),
                 lvl: document.getElementById("ui-level"),
                 checkBtn: document.getElementById("btn-check"),
-                modal: document.getElementById("modal")
+                modal: document.getElementById("modal"),
+                popup: document.getElementById("numPopup"),
+                confirm: document.getElementById("confirmModal")
             };
+
+            this.confetti = new ConfettiLauncher();
+
+            // Bind popup options
+            document.querySelectorAll(".num-option").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (btn.dataset.action === "close") {
+                        this.hidePopup(); // Chỉ ẩn bàn phím, không tác động vào ô
+                    } else {
+                        const val = +btn.dataset.val;
+                        this.selectNumber(val); // Điền số và tự động ẩn bàn phím
+                    }
+                });
+            });
+
+            // Close popup on outside click
+            document.addEventListener("click", (e) => {
+                if (this.ui.popup.classList.contains("show")) {
+                    if (!this.ui.popup.contains(e.target) && !e.target.classList.contains("cell")) {
+                        this.hidePopup();
+                    }
+                }
+            });
 
             this.init();
         }
@@ -446,10 +638,7 @@ font-size: 40px !important;
             this.load(1);
         }
 
-        // =========================
-        // SINH BÀN CỜ + LOGIC SOLVER
-        // =========================
-
+        /* ====== Puzzle Gen Logic ====== */
         genBoard(rng) {
             let b = [
                 [1, 2, 3, 4],
@@ -457,76 +646,60 @@ font-size: 40px !important;
                 [2, 1, 4, 3],
                 [4, 3, 2, 1]
             ];
-
             const map = rng.shuffle([1, 2, 3, 4]);
             b = b.map(row => row.map(v => map[v - 1]));
-
             if (rng.next() > 0.5) [b[0], b[1]] = [b[1], b[0]];
             if (rng.next() > 0.5) [b[2], b[3]] = [b[3], b[2]];
-
             return b;
         }
 
         canDeduce(board, r, c) {
             if (board[r][c] !== 0) return false;
-
             const used = new Set();
-
             for (let k = 0; k < 4; k++) {
                 if (board[r][k]) used.add(board[r][k]);
                 if (board[k][c]) used.add(board[k][c]);
             }
-
             const br = Math.floor(r / 2) * 2;
             const bc = Math.floor(c / 2) * 2;
-
             for (let i = br; i < br + 2; i++) {
                 for (let j = bc; j < bc + 2; j++) {
                     if (board[i][j]) used.add(board[i][j]);
                 }
             }
-
             return used.size === 3;
         }
 
         solveLogic(board) {
             let changed = true;
-
             while (changed) {
                 changed = false;
-
                 for (let r = 0; r < 4; r++) {
                     for (let c = 0; c < 4; c++) {
                         if (board[r][c] === 0 && this.canDeduce(board, r, c)) {
                             const used = new Set();
-
                             for (let k = 0; k < 4; k++) {
                                 if (board[r][k]) used.add(board[r][k]);
                                 if (board[k][c]) used.add(board[k][c]);
                             }
-
                             const br = Math.floor(r / 2) * 2;
                             const bc = Math.floor(c / 2) * 2;
-
                             for (let i = br; i < br + 2; i++) {
                                 for (let j = bc; j < bc + 2; j++) {
                                     if (board[i][j]) used.add(board[i][j]);
                                 }
                             }
-
                             for (let n = 1; n <= 4; n++) {
                                 if (!used.has(n)) {
                                     board[r][c] = n;
                                     break;
                                 }
                             }
-
                             changed = true;
                         }
                     }
                 }
             }
-
             return board.every(row => row.every(cell => cell !== 0));
         }
 
@@ -536,37 +709,25 @@ font-size: 40px !important;
 
         makePuzzle(solution, hints, rng) {
             const maxRemove = 16 - hints;
-
             let bestPuzzle = solution.map(row => [...row]);
             let bestRemoved = 0;
 
-            // Thử nhiều thứ tự xóa để đạt số gợi ý thấp nhất có thể
             for (let attempt = 0; attempt < 80 && bestRemoved < maxRemove; attempt++) {
                 const p = solution.map(row => [...row]);
                 let positions = [];
-
                 for (let r = 0; r < 4; r++) {
-                    for (let c = 0; c < 4; c++) {
-                        positions.push([r, c]);
-                    }
+                    for (let c = 0; c < 4; c++) positions.push([r, c]);
                 }
-
                 positions = rng.shuffle(positions);
                 let removed = 0;
 
                 for (const [r, c] of positions) {
                     if (removed >= maxRemove) break;
-
                     const backup = p[r][c];
                     p[r][c] = 0;
-
                     const testBoard = p.map(row => [...row]);
-
-                    if (this.solveLogic(testBoard)) {
-                        removed++;
-                    } else {
-                        p[r][c] = backup;
-                    }
+                    if (this.solveLogic(testBoard)) removed++;
+                    else p[r][c] = backup;
                 }
 
                 if (removed > bestRemoved) {
@@ -574,143 +735,157 @@ font-size: 40px !important;
                     bestPuzzle = p.map(row => [...row]);
                 }
             }
-
             return bestPuzzle;
         }
 
-        // =========================
-        // ĐIỀU KHIỂN LEVEL
-        // =========================
-
+        /* ====== Level Control ====== */
         load(level) {
             this.lvl = level;
-
             if (!this.cache[level]) {
                 const rng = new RNG(level * 7919 + 42);
                 const sol = this.genBoard(rng);
                 const hints = this.getHints(level);
                 const puz = this.makePuzzle(sol, hints, rng);
-
                 this.cache[level] = { sol, puz };
             }
-
             this.sol = this.cache[level].sol;
             this.puz = this.cache[level].puz.map(row => [...row]);
             this.user = this.puz.map(row => [...row]);
-
             this.renderGrid();
             this.renderLevels();
             this.updateStats();
             this.updateCheckBtn();
         }
 
-        reset() {
-            this.user = this.puz.map(row => [...row]);
-            this.renderGrid();
-            this.updateCheckBtn();
-        }
-
         renderGrid() {
             this.ui.grid.innerHTML = "";
-
             for (let r = 0; r < 4; r++) {
                 for (let c = 0; c < 4; c++) {
-                    const input = document.createElement("input");
-
-                    input.type = "text";
-                    input.inputMode = "numeric";
-                    input.autocomplete = "off";
-                    input.autocapitalize = "off";
-                    input.autocorrect = "off";
-                    input.spellcheck = false;
-                    input.className = "cell";
+                    const div = document.createElement("div");
+                    div.className = "cell";
+                    div.dataset.r = r;
+                    div.dataset.c = c;
 
                     if (this.puz[r][c] !== 0) {
-                        input.value = this.puz[r][c];
-                        input.readOnly = true;
-                        input.tabIndex = -1;
-                        input.classList.add("fixed");
+                        div.textContent = this.puz[r][c];
+                        div.classList.add("fixed");
+                        // Ô của đề bài -> Không cho click
                     } else {
-                        if (this.user[r][c] !== 0) {
-                            input.value = this.user[r][c];
-                        }
-
-                        input.addEventListener("input", (e) => this.onInput(e, r, c));
-                        input.addEventListener("focus", (e) => this.applyHighlights(e.target));
-                        input.addEventListener("blur", () => this.clearHighlights());
+                        // Cả ô trống và ô người chơi tự điền -> Đều cho click để hiện popup
+                        if (this.user[r][c] !== 0) div.textContent = this.user[r][c];
+                        div.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            this.onCellClick(div, r, c);
+                        });
                     }
-
-                    this.ui.grid.appendChild(input);
+                    this.ui.grid.appendChild(div);
                 }
             }
+        }
+
+        onCellClick(cellEl, r, c) {
+            this.applyHighlights(cellEl);
+            this.showPopup(r, c, cellEl);
+        }
+
+        showPopup(r, c, cellEl) {
+            this.currentRC = { r, c };
+            const popup = this.ui.popup;
+
+            // Hiển thị để đo kích thước (nhưng ẩn bằng opacity để tránh flash)
+            popup.style.visibility = 'hidden';
+            popup.style.display = 'flex';
+            popup.classList.remove('show');
+
+            const popupRect = popup.getBoundingClientRect();
+            const rect = cellEl.getBoundingClientRect();
+            const screenPadding = 12; // cách lề màn hình tối thiểu
+            const gap = 8;             // khoảng cách giữa ô và popup
+
+            // Vị trí mong muốn: giữa theo chiều ngang, ngay phía trên ô
+            let left = rect.left + rect.width / 2 - popupRect.width / 2;
+            let top = rect.top - popupRect.height - gap;
+
+            // Clamp theo chiều ngang: không được tràn ra ngoài lề trái/phải
+            if (left < screenPadding) {
+                left = screenPadding;
+            }
+            if (left + popupRect.width > window.innerWidth - screenPadding) {
+                left = window.innerWidth - popupRect.width - screenPadding;
+            }
+
+            // Nếu ô ở sát đỉnh màn hình, chuyển popup xuống dưới ô
+            if (top < screenPadding) {
+                top = rect.bottom + gap;
+            }
+
+            // Nếu vẫn không đủ chỗ ở dưới (ô sát đáy màn hình), đẩy lên trên trong khoảng cho phép
+            if (top + popupRect.height > window.innerHeight - screenPadding) {
+                top = window.innerHeight - popupRect.height - screenPadding;
+            }
+
+            popup.style.top = top + 'px';
+            popup.style.left = left + 'px';
+
+            // Hiển thị lại với animation
+            requestAnimationFrame(() => {
+                popup.style.visibility = 'visible';
+                popup.classList.add('show');
+            });
+        }
+
+        hidePopup() {
+            this.ui.popup.classList.remove("show");
+            
+            // Xóa inline style để CSS class .num-popup (display: none) được hoạt động trở lại
+            this.ui.popup.style.display = ""; 
+            this.ui.popup.style.visibility = ""; 
+            
+            this.currentRC = null;
+            this.clearHighlights();
+        }
+
+        selectNumber(val) {
+            if (!this.currentRC) return;
+            const { r, c } = this.currentRC;
+            this.user[r][c] = val;
+
+            const cells = this.ui.grid.querySelectorAll(".cell");
+            const cell = cells[r * 4 + c];
+            cell.textContent = val || "";
+            cell.classList.remove("wrong");
+
+            this.updateCheckBtn();
+            this.hidePopup();
         }
 
         renderLevels() {
             this.ui.lvls.innerHTML = "";
-
             for (let i = 1; i <= this.LVLS; i++) {
                 const btn = document.createElement("button");
                 btn.className = "lvl-pill";
                 btn.textContent = i;
-
                 if (i === this.lvl) btn.classList.add("active");
                 if (this.done.includes(i)) btn.classList.add("done");
-
                 btn.onclick = () => this.load(i);
-
                 this.ui.lvls.appendChild(btn);
             }
-
             setTimeout(() => {
                 const active = this.ui.lvls.querySelector(".active");
-                if (active) {
-                    active.scrollIntoView({
-                        behavior: "smooth",
-                        inline: "center",
-                        block: "nearest"
-                    });
-                }
+                if (active) active.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
             }, 50);
-        }
-
-        // =========================
-        // NHẬP LIỆU
-        // =========================
-
-        onInput(e, r, c) {
-            const el = e.target;
-
-            let value = el.value.replace(/[^1-4]/g, "");
-
-            if (value.length > 1) {
-                value = value[value.length - 1];
-            }
-
-            if (el.value !== value) {
-                el.value = value;
-            }
-
-            this.user[r][c] = value ? +value : 0;
-            el.classList.remove("wrong");
-
-            this.updateCheckBtn();
-            this.applyHighlights(el);
         }
 
         applyHighlights(activeEl) {
             document.querySelectorAll(".cell").forEach(el => {
                 el.classList.remove("selected", "same-num");
             });
-
             if (!activeEl) return;
-
             activeEl.classList.add("selected");
-
-            const value = activeEl.value;
-
+            const value = activeEl.textContent;
             if (value) {
                 document.querySelectorAll(".cell").forEach(el => {
-                    if (el !== activeEl && el.value === value) {
+                    if (el !== activeEl && el.textContent === value) {
                         el.classList.add("same-num");
                     }
                 });
@@ -728,49 +903,29 @@ font-size: 40px !important;
             this.ui.checkBtn.disabled = filled < 16;
         }
 
-        // =========================
-        // KIỂM TRA / CHIẾN THẮNG
-        // =========================
-
         check() {
             let allCorrect = true;
-            const cells = document.querySelectorAll(".cell");
-
+            const cells = this.ui.grid.querySelectorAll(".cell");
             for (let r = 0; r < 4; r++) {
                 for (let c = 0; c < 4; c++) {
-                    const idx = r * 4 + c;
-
-                    if (this.user[r][c] !== this.sol[r][c]) {
+                    if (this.puz[r][c] === 0 && this.user[r][c] !== this.sol[r][c]) {
                         allCorrect = false;
-
-                        if (!this.puz[r][c]) {
-                            cells[idx].classList.add("wrong");
-                        }
+                        cells[r * 4 + c].classList.add("wrong");
                     }
                 }
             }
-
-            if (allCorrect) {
-                this.win();
-            }
+            if (allCorrect) this.win();
         }
 
         win() {
             const points = 100 + this.lvl * 50;
-
             this.score += points;
-
             let isRecord = false;
-
             if (this.score > this.best) {
                 this.best = this.score;
                 isRecord = true;
             }
-
-            if (!this.done.includes(this.lvl)) {
-                this.done.push(this.lvl);
-            }
-
+            if (!this.done.includes(this.lvl)) this.done.push(this.lvl);
             this.saveData();
             this.updateStats();
             this.renderLevels();
@@ -782,28 +937,47 @@ font-size: 40px !important;
 
             const modal = this.ui.modal;
             modal.style.display = "flex";
+            requestAnimationFrame(() => modal.classList.add("show"));
 
-            requestAnimationFrame(() => {
-                modal.classList.add("show");
-            });
+            // Bắn pháo giấy khi lập kỷ lục
+            if (isRecord) {
+                setTimeout(() => this.confetti.celebrate(), 250);
+            }
         }
 
         next() {
             const modal = this.ui.modal;
             modal.classList.remove("show");
-
-            setTimeout(() => {
-                modal.style.display = "none";
-            }, 250);
-
-            if (this.lvl < this.LVLS) {
-                this.load(this.lvl + 1);
-            }
+            setTimeout(() => modal.style.display = "none", 250);
+            if (this.lvl < this.LVLS) this.load(this.lvl + 1);
         }
 
-        // =========================
-        // LƯU DỮ LIỆU
-        // =========================
+        /* ====== RESET TOÀN BỘ ====== */
+        askReset() {
+            const modal = this.ui.confirm;
+            modal.style.display = "flex";
+            requestAnimationFrame(() => modal.classList.add("show"));
+        }
+
+        closeConfirm() {
+            const modal = this.ui.confirm;
+            modal.classList.remove("show");
+            setTimeout(() => modal.style.display = "none", 250);
+        }
+
+        doReset() {
+            localStorage.removeItem("s4_ios_score");
+            localStorage.removeItem("s4_ios_best");
+            localStorage.removeItem("s4_ios_done");
+
+            this.score = 0;
+            this.best = 0;
+            this.done = [];
+            this.cache = {};
+
+            this.closeConfirm();
+            this.load(1);
+        }
 
         saveData() {
             localStorage.setItem("s4_ios_score", this.score);
