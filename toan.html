@@ -28,7 +28,6 @@
             touch-action: none;
         }
 
-        /* Nút Reset cố định ở góc trên bên trái */
         #reset-btn { 
             position: absolute; 
             top: 10px; 
@@ -44,7 +43,6 @@
             cursor: pointer;
         }
 
-        /* Nút (+) cố định ở giữa mép trên màn hình để thêm nhãn tự do */
         #add-floating-btn {
             position: absolute;
             top: 10px;
@@ -66,7 +64,6 @@
             justify-content: center;
         }
 
-        /* Nút menu mở dashboard ở góc trên bên phải */
         #edit-btn { 
             position: absolute; 
             top: 10px; 
@@ -83,7 +80,6 @@
             cursor: pointer;
         }
 
-        /* Cụm nút Zoom In (+) và Zoom Out (-) ở góc dưới cùng bên trái */
         #zoom-controls {
             position: absolute;
             bottom: 60px;
@@ -202,7 +198,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffeb5f;
             padding: 8px 14px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.18);
@@ -294,10 +290,9 @@
     <button id="add-floating-btn" onclick="addFloatingLabel()">+</button>
     <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột</button>
 
-    <!-- Nút Zoom In (+) và Zoom Out (-) ở góc dưới trái -->
     <div id="zoom-controls">
-        <button class="zoom-btn" onclick="zoomIn()" title="Phóng to">+</button>
-        <button class="zoom-btn" onclick="zoomOut()" title="Thu nhỏ">−</button>
+        <button class="zoom-btn" onclick="applyZoom(1.15)" title="Phóng to">+</button>
+        <button class="zoom-btn" onclick="applyZoom(1 / 1.15)" title="Thu nhỏ">−</button>
     </div>
 
     <div id="controls" class="hidden">
@@ -355,15 +350,44 @@
         let baseScaleRatio = 1.0; 
         let floatingCount = 0;
 
-        // Xử lý nút Zoom In (+) và Zoom Out (-)
-        function zoomIn() {
-            zoomScale = Math.min(zoomScale + 0.15, 3.0);
-            updateAllBarHeights();
-        }
+        // Xử lý zoom theo tỉ lệ tương đối (giữ nguyên vị trí các cột đang chồng)
+        function applyZoom(factor) {
+            const newScale = zoomScale * factor;
+            if (newScale < 0.3 || newScale > 3.5) return; // Giới hạn zoom
+            
+            const effectiveFactor = newScale / zoomScale;
+            zoomScale = newScale;
 
-        function zoomOut() {
-            zoomScale = Math.max(zoomScale - 0.15, 0.3);
-            updateAllBarHeights();
+            const playground = document.getElementById('playground');
+            const baselineY = playground.clientHeight - 50;
+            const containers = document.querySelectorAll('.bar-container');
+
+            containers.forEach(c => {
+                const currentHeight = parseFloat(c.offsetHeight);
+                const currentTop = parseFloat(c.offsetTop);
+                const currentBottom = currentTop + currentHeight;
+
+                // Khoảng cách từ đáy cột này tới đường cơ sở 0
+                const distFromBaseline = baselineY - currentBottom;
+
+                // Chiều cao mới và khoảng cách đáy mới nhân đúng theo tỉ lệ
+                const newHeight = Math.max(20, currentHeight * effectiveFactor);
+                let newDist = distFromBaseline * effectiveFactor;
+
+                // Nếu cột đang đặt sát/trên đường cơ sở (sai số dưới 3px) thì giữ nguyên đáy dính baseline
+                if (Math.abs(distFromBaseline) < 3) {
+                    newDist = 0;
+                }
+
+                const newBottom = baselineY - newDist;
+                const newTop = newBottom - newHeight;
+
+                c.style.height = newHeight + 'px';
+                c.style.top = newTop + 'px';
+            });
+
+            checkIntersections();
+            updateLabelPlacements();
         }
 
         function getNextLabel() {
@@ -537,21 +561,13 @@
             updateLabelPlacements();
         }
 
-        function updateAllBarHeights() {
-            const playground = document.getElementById('playground');
-            const containers = document.querySelectorAll('.bar-container');
-            if (containers.length === 0) return;
-
-            const playgroundHeight = playground.clientHeight;
-            const baselineY = playgroundHeight - 50;
-
-            containers.forEach(c => {
-                const val = parseInt(c.dataset.val) || 0;
-                const newHeight = Math.max(20, val * baseScaleRatio * zoomScale);
-                c.style.height = newHeight + 'px';
-                c.style.top = (baselineY - newHeight) + 'px';
-            });
-
+        // Cập nhật khi gõ chỉnh sửa số (giữ nguyên vị trí đáy của từng cột)
+        function updateHeightForContainer(c) {
+            const val = parseInt(c.dataset.val) || 0;
+            const oldBottom = c.offsetTop + c.offsetHeight;
+            const newHeight = Math.max(20, val * baseScaleRatio * zoomScale);
+            c.style.height = newHeight + 'px';
+            c.style.top = (oldBottom - newHeight) + 'px'; // Giữ đáy cố định, co giãn lên trên
             checkIntersections();
             updateLabelPlacements();
         }
@@ -575,17 +591,7 @@
                     if (num > 100) num = 100;
                     element.innerText = num;
                     container.dataset.val = num;
-                    
-                    const containers = document.querySelectorAll('.bar-container');
-                    let maxVal = 0;
-                    containers.forEach(c => {
-                        const v = parseInt(c.dataset.val) || 0;
-                        if (v > maxVal) maxVal = v;
-                    });
-                    const playgroundHeight = document.getElementById('playground').clientHeight;
-                    baseScaleRatio = (playgroundHeight * 0.5) / (maxVal || 1);
-                    
-                    updateAllBarHeights();
+                    updateHeightForContainer(container);
                 });
             }
         }
