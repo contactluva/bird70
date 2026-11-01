@@ -142,13 +142,25 @@
             overflow: hidden; 
             width: 100%; 
             height: 100%; 
+            cursor: default;
+        }
+
+        /* Lớp không gian chứa toàn bộ phần tử pan theo tay */
+        #viewport-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-origin: 0 0;
+            will-change: transform;
         }
         
         #baseline { 
             position: absolute; 
             bottom: 50px; 
-            left: 0; 
-            right: 0; 
+            left: -5000px; 
+            width: 10000px;
             height: 2px; 
             background-color: #d1d5db; 
             z-index: 0; 
@@ -157,7 +169,6 @@
         .bar-container { 
             position: absolute; 
             cursor: grab; 
-            width: 75px; 
         }
         .bar-container:active { cursor: grabbing; }
 
@@ -193,11 +204,8 @@
             padding-bottom: 0; 
         }
 
-        /* KHUNG ĐO DẤU NGOẶC VUÔNG */
         .bracket-measure-box {
             position: absolute;
-            width: 80px;
-            height: 140px;
             cursor: grab;
             user-select: none;
             z-index: 60;
@@ -239,7 +247,7 @@
         }
         .bracket-content .bar-label-text {
             background: transparent !important;
-            color: #222;
+            color: #d97706;
         }
         .bracket-content .bar-val-text {
             color: #b45309;
@@ -251,7 +259,6 @@
             right: calc(100% + 6px);
         }
 
-        /* Nút đổi chiều [ ] và nút xóa: ẨN MẶC ĐỊNH */
         .bracket-actions {
             position: absolute;
             top: -26px;
@@ -289,7 +296,6 @@
             font-size: 14px;
         }
 
-        /* CÁC CHẤM TRÒN: ẨN MẶC ĐỊNH, CHỈ HIỆN KHI CÓ CLASS .active */
         .resize-handle {
             position: absolute;
             width: 14px;
@@ -321,7 +327,6 @@
         .editable:focus { border-color: #4a90e2; background: #fff; box-shadow: 0 0 6px rgba(74, 144, 226, 0.4); z-index: 1000; }
         
         .bar-label-text { 
-            font-size: 26px; 
             font-weight: bold; 
             color: #222; 
             margin-bottom: 2px; 
@@ -329,7 +334,6 @@
             line-height: 1.1; 
         }
         .bar-val-text { 
-            font-size: 48px; 
             font-weight: 900; 
             color: black; 
             line-height: 1; 
@@ -401,7 +405,10 @@
         <button class="btn-submit" onclick="generateChart()">Tạo biểu đồ</button>
     </div>
 
-    <div id="playground"></div>
+    <!-- Playground chứa lớp viewport có thể Pan toàn bộ màn hình -->
+    <div id="playground">
+        <div id="viewport-layer"></div>
+    </div>
 
     <script>
         function setupStandalonePWA() {
@@ -425,15 +432,32 @@
         let activeElement = null;
         let startX, startY, initialLeft, initialTop;
         const SNAP_THRESHOLD = 20;
-        const BAR_WIDTH = 75;
-        const BAR_GAP = 50;
+
+        // Các thông số kích thước cơ bản
+        const BASE_BAR_WIDTH = 75;
+        const BASE_BAR_GAP = 50;
+        const BASE_LABEL_FONT = 26;
+        const BASE_VAL_FONT = 48;
 
         let zoomScale = 1.0; 
         let baseScaleRatio = 1.0; 
 
+        // Biến tọa độ Pan của Viewport
+        let panX = 0;
+        let panY = 0;
+        let isPanning = false;
+        let panStartX = 0;
+        let panStartY = 0;
+
+        function updateViewportTransform() {
+            const layer = document.getElementById('viewport-layer');
+            layer.style.transform = `translate(${panX}px, ${panY}px)`;
+        }
+
+        // 1. ZOOM OUT / ZOOM IN: Thu nhỏ / Phóng to TOÀN BỘ CỘT (cao, rộng, font chữ, khoảng cách)
         function applyZoom(factor) {
             const newScale = zoomScale * factor;
-            if (newScale < 0.3 || newScale > 3.5) return;
+            if (newScale < 0.25 || newScale > 3.5) return;
             
             const effectiveFactor = newScale / zoomScale;
             zoomScale = newScale;
@@ -442,24 +466,50 @@
             const baselineY = playground.clientHeight - 50;
             const containers = document.querySelectorAll('.bar-container');
 
+            // Tính tâm trung bình trục X của các cột để zoom tỏa đều từ giữa cụm
+            let avgCenterX = 0;
+            if (containers.length > 0) {
+                let sumX = 0;
+                containers.forEach(c => {
+                    sumX += (parseFloat(c.offsetLeft) + parseFloat(c.offsetWidth) / 2);
+                });
+                avgCenterX = sumX / containers.length;
+            }
+
+            const currentWidth = BASE_BAR_WIDTH * zoomScale;
+            const labelFont = Math.max(12, Math.round(BASE_LABEL_FONT * zoomScale));
+            const valFont = Math.max(18, Math.round(BASE_VAL_FONT * zoomScale));
+
             containers.forEach(c => {
-                const currentHeight = parseFloat(c.offsetHeight);
-                const currentTop = parseFloat(c.offsetTop);
-                const currentBottom = currentTop + currentHeight;
+                const curH = parseFloat(c.offsetHeight);
+                const curTop = parseFloat(c.offsetTop);
+                const curLeft = parseFloat(c.offsetLeft);
+                const curBottom = curTop + curH;
 
-                const distFromBaseline = baselineY - currentBottom;
-                const newHeight = Math.max(20, currentHeight * effectiveFactor);
-                let newDist = distFromBaseline * effectiveFactor;
+                // Tọa độ tương đối so với đáy cơ sở và tâm nhóm
+                const distFromBaseline = baselineY - curBottom;
+                const distFromCenterX = curLeft - avgCenterX;
 
+                const newH = Math.max(15, curH * effectiveFactor);
+                let newDistY = distFromBaseline * effectiveFactor;
                 if (Math.abs(distFromBaseline) < 3) {
-                    newDist = 0;
+                    newDistY = 0;
                 }
 
-                const newBottom = baselineY - newDist;
-                const newTop = newBottom - newHeight;
+                const newBottom = baselineY - newDistY;
+                const newTop = newBottom - newH;
+                const newLeft = avgCenterX + (distFromCenterX * effectiveFactor);
 
-                c.style.height = newHeight + 'px';
+                c.style.width = currentWidth + 'px';
+                c.style.height = newH + 'px';
                 c.style.top = newTop + 'px';
+                c.style.left = newLeft + 'px';
+
+                // Thu phóng cỡ chữ tương ứng
+                const labelText = c.querySelector('.bar-label-text');
+                const valText = c.querySelector('.bar-val-text');
+                if (labelText) labelText.style.fontSize = labelFont + 'px';
+                if (valText) valText.style.fontSize = valFont + 'px';
             });
 
             checkIntersections();
@@ -494,6 +544,10 @@
 
         function resetToDefault() {
             zoomScale = 1.0;
+            panX = 0;
+            panY = 0;
+            updateViewportTransform();
+
             document.querySelectorAll('.bracket-measure-box').forEach(el => el.remove());
             
             const container = document.getElementById('inputs-container');
@@ -511,19 +565,21 @@
         }
 
         function addBracketMeasure() {
+            const viewport = document.getElementById('viewport-layer');
             const playground = document.getElementById('playground');
             
-            // Bỏ chọn tất cả khung khác trước khi thêm mới
             document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
 
             const box = document.createElement('div');
-            // Mặc định thêm class 'active' để khi vừa tạo ra người dùng có thể chỉnh sửa kích thước ngay
             box.className = 'bracket-measure-box bracket-right active';
 
-            const initLeft = (playground.clientWidth / 2) - 40;
-            const initTop = (playground.clientHeight / 2) - 80;
+            // Đặt vào vị trí trung tâm hiển thị thực tế (bù trừ độ lệch pan)
+            const initLeft = (playground.clientWidth / 2) - 40 - panX;
+            const initTop = (playground.clientHeight / 2) - 80 - panY;
             box.style.left = initLeft + 'px';
             box.style.top = initTop + 'px';
+            box.style.width = '80px';
+            box.style.height = '140px';
 
             box.innerHTML = `
                 <div class="bracket-line"></div>
@@ -541,7 +597,6 @@
                 <div class="resize-handle handle-right" data-handle="right"></div>
             `;
 
-            // Bấm vào khung đo hoặc thẻ label sẽ kích hoạt hiển thị các chấm tròn
             box.addEventListener('mousedown', (e) => {
                 if (!box.classList.contains('active')) {
                     document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
@@ -571,7 +626,7 @@
             addDragEvents(box);
             setupResizeEvents(box);
 
-            playground.appendChild(box);
+            viewport.appendChild(box);
         }
 
         function toggleBracketDirection(btn) {
@@ -595,7 +650,6 @@
 
             let resultLeft = targetLeft;
             let resultTop = targetTop;
-            let resultHeight = targetHeight;
 
             for (let bar of bars) {
                 const bLeft = bar.offsetLeft;
@@ -620,7 +674,7 @@
                 }
             }
 
-            return { left: resultLeft, top: resultTop, width: targetWidth, height: resultHeight };
+            return { left: resultLeft, top: resultTop };
         }
 
         function setupResizeEvents(box) {
@@ -629,8 +683,8 @@
                 const startResize = (e) => {
                     e.stopPropagation();
                     const isTouch = e.type === 'touchstart';
-                    const startX = isTouch ? e.touches[0].clientX : e.clientX;
-                    const startY = isTouch ? e.touches[0].clientY : e.clientY;
+                    const sX = isTouch ? e.touches[0].clientX : e.clientX;
+                    const sY = isTouch ? e.touches[0].clientY : e.clientY;
                     const initialWidth = box.offsetWidth;
                     const initialHeight = box.offsetHeight;
                     const initialLeft = box.offsetLeft;
@@ -640,8 +694,8 @@
                     const onMove = (ev) => {
                         const curX = isTouch ? ev.touches[0].clientX : ev.clientX;
                         const curY = isTouch ? ev.touches[0].clientY : ev.clientY;
-                        const dx = curX - startX;
-                        const dy = curY - startY;
+                        const dx = curX - sX;
+                        const dy = curY - sY;
 
                         let newW = initialWidth;
                         let newH = initialHeight;
@@ -703,12 +757,12 @@
                 editBtn.style.display = 'block';
             }
 
-            const playground = document.getElementById('playground');
-            playground.innerHTML = ''; 
+            const viewport = document.getElementById('viewport-layer');
+            viewport.innerHTML = ''; 
             
             const baselineDiv = document.createElement('div');
             baselineDiv.id = 'baseline';
-            playground.appendChild(baselineDiv);
+            viewport.appendChild(baselineDiv);
 
             const rows = document.querySelectorAll('.input-row');
             let data = [];
@@ -725,12 +779,14 @@
 
             if(data.length === 0) return;
 
-            const playgroundHeight = playground.clientHeight;
-            const playgroundWidth = playground.clientWidth;
+            const playgroundHeight = document.getElementById('playground').clientHeight;
+            const playgroundWidth = document.getElementById('playground').clientWidth;
             const targetMaxHeight = playgroundHeight * 0.5;
             baseScaleRatio = targetMaxHeight / maxVal; 
 
-            const totalGroupWidth = data.length * BAR_WIDTH + (data.length - 1) * BAR_GAP;
+            const currentWidth = BASE_BAR_WIDTH * zoomScale;
+            const currentGap = BASE_BAR_GAP * zoomScale;
+            const totalGroupWidth = data.length * currentWidth + (data.length - 1) * currentGap;
             let startPos = Math.max(15, (playgroundWidth - totalGroupWidth) / 2);
             const baselineY = playgroundHeight - 50; 
 
@@ -741,7 +797,7 @@
                 const barContainer = document.createElement('div');
                 barContainer.className = 'bar-container';
                 barContainer.dataset.val = item.val;
-                barContainer.style.width = BAR_WIDTH + 'px';
+                barContainer.style.width = currentWidth + 'px';
                 barContainer.style.left = startPos + 'px';
                 barContainer.style.height = heightPx + 'px'; 
                 barContainer.style.top = (baselineY - heightPx) + 'px'; 
@@ -753,11 +809,13 @@
                 labelEl.className = 'bar-label-text editable';
                 labelEl.contentEditable = "true";
                 labelEl.innerText = item.label;
+                labelEl.style.fontSize = Math.max(12, Math.round(BASE_LABEL_FONT * zoomScale)) + 'px';
 
                 const valEl = document.createElement('div');
                 valEl.className = 'bar-val-text editable';
                 valEl.contentEditable = "true";
                 valEl.innerText = item.val;
+                valEl.style.fontSize = Math.max(18, Math.round(BASE_VAL_FONT * zoomScale)) + 'px';
 
                 setupEditableEvents(labelEl, false, barContainer);
                 setupEditableEvents(valEl, true, barContainer);
@@ -775,10 +833,10 @@
 
                 barContainer.appendChild(headerDiv);
                 barContainer.appendChild(bar);
-                playground.appendChild(barContainer);
+                viewport.appendChild(barContainer);
 
                 addDragEvents(barContainer);
-                startPos += (BAR_WIDTH + BAR_GAP);
+                startPos += (currentWidth + currentGap);
             });
             checkIntersections();
             updateLabelPlacements();
@@ -825,6 +883,8 @@
 
         function dragStart(e) {
             if (e.target.isContentEditable || e.target.classList.contains('bracket-btn') || e.target.classList.contains('resize-handle')) return;
+
+            e.stopPropagation(); // Không cho nổi bọt lên playground để tránh kích hoạt Pan màn hình
 
             if (e.type === "touchstart") { 
                 startX = e.touches[0].clientX; 
@@ -915,10 +975,59 @@
             document.removeEventListener('mouseup', dragEnd);
         }
 
+        // 2. PAN TOÀN BỘ VIEWPORT KHI CHẠM VÀO KHOẢNG TRỐNG
+        const playgroundEl = document.getElementById('playground');
+
+        function onPanStart(e) {
+            // Nếu bấm trúng vào một đối tượng con (cột, nhãn, nút) thì bỏ qua
+            if (e.target.closest('.bar-container') || e.target.closest('.bracket-measure-box') || e.target.closest('.ios-blur-btn') || e.target.closest('#controls') || e.target.closest('#add-floating-btn')) {
+                return;
+            }
+
+            isPanning = true;
+            playgroundEl.style.cursor = 'grabbing';
+
+            if (e.type === 'touchstart') {
+                panStartX = e.touches[0].clientX - panX;
+                panStartY = e.touches[0].clientY - panY;
+            } else {
+                panStartX = e.clientX - panX;
+                panStartY = e.clientY - panY;
+            }
+
+            document.addEventListener('touchmove', onPanMove, { passive: false });
+            document.addEventListener('touchend', onPanEnd);
+            document.addEventListener('mousemove', onPanMove);
+            document.addEventListener('mouseup', onPanEnd);
+        }
+
+        function onPanMove(e) {
+            if (!isPanning) return;
+            e.preventDefault();
+
+            let curX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            let curY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+            panX = curX - panStartX;
+            panY = curY - panStartY;
+
+            updateViewportTransform();
+        }
+
+        function onPanEnd() {
+            isPanning = false;
+            playgroundEl.style.cursor = 'default';
+            document.removeEventListener('touchmove', onPanMove);
+            document.removeEventListener('touchend', onPanEnd);
+            document.removeEventListener('mousemove', onPanMove);
+            document.removeEventListener('mouseup', onPanEnd);
+        }
+
+        playgroundEl.addEventListener('mousedown', onPanStart);
+        playgroundEl.addEventListener('touchstart', onPanStart, { passive: false });
+
         function updateLabelPlacements() {
             const containers = Array.from(document.querySelectorAll('.bar-container'));
-            const playground = document.getElementById('playground');
-            const pgRect = playground.getBoundingClientRect();
             const sortedContainers = [...containers].sort((a, b) => a.offsetTop - b.offsetTop);
 
             containers.forEach(c => {
@@ -936,7 +1045,9 @@
 
                 for (let other of containers) {
                     if (other === container) continue;
-                    const otherRect = other.querySelector('.bar-value').getBoundingClientRect();
+                    const otherBar = other.querySelector('.bar-value');
+                    const otherRect = otherBar.getBoundingClientRect();
+
                     const headerZoneTop = barValRect.top - 100;
                     const headerZoneBottom = barValRect.top + 5;
                     const headerZoneLeft = barValRect.left - 5;
@@ -958,6 +1069,7 @@
                 }
 
                 if (shouldDisplace) {
+                    const pgRect = document.getElementById('playground').getBoundingClientRect();
                     if (barValRect.right + 130 > pgRect.right) {
                         header.classList.remove('displaced-right');
                         header.classList.add('displaced-left');
@@ -970,8 +1082,8 @@
         }
 
         function checkIntersections() {
-            const playground = document.getElementById('playground');
-            const pgRect = playground.getBoundingClientRect();
+            const viewport = document.getElementById('viewport-layer');
+            const vpRect = viewport.getBoundingClientRect();
             document.querySelectorAll('.intersection').forEach(el => el.remove());
             
             const bars = Array.from(document.querySelectorAll('.bar-value'));
@@ -983,8 +1095,8 @@
                     const overlapY = Math.max(0, Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top));
                     
                     if(overlapX > 0 && overlapY > 0) {
-                        const interLeft = Math.max(rect1.left, rect2.left) - pgRect.left;
-                        const interTop = Math.max(rect1.top, rect2.top) - pgRect.top;
+                        const interLeft = Math.max(rect1.left, rect2.left) - vpRect.left;
+                        const interTop = Math.max(rect1.top, rect2.top) - vpRect.top;
                         
                         const intersection = document.createElement('div');
                         intersection.className = 'intersection';
@@ -992,13 +1104,12 @@
                         intersection.style.top = interTop + 'px';
                         intersection.style.width = overlapX + 'px';
                         intersection.style.height = overlapY + 'px';
-                        playground.appendChild(intersection);
+                        viewport.appendChild(intersection);
                     }
                 }
             }
         }
 
-        // Bấm ra ngoài khoảng trống màn hình sẽ ẩn các chấm tròn
         document.getElementById('playground').addEventListener('click', (e) => {
             if (!e.target.closest('.bracket-measure-box')) {
                 document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
