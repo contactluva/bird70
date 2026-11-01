@@ -844,39 +844,53 @@
             updateLabelPlacements();
         }
 
-        function setupEditableEvents(element, isNumeric, container) {
-            const stopPropagation = (e) => e.stopPropagation();
-            element.addEventListener('mousedown', stopPropagation);
-            element.addEventListener('touchstart', stopPropagation, {passive: true});
+       function setupEditableEvents(element, isNumeric, container) {
+    const stopPropagation = (e) => e.stopPropagation();
+    element.addEventListener('mousedown', stopPropagation);
+    element.addEventListener('touchstart', stopPropagation, {passive: true});
 
-            element.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    element.blur();
-                }
-            });
-
-            if (isNumeric) {
-                element.addEventListener('blur', () => {
-                    let num = parseInt(element.innerText.trim());
-                    if (isNaN(num) || num <= 0) num = 1;
-                    if (num > 100) num = 100;
-                    element.innerText = num;
-                    container.dataset.val = num;
-                    
-                    const containers = document.querySelectorAll('.bar-container');
-                    let maxVal = 0;
-                    containers.forEach(c => {
-                        const v = parseInt(c.dataset.val) || 0;
-                        if (v > maxVal) maxVal = v;
-                    });
-                    const playgroundHeight = document.getElementById('playground').clientHeight;
-                    baseScaleRatio = (playgroundHeight * 0.5) / (maxVal || 1);
-                    
-                    applyZoom(1.0);
-                });
-            }
+    element.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            element.blur();
         }
+    });
+
+    if (isNumeric) {
+        element.addEventListener('blur', () => {
+            const rawText = element.innerText.trim();
+            
+            // Nếu người dùng nhập dấu '?' hoặc để trống kèm dấu '?'
+            if (rawText === '?' || rawText === '？') {
+                element.innerText = '?';
+                // Giữ nguyên container.dataset.val cũ, không thay đổi kích thước cột
+                return;
+            }
+
+            let num = parseInt(rawText);
+            if (isNaN(num) || num <= 0) {
+                // Nếu xóa trắng hoặc nhập ký tự lạ, khôi phục lại giá trị cũ thay vì ép về 1
+                element.innerText = container.dataset.val || 10;
+                return;
+            }
+            if (num > 100) num = 100;
+
+            element.innerText = num;
+            container.dataset.val = num;
+            
+            const containers = document.querySelectorAll('.bar-container');
+            let maxVal = 0;
+            containers.forEach(c => {
+                const v = parseInt(c.dataset.val) || 0;
+                if (v > maxVal) maxVal = v;
+            });
+            const playgroundHeight = document.getElementById('playground').clientHeight;
+            baseScaleRatio = (playgroundHeight * 0.5) / (maxVal || 1);
+            
+            applyZoom(1.0);
+        });
+    }
+}
 
         function addDragEvents(el) {
             el.addEventListener('touchstart', dragStart, {passive: false});
