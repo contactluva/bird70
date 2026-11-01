@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Biểu đồ Toán lớp 2</title>
 
-    <!-- Khai báo Web App cho iOS và Android -->
     <meta name="theme-color" content="#2ecc71">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,12 +12,67 @@
     <link rel="icon" type="image/jpeg" href="https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg">
     <link rel="apple-touch-icon" href="https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg">
     
-    <!-- Link Manifest sẽ được JS tự động tạo để chống lỗi Page doesn't exist -->
     <link id="manifest-link" rel="manifest" href="">
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; }
-        #controls { padding: 15px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000; position: absolute; top: 0; left: 0; right: 0; transition: transform 0.3s ease; max-height: 50vh; overflow-y: auto; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f4f4f9; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+            position: relative; 
+            touch-action: none;
+        }
+
+        /* Nút Reset cố định ở góc trên bên trái */
+        #reset-btn { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            z-index: 999; 
+            background: #e74c3c; 
+            color: white; 
+            padding: 10px 16px; 
+            border-radius: 20px; 
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            border: none;
+            cursor: pointer;
+        }
+
+        #edit-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            z-index: 999; 
+            background: #f39c12; 
+            color: white; 
+            padding: 10px 16px; 
+            border-radius: 20px; 
+            display: block; 
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            border: none;
+            cursor: pointer;
+        }
+
+        #controls { 
+            padding: 15px; 
+            background: white; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); 
+            z-index: 1000; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            transition: transform 0.3s ease; 
+            max-height: 50vh; 
+            overflow-y: auto; 
+        }
         #controls.hidden { transform: translateY(-100%); }
         h2 { margin: 0 0 10px 0; font-size: 18px; color: #333; }
         .form-group { margin-bottom: 10px; }
@@ -29,27 +83,127 @@
         button { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .btn-add { background: #3498db; color: white; }
         .btn-submit { background: #2ecc71; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 5px; }
-        #edit-btn { position: absolute; top: 10px; right: 10px; z-index: 999; background: #f39c12; color: white; padding: 10px 15px; border-radius: 20px; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        #playground { flex: 1; position: relative; background: #e9ecef; touch-action: none; overflow: hidden; width: 100%; height: 100%; }
-        #baseline { position: absolute; bottom: 50px; left: 0; right: 0; height: 2px; background-color: #7f8c8d; z-index: 0; }
+
+        #playground { 
+            flex: 1; 
+            position: relative; 
+            background: #e9ecef; 
+            touch-action: none; 
+            overflow: hidden; 
+            width: 100%; 
+            height: 100%; 
+        }
         
-        .bar-container { position: absolute; cursor: grab; width: 75px; }
+        /* Mặt bằng 0 luôn cố định cách đáy 50px */
+        #baseline { 
+            position: absolute; 
+            bottom: 50px; 
+            left: 0; 
+            right: 0; 
+            height: 2px; 
+            background-color: #7f8c8d; 
+            z-index: 0; 
+        }
+        
+        .bar-container { 
+            position: absolute; 
+            cursor: grab; 
+            width: 75px; 
+        }
         .bar-container:active { cursor: grabbing; }
-        .bar-header { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; padding-bottom: 8px; white-space: nowrap; user-select: none; transition: left 0.15s ease, right 0.15s ease, transform 0.15s ease; pointer-events: auto; }
-        .bar-header.displaced-right { bottom: auto; top: 0; left: calc(100% + 8px); transform: none; align-items: flex-start; padding-bottom: 0; }
-        .bar-header.displaced-left { bottom: auto; top: 0; left: auto; right: calc(100% + 8px); transform: none; align-items: flex-end; padding-bottom: 0; }
-        .editable { cursor: text; outline: none; border-radius: 6px; border: 2px dashed transparent; padding: 2px 6px; transition: all 0.2s; }
+
+        .bar-header { 
+            position: absolute; 
+            bottom: 100%; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding-bottom: 8px; 
+            white-space: nowrap; 
+            user-select: none; 
+            transition: left 0.15s ease, right 0.15s ease, transform 0.15s ease; 
+            pointer-events: auto; 
+        }
+        .bar-header.displaced-right { 
+            bottom: auto; 
+            top: 0; 
+            left: calc(100% + 8px); 
+            transform: none; 
+            align-items: flex-start; 
+            padding-bottom: 0; 
+        }
+        .bar-header.displaced-left { 
+            bottom: auto; 
+            top: 0; 
+            left: auto; 
+            right: calc(100% + 8px); 
+            transform: none; 
+            align-items: flex-end; 
+            padding-bottom: 0; 
+        }
+
+        .editable { 
+            cursor: text; 
+            outline: none; 
+            border-radius: 6px; 
+            border: 2px dashed transparent; 
+            padding: 2px 6px; 
+            transition: all 0.2s; 
+        }
         .editable:hover { border-color: #999; background: rgba(255,255,255,0.9); }
         .editable:focus { border-color: #2980b9; background: #fff; box-shadow: 0 0 6px rgba(41, 128, 185, 0.5); z-index: 1000; }
-        .bar-label-text { font-size: 28px; font-weight: bold; color: #222; margin-bottom: 2px; background: rgba(255,255,255,0.85); line-height: 1.1; }
-        .bar-val-text { font-size: 52px; font-weight: 900; color: black; line-height: 1; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px 2px 0 #fff, -2px 2px 0 #fff; }
-        .bar-value { width: 100%; height: 100%; border-radius: 4px 4px 0 0; box-sizing: border-box; border: 1px solid rgba(0,0,0,0.15); border-bottom: 2px solid #222; position: relative; }
-        .intersection { position: absolute; background-color: #003300; pointer-events: none; z-index: 100; opacity: 0.85; border: 2px dashed #fff; box-sizing: border-box; }
-        .snap-point { position: absolute; width: 8px; height: 8px; background: rgba(0,0,0,0.4); border-radius: 50%; pointer-events: none; top: 5px; left: 50%; transform: translateX(-50%); }
+        
+        .bar-label-text { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #222; 
+            margin-bottom: 2px; 
+            background: rgba(255,255,255,0.85); 
+            line-height: 1.1; 
+        }
+        .bar-val-text { 
+            font-size: 52px; 
+            font-weight: 900; 
+            color: black; 
+            line-height: 1; 
+            text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px 2px 0 #fff, -2px 2px 0 #fff; 
+        }
+        .bar-value { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 4px 4px 0 0; 
+            box-sizing: border-box; 
+            border: 1px solid rgba(0,0,0,0.15); 
+            border-bottom: 2px solid #222; 
+            position: relative; 
+        }
+        .intersection { 
+            position: absolute; 
+            background-color: #003300; 
+            pointer-events: none; 
+            z-index: 100; 
+            opacity: 0.85; 
+            border: 2px dashed #fff; 
+            box-sizing: border-box; 
+        }
+        .snap-point { 
+            position: absolute; 
+            width: 8px; 
+            height: 8px; 
+            background: rgba(0,0,0,0.4); 
+            border-radius: 50%; 
+            pointer-events: none; 
+            top: 5px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+        }
     </style>
 </head>
 <body>
 
+    <button id="reset-btn" onclick="resetToDefault()">🔄 Reset</button>
     <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột</button>
 
     <div id="controls" class="hidden">
@@ -64,22 +218,21 @@
         </div>
         <div id="inputs-container">
             <div class="input-row">
-                <input type="text" class="label-input" placeholder="Tên" value="Cam">
-                <input type="number" class="val-input" placeholder="Số" value="50" max="100">
+                <input type="text" class="label-input" placeholder="Tên" value="A">
+                <input type="number" class="val-input" placeholder="Số" value="10" max="100">
             </div>
             <div class="input-row">
-                <input type="text" class="label-input" placeholder="Tên" value="Táo">
-                <input type="number" class="val-input" placeholder="Số" value="20" max="100">
+                <input type="text" class="label-input" placeholder="Tên" value="B">
+                <input type="number" class="val-input" placeholder="Số" value="10" max="100">
             </div>
         </div>
-        <button class="btn-add" onclick="addInputRow()">+ Thêm giá trị</button>
+        <button class="btn-add" onclick="addInputRow()">+ Thêm 1 cột</button>
         <button class="btn-submit" onclick="generateChart()">Tạo biểu đồ</button>
     </div>
 
     <div id="playground"></div>
 
     <script>
-        // Tự động tạo cấu hình PWA nhúng trực tiếp vào trang để cài đặt độc lập
         function setupStandalonePWA() {
             const manifestJSON = {
                 "name": "Toán Lớp 2",
@@ -94,9 +247,7 @@
                     "type": "image/jpeg"
                 }]
             };
-            const manifestStr = JSON.stringify(manifestJSON);
-            const manifestUrl = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(manifestStr);
-            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
+            document.getElementById('manifest-link').setAttribute('href', 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestJSON)));
         }
 
         const colors = ['#e74c3c', '#9b59b6', '#f1c40f', '#e67e22', '#1abc9c', '#34495e'];
@@ -106,11 +257,24 @@
         const BAR_WIDTH = 75;
         const BAR_GAP = 50;
 
+        // Biến kiểm soát tỉ lệ thu phóng (Pinch Zoom)
+        let zoomScale = 1.0; 
+        let baseScaleRatio = 1.0; 
+        let initialPinchDistance = null;
+        let startZoomScale = 1.0;
+
+        // Hàm lấy ký tự chữ cái tiếp theo (A -> B -> C -> ...)
+        function getNextLabel() {
+            const inputs = document.querySelectorAll('.label-input');
+            return String.fromCharCode(65 + inputs.length);
+        }
+
         function addInputRow() {
             const container = document.getElementById('inputs-container');
             const row = document.createElement('div');
             row.className = 'input-row';
-            row.innerHTML = `<input type="text" class="label-input" placeholder="Tên cột"><input type="number" class="val-input" placeholder="Số" max="100">`;
+            const nextChar = getNextLabel();
+            row.innerHTML = `<input type="text" class="label-input" placeholder="Tên" value="${nextChar}"><input type="number" class="val-input" placeholder="Số" value="10" max="100">`;
             container.appendChild(row);
         }
 
@@ -124,6 +288,23 @@
                 controls.classList.add('hidden');
                 editBtn.style.display = 'block';
             }
+        }
+
+        // Đưa mọi thứ về trạng thái A=10, B=10 ban đầu
+        function resetToDefault() {
+            zoomScale = 1.0;
+            const container = document.getElementById('inputs-container');
+            container.innerHTML = `
+                <div class="input-row">
+                    <input type="text" class="label-input" placeholder="Tên" value="A">
+                    <input type="number" class="val-input" placeholder="Số" value="10" max="100">
+                </div>
+                <div class="input-row">
+                    <input type="text" class="label-input" placeholder="Tên" value="B">
+                    <input type="number" class="val-input" placeholder="Số" value="10" max="100">
+                </div>
+            `;
+            generateChart();
         }
 
         function generateChart() {
@@ -159,14 +340,14 @@
             const playgroundHeight = playground.clientHeight;
             const playgroundWidth = playground.clientWidth;
             const targetMaxHeight = playgroundHeight * 0.5;
-            const scaleRatio = targetMaxHeight / maxVal; 
+            baseScaleRatio = targetMaxHeight / maxVal; 
 
             const totalGroupWidth = data.length * BAR_WIDTH + (data.length - 1) * BAR_GAP;
             let startPos = Math.max(15, (playgroundWidth - totalGroupWidth) / 2);
             const baselineY = playgroundHeight - 50; 
 
             data.forEach((item, index) => {
-                const heightPx = item.val * scaleRatio;
+                const heightPx = item.val * baseScaleRatio * zoomScale;
                 const color = colors[index % colors.length];
 
                 const barContainer = document.createElement('div');
@@ -215,29 +396,20 @@
             updateLabelPlacements();
         }
 
+        // Cập nhật lại chiều cao khi Zoom hoặc Sửa số (Mặt bằng 0 luôn cố định)
         function updateAllBarHeights() {
             const playground = document.getElementById('playground');
             const containers = document.querySelectorAll('.bar-container');
             if (containers.length === 0) return;
 
-            let maxVal = 0;
-            containers.forEach(c => {
-                const v = parseInt(c.dataset.val) || 0;
-                if (v > maxVal) maxVal = v;
-            });
-            if (maxVal <= 0) maxVal = 1;
-
             const playgroundHeight = playground.clientHeight;
-            const targetMaxHeight = playgroundHeight * 0.5;
-            const scaleRatio = targetMaxHeight / maxVal;
+            const baselineY = playgroundHeight - 50;
 
             containers.forEach(c => {
                 const val = parseInt(c.dataset.val) || 0;
-                const oldBottom = c.offsetTop + c.offsetHeight;
-                const newHeight = Math.max(20, val * scaleRatio);
-
+                const newHeight = Math.max(20, val * baseScaleRatio * zoomScale);
                 c.style.height = newHeight + 'px';
-                c.style.top = (oldBottom - newHeight) + 'px';
+                c.style.top = (baselineY - newHeight) + 'px'; // Neo chặt đáy vào baseline 0
             });
 
             checkIntersections();
@@ -263,11 +435,23 @@
                     if (num > 100) num = 100;
                     element.innerText = num;
                     container.dataset.val = num;
+                    
+                    // Tính lại baseScaleRatio theo giá trị lớn nhất mới
+                    const containers = document.querySelectorAll('.bar-container');
+                    let maxVal = 0;
+                    containers.forEach(c => {
+                        const v = parseInt(c.dataset.val) || 0;
+                        if (v > maxVal) maxVal = v;
+                    });
+                    const playgroundHeight = document.getElementById('playground').clientHeight;
+                    baseScaleRatio = (playgroundHeight * 0.5) / (maxVal || 1);
+                    
                     updateAllBarHeights();
                 });
             }
         }
 
+        // === XỬ LÝ KÉO THẢ 1 NGÓN TAY ===
         function addDragEvents(el) {
             el.addEventListener('touchstart', dragStart, {passive: false});
             el.addEventListener('mousedown', dragStart);
@@ -275,12 +459,21 @@
 
         function dragStart(e) {
             if (e.target.isContentEditable) return;
-            if (e.type === "touchstart") { startX = e.touches[0].clientX; startY = e.touches[0].clientY; } 
-            else { startX = e.clientX; startY = e.clientY; e.preventDefault(); }
+            if (e.touches && e.touches.length > 1) return; // Nhường cho pinch zoom
+
+            if (e.type === "touchstart") { 
+                startX = e.touches[0].clientX; 
+                startY = e.touches[0].clientY; 
+            } else { 
+                startX = e.clientX; 
+                startY = e.clientY; 
+                e.preventDefault(); 
+            }
             activeElement = this;
             initialLeft = activeElement.offsetLeft;
             initialTop = activeElement.offsetTop;
             activeElement.style.zIndex = 10; 
+
             document.addEventListener('touchmove', dragMove, {passive: false});
             document.addEventListener('touchend', dragEnd);
             document.addEventListener('mousemove', dragMove);
@@ -289,10 +482,17 @@
 
         function dragMove(e) {
             if (!activeElement) return;
+            if (e.touches && e.touches.length > 1) return; 
             e.preventDefault(); 
+
             let currentX, currentY;
-            if (e.type === "touchmove") { currentX = e.touches[0].clientX; currentY = e.touches[0].clientY; } 
-            else { currentX = e.clientX; currentY = e.clientY; }
+            if (e.type === "touchmove") { 
+                currentX = e.touches[0].clientX; 
+                currentY = e.touches[0].clientY; 
+            } else { 
+                currentX = e.clientX; 
+                currentY = e.clientY; 
+            }
 
             const dx = currentX - startX;
             const dy = currentY - startY;
@@ -336,6 +536,52 @@
             document.removeEventListener('mousemove', dragMove);
             document.removeEventListener('mouseup', dragEnd);
         }
+
+        // === XỬ LÝ PINCH TO ZOOM 2 NGÓN TAY TRÊN PLAYGROUND ===
+        const playground = document.getElementById('playground');
+
+        playground.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                // Hủy kéo thả đơn nếu đang chạm ngón thứ 2
+                if (activeElement) {
+                    activeElement.style.zIndex = 1;
+                    activeElement = null;
+                }
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                startZoomScale = zoomScale;
+            }
+        }, { passive: false });
+
+        playground.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && initialPinchDistance) {
+                e.preventDefault();
+                const currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const factor = currentDistance / initialPinchDistance;
+                // Giới hạn tỉ lệ zoom từ 0.3x đến 3.0x
+                zoomScale = Math.min(Math.max(startZoomScale * factor, 0.3), 3.0);
+                updateAllBarHeights();
+            }
+        }, { passive: false });
+
+        playground.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                initialPinchDistance = null;
+            }
+        });
+
+        // Hỗ trợ cả lăn chuột (Wheel) trên máy tính để test zoom
+        playground.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            zoomScale = Math.min(Math.max(zoomScale * delta, 0.3), 3.0);
+            updateAllBarHeights();
+        }, { passive: false });
 
         function updateLabelPlacements() {
             const containers = Array.from(document.querySelectorAll('.bar-container'));
