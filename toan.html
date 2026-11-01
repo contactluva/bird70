@@ -222,7 +222,6 @@
             border-bottom: 2px solid #888888;
         }
 
-        /* Label mới thêm có nền vàng nhạt */
         .bracket-content {
             position: absolute;
             top: 50%;
@@ -230,16 +229,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #fff9db !important; /* Vàng nhạt */
+            background: #fff9db !important;
             padding: 4px 10px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 1px solid #ffe066;
             white-space: nowrap;
+            cursor: pointer;
         }
         .bracket-content .bar-label-text {
             background: transparent !important;
-            color: #222; /* Màu cam nâu dịu mắt trên nền vàng */
+            color: #d97706;
         }
         .bracket-content .bar-val-text {
             color: #b45309;
@@ -251,12 +251,16 @@
             right: calc(100% + 6px);
         }
 
+        /* Nút đổi chiều [ ] và nút xóa: ẨN MẶC ĐỊNH */
         .bracket-actions {
             position: absolute;
             top: -26px;
-            display: flex;
+            display: none;
             gap: 6px;
             pointer-events: auto;
+        }
+        .bracket-measure-box.active .bracket-actions {
+            display: flex;
         }
         .bracket-measure-box.bracket-right .bracket-actions { right: 0; }
         .bracket-measure-box.bracket-left .bracket-actions { left: 0; }
@@ -265,7 +269,7 @@
             background: rgba(255,255,255,0.9);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(0,0,0,0.12);
-            color: #c2c2c2;
+            color: #444;
             border-radius: 12px;
             font-size: 13px;
             font-weight: 700;
@@ -285,6 +289,7 @@
             font-size: 14px;
         }
 
+        /* CÁC CHẤM TRÒN: ẨN MẶC ĐỊNH, CHỈ HIỆN KHI CÓ CLASS .active */
         .resize-handle {
             position: absolute;
             width: 14px;
@@ -293,7 +298,12 @@
             border: 1.5px solid #777;
             border-radius: 50%;
             z-index: 5;
+            display: none;
         }
+        .bracket-measure-box.active .resize-handle {
+            display: block;
+        }
+
         .handle-top { top: -7px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
         .handle-bottom { bottom: -7px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
         .handle-left { left: -7px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
@@ -500,11 +510,15 @@
             generateChart();
         }
 
-        // TẠO THƯỚC ĐO NGOẶC VUÔNG
         function addBracketMeasure() {
             const playground = document.getElementById('playground');
+            
+            // Bỏ chọn tất cả khung khác trước khi thêm mới
+            document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
+
             const box = document.createElement('div');
-            box.className = 'bracket-measure-box bracket-right';
+            // Mặc định thêm class 'active' để khi vừa tạo ra người dùng có thể chỉnh sửa kích thước ngay
+            box.className = 'bracket-measure-box bracket-right active';
 
             const initLeft = (playground.clientWidth / 2) - 40;
             const initTop = (playground.clientHeight / 2) - 80;
@@ -526,6 +540,20 @@
                 <div class="resize-handle handle-left" data-handle="left"></div>
                 <div class="resize-handle handle-right" data-handle="right"></div>
             `;
+
+            // Bấm vào khung đo hoặc thẻ label sẽ kích hoạt hiển thị các chấm tròn
+            box.addEventListener('mousedown', (e) => {
+                if (!box.classList.contains('active')) {
+                    document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
+                    box.classList.add('active');
+                }
+            });
+            box.addEventListener('touchstart', (e) => {
+                if (!box.classList.contains('active')) {
+                    document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
+                    box.classList.add('active');
+                }
+            }, { passive: true });
 
             const editables = box.querySelectorAll('.editable');
             editables.forEach(el => {
@@ -557,14 +585,10 @@
             }
         }
 
-        // HÀM BẮT ĐIỂM (SNAPPING) CHO ĐẦU NGOẶC VỚI ĐỈNH/ĐÁY CỘT
         function snapBracketTips(box, targetLeft, targetTop, targetWidth, targetHeight) {
             const bars = document.querySelectorAll('.bar-container');
             const isBracketRight = box.classList.contains('bracket-right');
 
-            // Mép mở của ngoặc (đầu ngoặc đối diện lưng/label)
-            // Nếu là bracket-right ] -> Lưng bên phải, đầu mở nằm bên TRÁI
-            // Nếu là bracket-left [  -> Lưng bên trái, đầu mở nằm bên PHẢI
             const tipX = isBracketRight ? targetLeft : (targetLeft + targetWidth);
             const tipTopY = targetTop;
             const tipBottomY = targetTop + targetHeight;
@@ -579,23 +603,18 @@
                 const bTop = bar.offsetTop;
                 const bBottom = bTop + bar.offsetHeight;
 
-                // 1. Bắt dính mép ngang (X): Đầu ngoặc hít vào mép trái hoặc mép phải của cột
                 if (Math.abs(tipX - bLeft) < SNAP_THRESHOLD) {
                     resultLeft = isBracketRight ? bLeft : (bLeft - targetWidth);
                 } else if (Math.abs(tipX - bRight) < SNAP_THRESHOLD) {
                     resultLeft = isBracketRight ? bRight : (bRight - targetWidth);
                 }
 
-                // 2. Bắt dính mép dọc (Y):
-                // Đầu trên ngoặc hít vào đỉnh cột
                 if (Math.abs(tipTopY - bTop) < SNAP_THRESHOLD) {
                     resultTop = bTop;
                 }
-                // Đầu dưới ngoặc hít vào đáy cột
                 if (Math.abs(tipBottomY - bBottom) < SNAP_THRESHOLD) {
                     resultTop = bBottom - targetHeight;
                 }
-                // Đầu dưới ngoặc hít vào đỉnh cột (dành cho đo đoạn chồng phía trên)
                 if (Math.abs(tipBottomY - bTop) < SNAP_THRESHOLD) {
                     resultTop = bTop - targetHeight;
                 }
@@ -604,7 +623,6 @@
             return { left: resultLeft, top: resultTop, width: targetWidth, height: resultHeight };
         }
 
-        // KÉO DÀI / RỘNG VÀ BẮT ĐIỂM KHI RESIZE
         function setupResizeEvents(box) {
             const handles = box.querySelectorAll('.resize-handle');
             handles.forEach(handle => {
@@ -642,7 +660,6 @@
                             newL = initialLeft + (initialWidth - newW);
                         }
 
-                        // Kiểm tra bắt điểm đầu ngoặc khi co giãn chiều cao
                         const bars = document.querySelectorAll('.bar-container');
                         for (let bar of bars) {
                             const bTop = bar.offsetTop;
@@ -872,7 +889,6 @@
                 checkIntersections();
                 updateLabelPlacements();
             } else if (activeElement.classList.contains('bracket-measure-box')) {
-                // Tự động bắt dính đầu ngoặc vuông vào các cột
                 const snapped = snapBracketTips(
                     activeElement, 
                     newLeft, 
@@ -981,6 +997,13 @@
                 }
             }
         }
+
+        // Bấm ra ngoài khoảng trống màn hình sẽ ẩn các chấm tròn
+        document.getElementById('playground').addEventListener('click', (e) => {
+            if (!e.target.closest('.bracket-measure-box')) {
+                document.querySelectorAll('.bracket-measure-box').forEach(el => el.classList.remove('active'));
+            }
+        });
 
         window.onload = function() {
             setupStandalonePWA();
