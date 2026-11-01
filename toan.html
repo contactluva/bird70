@@ -44,6 +44,29 @@
             cursor: pointer;
         }
 
+        /* Nút (+) cố định ở giữa mép trên màn hình để thêm nhãn tự do */
+        #add-floating-btn {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            background: #27ae60;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Nút menu mở dashboard ở góc trên bên phải */
         #edit-btn { 
             position: absolute; 
             top: 10px; 
@@ -58,6 +81,37 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
             border: none;
             cursor: pointer;
+        }
+
+        /* Cụm nút Zoom In (+) và Zoom Out (-) ở góc dưới cùng bên trái */
+        #zoom-controls {
+            position: absolute;
+            bottom: 60px;
+            left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+        .zoom-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #2c3e50;
+            border: 2px solid #bdc3c7;
+            font-size: 24px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+            cursor: pointer;
+            user-select: none;
+        }
+        .zoom-btn:active {
+            background: #ecf0f1;
+            transform: scale(0.92);
         }
 
         #controls { 
@@ -94,7 +148,6 @@
             height: 100%; 
         }
         
-        /* Mặt bằng 0 luôn cố định cách đáy 50px */
         #baseline { 
             position: absolute; 
             bottom: 50px; 
@@ -142,6 +195,40 @@
             transform: none; 
             align-items: flex-end; 
             padding-bottom: 0; 
+        }
+
+        .floating-label-item {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            border: 2px solid #3498db;
+            cursor: grab;
+            user-select: none;
+            z-index: 50;
+            white-space: nowrap;
+        }
+        .floating-label-item:active { cursor: grabbing; }
+        .floating-close-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            border: none;
         }
 
         .editable { 
@@ -204,7 +291,14 @@
 <body>
 
     <button id="reset-btn" onclick="resetToDefault()">🔄 Reset</button>
+    <button id="add-floating-btn" onclick="addFloatingLabel()">+</button>
     <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột</button>
+
+    <!-- Nút Zoom In (+) và Zoom Out (-) ở góc dưới trái -->
+    <div id="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()" title="Phóng to">+</button>
+        <button class="zoom-btn" onclick="zoomOut()" title="Thu nhỏ">−</button>
+    </div>
 
     <div id="controls" class="hidden">
         <h2>Bài toán cộng trừ lớp 2</h2>
@@ -257,13 +351,21 @@
         const BAR_WIDTH = 75;
         const BAR_GAP = 50;
 
-        // Biến kiểm soát tỉ lệ thu phóng (Pinch Zoom)
         let zoomScale = 1.0; 
         let baseScaleRatio = 1.0; 
-        let initialPinchDistance = null;
-        let startZoomScale = 1.0;
+        let floatingCount = 0;
 
-        // Hàm lấy ký tự chữ cái tiếp theo (A -> B -> C -> ...)
+        // Xử lý nút Zoom In (+) và Zoom Out (-)
+        function zoomIn() {
+            zoomScale = Math.min(zoomScale + 0.15, 3.0);
+            updateAllBarHeights();
+        }
+
+        function zoomOut() {
+            zoomScale = Math.max(zoomScale - 0.15, 0.3);
+            updateAllBarHeights();
+        }
+
         function getNextLabel() {
             const inputs = document.querySelectorAll('.label-input');
             return String.fromCharCode(65 + inputs.length);
@@ -290,9 +392,9 @@
             }
         }
 
-        // Đưa mọi thứ về trạng thái A=10, B=10 ban đầu
         function resetToDefault() {
             zoomScale = 1.0;
+            floatingCount = 0;
             const container = document.getElementById('inputs-container');
             container.innerHTML = `
                 <div class="input-row">
@@ -305,6 +407,45 @@
                 </div>
             `;
             generateChart();
+        }
+
+        function addFloatingLabel() {
+            const playground = document.getElementById('playground');
+            const item = document.createElement('div');
+            item.className = 'floating-label-item';
+
+            let labelName = 'X';
+            if (floatingCount === 1) labelName = 'Y';
+            else if (floatingCount === 2) labelName = 'Z';
+            else if (floatingCount > 2) labelName = 'X' + (floatingCount - 2);
+            floatingCount++;
+
+            const initLeft = (playground.clientWidth / 2) - 45 + (floatingCount * 10);
+            const initTop = 80 + (floatingCount * 10);
+            item.style.left = initLeft + 'px';
+            item.style.top = initTop + 'px';
+
+            item.innerHTML = `
+                <button class="floating-close-btn" onclick="this.parentElement.remove()">×</button>
+                <div class="bar-label-text editable" contenteditable="true">${labelName}</div>
+                <div class="bar-val-text editable" contenteditable="true">10</div>
+            `;
+
+            const editables = item.querySelectorAll('.editable');
+            editables.forEach(el => {
+                const stopProp = (e) => e.stopPropagation();
+                el.addEventListener('mousedown', stopProp);
+                el.addEventListener('touchstart', stopProp, { passive: true });
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        el.blur();
+                    }
+                });
+            });
+
+            addDragEvents(item);
+            playground.appendChild(item);
         }
 
         function generateChart() {
@@ -396,7 +537,6 @@
             updateLabelPlacements();
         }
 
-        // Cập nhật lại chiều cao khi Zoom hoặc Sửa số (Mặt bằng 0 luôn cố định)
         function updateAllBarHeights() {
             const playground = document.getElementById('playground');
             const containers = document.querySelectorAll('.bar-container');
@@ -409,7 +549,7 @@
                 const val = parseInt(c.dataset.val) || 0;
                 const newHeight = Math.max(20, val * baseScaleRatio * zoomScale);
                 c.style.height = newHeight + 'px';
-                c.style.top = (baselineY - newHeight) + 'px'; // Neo chặt đáy vào baseline 0
+                c.style.top = (baselineY - newHeight) + 'px';
             });
 
             checkIntersections();
@@ -436,7 +576,6 @@
                     element.innerText = num;
                     container.dataset.val = num;
                     
-                    // Tính lại baseScaleRatio theo giá trị lớn nhất mới
                     const containers = document.querySelectorAll('.bar-container');
                     let maxVal = 0;
                     containers.forEach(c => {
@@ -451,15 +590,13 @@
             }
         }
 
-        // === XỬ LÝ KÉO THẢ 1 NGÓN TAY ===
         function addDragEvents(el) {
             el.addEventListener('touchstart', dragStart, {passive: false});
             el.addEventListener('mousedown', dragStart);
         }
 
         function dragStart(e) {
-            if (e.target.isContentEditable) return;
-            if (e.touches && e.touches.length > 1) return; // Nhường cho pinch zoom
+            if (e.target.isContentEditable || e.target.classList.contains('floating-close-btn')) return;
 
             if (e.type === "touchstart") { 
                 startX = e.touches[0].clientX; 
@@ -472,7 +609,7 @@
             activeElement = this;
             initialLeft = activeElement.offsetLeft;
             initialTop = activeElement.offsetTop;
-            activeElement.style.zIndex = 10; 
+            activeElement.style.zIndex = 200; 
 
             document.addEventListener('touchmove', dragMove, {passive: false});
             document.addEventListener('touchend', dragEnd);
@@ -482,7 +619,6 @@
 
         function dragMove(e) {
             if (!activeElement) return;
-            if (e.touches && e.touches.length > 1) return; 
             e.preventDefault(); 
 
             let currentX, currentY;
@@ -500,88 +636,46 @@
             let newLeft = initialLeft + dx;
             let newTop = initialTop + dy;
 
-            const activeHeight = activeElement.offsetHeight;
-            const otherBars = document.querySelectorAll('.bar-container');
-            
-            for (let other of otherBars) {
-                if (other === activeElement) continue;
-                const otherLeft = other.offsetLeft;
-                const otherTop = other.offsetTop;
-                const otherBottom = otherTop + other.offsetHeight;
-                const activeBottom = newTop + activeHeight;
+            if (activeElement.classList.contains('bar-container')) {
+                const activeHeight = activeElement.offsetHeight;
+                const otherBars = document.querySelectorAll('.bar-container');
+                
+                for (let other of otherBars) {
+                    if (other === activeElement) continue;
+                    const otherLeft = other.offsetLeft;
+                    const otherTop = other.offsetTop;
+                    const otherBottom = otherTop + other.offsetHeight;
+                    const activeBottom = newTop + activeHeight;
 
-                if (Math.abs(newLeft - otherLeft) < SNAP_THRESHOLD) newLeft = otherLeft;
-                if (Math.abs(activeBottom - otherBottom) < SNAP_THRESHOLD) newTop = otherBottom - activeHeight;
-                else if (Math.abs(newTop - otherTop) < SNAP_THRESHOLD) newTop = otherTop;
-                else if (Math.abs(activeBottom - otherTop) < SNAP_THRESHOLD) newTop = otherTop - activeHeight;
-                else if (Math.abs(newTop - otherBottom) < SNAP_THRESHOLD) newTop = otherBottom;
+                    if (Math.abs(newLeft - otherLeft) < SNAP_THRESHOLD) newLeft = otherLeft;
+                    if (Math.abs(activeBottom - otherBottom) < SNAP_THRESHOLD) newTop = otherBottom - activeHeight;
+                    else if (Math.abs(newTop - otherTop) < SNAP_THRESHOLD) newTop = otherTop;
+                    else if (Math.abs(activeBottom - otherTop) < SNAP_THRESHOLD) newTop = otherTop - activeHeight;
+                    else if (Math.abs(newTop - otherBottom) < SNAP_THRESHOLD) newTop = otherBottom;
+                }
+
+                const playgroundHeight = document.getElementById('playground').clientHeight;
+                const baselineY = playgroundHeight - 50;
+                if (Math.abs((newTop + activeHeight) - baselineY) < SNAP_THRESHOLD) newTop = baselineY - activeHeight;
+
+                checkIntersections();
+                updateLabelPlacements();
             }
-
-            const playgroundHeight = document.getElementById('playground').clientHeight;
-            const baselineY = playgroundHeight - 50;
-            if (Math.abs((newTop + activeHeight) - baselineY) < SNAP_THRESHOLD) newTop = baselineY - activeHeight;
 
             activeElement.style.left = newLeft + 'px';
             activeElement.style.top = newTop + 'px';
-
-            checkIntersections();
-            updateLabelPlacements();
         }
 
         function dragEnd() {
-            if (activeElement) activeElement.style.zIndex = 1;
+            if (activeElement) {
+                activeElement.style.zIndex = activeElement.classList.contains('floating-label-item') ? 50 : 1;
+            }
             activeElement = null;
             document.removeEventListener('touchmove', dragMove);
             document.removeEventListener('touchend', dragEnd);
             document.removeEventListener('mousemove', dragMove);
             document.removeEventListener('mouseup', dragEnd);
         }
-
-        // === XỬ LÝ PINCH TO ZOOM 2 NGÓN TAY TRÊN PLAYGROUND ===
-        const playground = document.getElementById('playground');
-
-        playground.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                // Hủy kéo thả đơn nếu đang chạm ngón thứ 2
-                if (activeElement) {
-                    activeElement.style.zIndex = 1;
-                    activeElement = null;
-                }
-                initialPinchDistance = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                startZoomScale = zoomScale;
-            }
-        }, { passive: false });
-
-        playground.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2 && initialPinchDistance) {
-                e.preventDefault();
-                const currentDistance = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                const factor = currentDistance / initialPinchDistance;
-                // Giới hạn tỉ lệ zoom từ 0.3x đến 3.0x
-                zoomScale = Math.min(Math.max(startZoomScale * factor, 0.3), 3.0);
-                updateAllBarHeights();
-            }
-        }, { passive: false });
-
-        playground.addEventListener('touchend', (e) => {
-            if (e.touches.length < 2) {
-                initialPinchDistance = null;
-            }
-        });
-
-        // Hỗ trợ cả lăn chuột (Wheel) trên máy tính để test zoom
-        playground.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            zoomScale = Math.min(Math.max(zoomScale * delta, 0.3), 3.0);
-            updateAllBarHeights();
-        }, { passive: false });
 
         function updateLabelPlacements() {
             const containers = Array.from(document.querySelectorAll('.bar-container'));
