@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Biểu đồ Toán lớp 2 - Tự động né chữ</title>
+    <title>Biểu đồ Toán lớp 2</title>
+
+    <!-- Khai báo PWA & Icon -->
+    <meta name="theme-color" content="#2ecc71">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/jpeg" href="https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg">
+    <link rel="apple-touch-icon" href="https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg">
+
+    <!-- Web App Manifest nhúng trực tiếp bằng Base64 Data URI -->
+    <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22To%C3%A1n%20L%E1%BB%9Bp%202%22%2C%22short_name%22%3A%22ToanLop2%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4f4f9%22%2C%22theme_color%22%3A%22%232ecc71%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Ft4.ftcdn.net%2Fjpg%2F06%2F30%2F17%2F23%2F360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg%22%2C%22sizes%22%3A%22360x360%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,7 +74,20 @@
             color: white;
             padding: 10px 15px;
             border-radius: 20px;
-            display: block; /* Hiện sẵn nút mở bảng điều khiển khi cần */
+            display: block;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #pwa-install-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+            background: #27ae60;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: none;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
@@ -197,9 +222,9 @@
 </head>
 <body>
 
+    <button id="pwa-install-btn" onclick="installApp()">📲 Cài đặt App</button>
     <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột mới</button>
 
-    <!-- Ẩn ngay từ đầu bằng class="hidden" -->
     <div id="controls" class="hidden">
         <h2>Bài toán cộng trừ lớp 2</h2>
         
@@ -230,6 +255,51 @@
     <div id="playground"></div>
 
     <script>
+        // === KHỞI TẠO SERVICE WORKER CHO PWA ===
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', (e) => {
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', (e) => {
+                    e.waitUntil(clients.claim());
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(fetch(e.request).catch(() => new Response('Offline')));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(console.error);
+        }
+
+        // Bắt sự kiện cài đặt của Chrome
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwa-install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        installBtn.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+            deferredPrompt = null;
+        });
+
+        // === LOGIC BIỂU ĐỒ ===
         const colors = ['#e74c3c', '#9b59b6', '#f1c40f', '#e67e22', '#1abc9c', '#34495e'];
         let activeElement = null;
         let startX, startY, initialLeft, initialTop;
@@ -402,7 +472,6 @@
             }
         }
 
-        // === XỬ LÝ KÉO THẢ & BẮT ĐIỂM ===
         function addDragEvents(el) {
             el.addEventListener('touchstart', dragStart, {passive: false});
             el.addEventListener('mousedown', dragStart);
@@ -597,7 +666,6 @@
             }
         }
 
-        // Tự động khởi tạo và vẽ biểu đồ ngay khi trang load xong
         window.onload = function() {
             generateChart();
         };
