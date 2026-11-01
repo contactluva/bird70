@@ -5,229 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Biểu đồ Toán lớp 2</title>
 
-    <!-- Khai báo PWA & Icon -->
+    <!-- Khai báo Web App cho iOS và Android -->
     <meta name="theme-color" content="#2ecc71">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/jpeg" href="https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg">
     <link rel="apple-touch-icon" href="https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg">
-
-    <!-- Web App Manifest nhúng trực tiếp bằng Base64 Data URI -->
-    <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22To%C3%A1n%20L%E1%BB%9Bp%202%22%2C%22short_name%22%3A%22ToanLop2%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4f4f9%22%2C%22theme_color%22%3A%22%232ecc71%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Ft4.ftcdn.net%2Fjpg%2F06%2F30%2F17%2F23%2F360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg%22%2C%22sizes%22%3A%22360x360%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
+    
+    <!-- Link Manifest sẽ được JS tự động tạo để chống lỗi Page doesn't exist -->
+    <link id="manifest-link" rel="manifest" href="">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-        #controls {
-            padding: 15px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            transition: transform 0.3s ease;
-            max-height: 50vh;
-            overflow-y: auto;
-        }
-        #controls.hidden {
-            transform: translateY(-100%);
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; }
+        #controls { padding: 15px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000; position: absolute; top: 0; left: 0; right: 0; transition: transform 0.3s ease; max-height: 50vh; overflow-y: auto; }
+        #controls.hidden { transform: translateY(-100%); }
         h2 { margin: 0 0 10px 0; font-size: 18px; color: #333; }
         .form-group { margin-bottom: 10px; }
         .input-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
-        input, select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
         .val-input { width: 60px; }
         .label-input { flex: 1; }
-        button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        button { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .btn-add { background: #3498db; color: white; }
         .btn-submit { background: #2ecc71; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 5px; }
+        #edit-btn { position: absolute; top: 10px; right: 10px; z-index: 999; background: #f39c12; color: white; padding: 10px 15px; border-radius: 20px; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #playground { flex: 1; position: relative; background: #e9ecef; touch-action: none; overflow: hidden; width: 100%; height: 100%; }
+        #baseline { position: absolute; bottom: 50px; left: 0; right: 0; height: 2px; background-color: #7f8c8d; z-index: 0; }
         
-        #edit-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 999;
-            background: #f39c12;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            display: block;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        #pwa-install-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 999;
-            background: #27ae60;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        #playground {
-            flex: 1;
-            position: relative;
-            background: #e9ecef;
-            touch-action: none; 
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-
-        #baseline {
-            position: absolute;
-            bottom: 50px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #7f8c8d;
-            z-index: 0;
-        }
-
-        .bar-container {
-            position: absolute;
-            cursor: grab;
-            width: 75px;
-        }
+        .bar-container { position: absolute; cursor: grab; width: 75px; }
         .bar-container:active { cursor: grabbing; }
-
-        .bar-header {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 8px;
-            white-space: nowrap;
-            user-select: none;
-            transition: left 0.15s ease, right 0.15s ease, transform 0.15s ease;
-            pointer-events: auto;
-        }
-
-        .bar-header.displaced-right {
-            bottom: auto;
-            top: 0;
-            left: calc(100% + 8px);
-            transform: none;
-            align-items: flex-start;
-            padding-bottom: 0;
-        }
-
-        .bar-header.displaced-left {
-            bottom: auto;
-            top: 0;
-            left: auto;
-            right: calc(100% + 8px);
-            transform: none;
-            align-items: flex-end;
-            padding-bottom: 0;
-        }
-
-        .editable {
-            cursor: text;
-            outline: none;
-            border-radius: 6px;
-            border: 2px dashed transparent;
-            padding: 2px 6px;
-            transition: all 0.2s;
-        }
-        .editable:hover {
-            border-color: #999;
-            background: rgba(255,255,255,0.9);
-        }
-        .editable:focus {
-            border-color: #2980b9;
-            background: #fff;
-            box-shadow: 0 0 6px rgba(41, 128, 185, 0.5);
-            z-index: 1000;
-        }
-
-        .bar-label-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #222;
-            margin-bottom: 2px;
-            background: rgba(255,255,255,0.85);
-            line-height: 1.1;
-        }
-        .bar-val-text {
-            font-size: 52px;
-            font-weight: 900;
-            color: black;
-            line-height: 1;
-            text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px 2px 0 #fff, -2px 2px 0 #fff; 
-        }
-
-        .bar-value {
-            width: 100%;
-            height: 100%;
-            border-radius: 4px 4px 0 0;
-            box-sizing: border-box;
-            border: 1px solid rgba(0,0,0,0.15);
-            border-bottom: 2px solid #222;
-            position: relative;
-        }
-
-        .intersection {
-            position: absolute;
-            background-color: #003300; 
-            pointer-events: none;
-            z-index: 100;
-            opacity: 0.85;
-            border: 2px dashed #fff;
-            box-sizing: border-box;
-        }
-
-        .snap-point {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 50%;
-            pointer-events: none;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+        .bar-header { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; padding-bottom: 8px; white-space: nowrap; user-select: none; transition: left 0.15s ease, right 0.15s ease, transform 0.15s ease; pointer-events: auto; }
+        .bar-header.displaced-right { bottom: auto; top: 0; left: calc(100% + 8px); transform: none; align-items: flex-start; padding-bottom: 0; }
+        .bar-header.displaced-left { bottom: auto; top: 0; left: auto; right: calc(100% + 8px); transform: none; align-items: flex-end; padding-bottom: 0; }
+        .editable { cursor: text; outline: none; border-radius: 6px; border: 2px dashed transparent; padding: 2px 6px; transition: all 0.2s; }
+        .editable:hover { border-color: #999; background: rgba(255,255,255,0.9); }
+        .editable:focus { border-color: #2980b9; background: #fff; box-shadow: 0 0 6px rgba(41, 128, 185, 0.5); z-index: 1000; }
+        .bar-label-text { font-size: 28px; font-weight: bold; color: #222; margin-bottom: 2px; background: rgba(255,255,255,0.85); line-height: 1.1; }
+        .bar-val-text { font-size: 52px; font-weight: 900; color: black; line-height: 1; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px 2px 0 #fff, -2px 2px 0 #fff; }
+        .bar-value { width: 100%; height: 100%; border-radius: 4px 4px 0 0; box-sizing: border-box; border: 1px solid rgba(0,0,0,0.15); border-bottom: 2px solid #222; position: relative; }
+        .intersection { position: absolute; background-color: #003300; pointer-events: none; z-index: 100; opacity: 0.85; border: 2px dashed #fff; box-sizing: border-box; }
+        .snap-point { position: absolute; width: 8px; height: 8px; background: rgba(0,0,0,0.4); border-radius: 50%; pointer-events: none; top: 5px; left: 50%; transform: translateX(-50%); }
     </style>
 </head>
 <body>
 
-    <button id="pwa-install-btn" onclick="installApp()">📲 Cài đặt App</button>
-    <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột mới</button>
+    <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột</button>
 
     <div id="controls" class="hidden">
         <h2>Bài toán cộng trừ lớp 2</h2>
-        
         <div class="form-group">
             <label>Chọn dạng bài:</label>
             <select id="chartType">
@@ -236,70 +62,43 @@
                 <option value="sosanh">3. Bài toán So sánh</option>
             </select>
         </div>
-
         <div id="inputs-container">
             <div class="input-row">
-                <input type="text" class="label-input" placeholder="Tên (VD: Cam)" value="Cam">
-                <input type="number" class="val-input" placeholder="Giá trị" value="50" max="100">
+                <input type="text" class="label-input" placeholder="Tên" value="Cam">
+                <input type="number" class="val-input" placeholder="Số" value="50" max="100">
             </div>
             <div class="input-row">
-                <input type="text" class="label-input" placeholder="Tên (VD: Táo)" value="Táo">
-                <input type="number" class="val-input" placeholder="Giá trị" value="20" max="100">
+                <input type="text" class="label-input" placeholder="Tên" value="Táo">
+                <input type="number" class="val-input" placeholder="Số" value="20" max="100">
             </div>
         </div>
-
         <button class="btn-add" onclick="addInputRow()">+ Thêm giá trị</button>
-        <button class="btn-submit" onclick="generateChart()">Tạo biểu đồ & Bắt đầu</button>
+        <button class="btn-submit" onclick="generateChart()">Tạo biểu đồ</button>
     </div>
 
     <div id="playground"></div>
 
     <script>
-        // === KHỞI TẠO SERVICE WORKER CHO PWA ===
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('install', (e) => {
-                    self.skipWaiting();
-                });
-                self.addEventListener('activate', (e) => {
-                    e.waitUntil(clients.claim());
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(fetch(e.request).catch(() => new Response('Offline')));
-                });
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(console.error);
+        // Tự động tạo cấu hình PWA nhúng trực tiếp vào trang để cài đặt độc lập
+        function setupStandalonePWA() {
+            const manifestJSON = {
+                "name": "Toán Lớp 2",
+                "short_name": "Toán",
+                "start_url": window.location.href, 
+                "display": "standalone",
+                "background_color": "#f4f4f9",
+                "theme_color": "#2ecc71",
+                "icons": [{
+                    "src": "https://t4.ftcdn.net/jpg/06/30/17/23/360_F_630172348_PdusiUUag4Lg0NZu5RossnhhnEHxI2jn.jpg",
+                    "sizes": "512x512",
+                    "type": "image/jpeg"
+                }]
+            };
+            const manifestStr = JSON.stringify(manifestJSON);
+            const manifestUrl = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(manifestStr);
+            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
         }
 
-        // Bắt sự kiện cài đặt của Chrome
-        let deferredPrompt;
-        const installBtn = document.getElementById('pwa-install-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        installBtn.style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        }
-
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-            deferredPrompt = null;
-        });
-
-        // === LOGIC BIỂU ĐỒ ===
         const colors = ['#e74c3c', '#9b59b6', '#f1c40f', '#e67e22', '#1abc9c', '#34495e'];
         let activeElement = null;
         let startX, startY, initialLeft, initialTop;
@@ -311,10 +110,7 @@
             const container = document.getElementById('inputs-container');
             const row = document.createElement('div');
             row.className = 'input-row';
-            row.innerHTML = `
-                <input type="text" class="label-input" placeholder="Tên cột">
-                <input type="number" class="val-input" placeholder="Số" max="100">
-            `;
+            row.innerHTML = `<input type="text" class="label-input" placeholder="Tên cột"><input type="number" class="val-input" placeholder="Số" max="100">`;
             container.appendChild(row);
         }
 
@@ -479,20 +275,12 @@
 
         function dragStart(e) {
             if (e.target.isContentEditable) return;
-
-            if (e.type === "touchstart") {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            } else {
-                startX = e.clientX;
-                startY = e.clientY;
-                e.preventDefault();
-            }
+            if (e.type === "touchstart") { startX = e.touches[0].clientX; startY = e.touches[0].clientY; } 
+            else { startX = e.clientX; startY = e.clientY; e.preventDefault(); }
             activeElement = this;
             initialLeft = activeElement.offsetLeft;
             initialTop = activeElement.offsetTop;
             activeElement.style.zIndex = 10; 
-
             document.addEventListener('touchmove', dragMove, {passive: false});
             document.addEventListener('touchend', dragEnd);
             document.addEventListener('mousemove', dragMove);
@@ -502,15 +290,9 @@
         function dragMove(e) {
             if (!activeElement) return;
             e.preventDefault(); 
-            
             let currentX, currentY;
-            if (e.type === "touchmove") {
-                currentX = e.touches[0].clientX;
-                currentY = e.touches[0].clientY;
-            } else {
-                currentX = e.clientX;
-                currentY = e.clientY;
-            }
+            if (e.type === "touchmove") { currentX = e.touches[0].clientX; currentY = e.touches[0].clientY; } 
+            else { currentX = e.clientX; currentY = e.clientY; }
 
             const dx = currentX - startX;
             const dy = currentY - startY;
@@ -523,32 +305,21 @@
             
             for (let other of otherBars) {
                 if (other === activeElement) continue;
-                
                 const otherLeft = other.offsetLeft;
                 const otherTop = other.offsetTop;
                 const otherBottom = otherTop + other.offsetHeight;
                 const activeBottom = newTop + activeHeight;
 
-                if (Math.abs(newLeft - otherLeft) < SNAP_THRESHOLD) {
-                    newLeft = otherLeft;
-                }
-
-                if (Math.abs(activeBottom - otherBottom) < SNAP_THRESHOLD) { 
-                    newTop = otherBottom - activeHeight;
-                } else if (Math.abs(newTop - otherTop) < SNAP_THRESHOLD) { 
-                    newTop = otherTop;
-                } else if (Math.abs(activeBottom - otherTop) < SNAP_THRESHOLD) { 
-                    newTop = otherTop - activeHeight;
-                } else if (Math.abs(newTop - otherBottom) < SNAP_THRESHOLD) { 
-                    newTop = otherBottom;
-                }
+                if (Math.abs(newLeft - otherLeft) < SNAP_THRESHOLD) newLeft = otherLeft;
+                if (Math.abs(activeBottom - otherBottom) < SNAP_THRESHOLD) newTop = otherBottom - activeHeight;
+                else if (Math.abs(newTop - otherTop) < SNAP_THRESHOLD) newTop = otherTop;
+                else if (Math.abs(activeBottom - otherTop) < SNAP_THRESHOLD) newTop = otherTop - activeHeight;
+                else if (Math.abs(newTop - otherBottom) < SNAP_THRESHOLD) newTop = otherBottom;
             }
 
             const playgroundHeight = document.getElementById('playground').clientHeight;
             const baselineY = playgroundHeight - 50;
-            if (Math.abs((newTop + activeHeight) - baselineY) < SNAP_THRESHOLD) {
-                newTop = baselineY - activeHeight;
-            }
+            if (Math.abs((newTop + activeHeight) - baselineY) < SNAP_THRESHOLD) newTop = baselineY - activeHeight;
 
             activeElement.style.left = newLeft + 'px';
             activeElement.style.top = newTop + 'px';
@@ -570,7 +341,6 @@
             const containers = Array.from(document.querySelectorAll('.bar-container'));
             const playground = document.getElementById('playground');
             const pgRect = playground.getBoundingClientRect();
-
             const sortedContainers = [...containers].sort((a, b) => a.offsetTop - b.offsetTop);
 
             containers.forEach(c => {
@@ -588,9 +358,7 @@
 
                 for (let other of containers) {
                     if (other === container) continue;
-                    const otherBar = other.querySelector('.bar-value');
-                    const otherRect = otherBar.getBoundingClientRect();
-
+                    const otherRect = other.querySelector('.bar-value').getBoundingClientRect();
                     const headerZoneTop = barValRect.top - 100;
                     const headerZoneBottom = barValRect.top + 5;
                     const headerZoneLeft = barValRect.left - 5;
@@ -599,25 +367,15 @@
                     const overlapX = Math.max(0, Math.min(headerZoneRight, otherRect.right) - Math.max(headerZoneLeft, otherRect.left));
                     const overlapY = Math.max(0, Math.min(headerZoneBottom, otherRect.bottom) - Math.max(headerZoneTop, otherRect.top));
 
-                    if (overlapX > 10 && overlapY > 10) {
-                        shouldDisplace = true;
-                        break;
-                    }
+                    if (overlapX > 10 && overlapY > 10) { shouldDisplace = true; break; }
                 }
 
                 if (!shouldDisplace) {
                     for (let j = 0; j < i; j++) {
-                        const higherContainer = sortedContainers[j];
-                        const higherHeader = higherContainer.querySelector('.bar-header');
-                        const higherRect = higherHeader.getBoundingClientRect();
-
+                        const higherRect = sortedContainers[j].querySelector('.bar-header').getBoundingClientRect();
                         const overlapX = Math.max(0, Math.min(headerRect.right, higherRect.right) - Math.max(headerRect.left, higherRect.left));
                         const overlapY = Math.max(0, Math.min(headerRect.bottom, higherRect.bottom) - Math.max(headerRect.top, higherRect.top));
-
-                        if (overlapX > 10 && overlapY > 10) {
-                            shouldDisplace = true;
-                            break;
-                        }
+                        if (overlapX > 10 && overlapY > 10) { shouldDisplace = true; break; }
                     }
                 }
 
@@ -636,16 +394,13 @@
         function checkIntersections() {
             const playground = document.getElementById('playground');
             const pgRect = playground.getBoundingClientRect();
-            
             document.querySelectorAll('.intersection').forEach(el => el.remove());
             
             const bars = Array.from(document.querySelectorAll('.bar-value'));
-            
             for(let i = 0; i < bars.length; i++) {
                 for(let j = i + 1; j < bars.length; j++) {
                     const rect1 = bars[i].getBoundingClientRect();
                     const rect2 = bars[j].getBoundingClientRect();
-                    
                     const overlapX = Math.max(0, Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left));
                     const overlapY = Math.max(0, Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top));
                     
@@ -659,7 +414,6 @@
                         intersection.style.top = interTop + 'px';
                         intersection.style.width = overlapX + 'px';
                         intersection.style.height = overlapY + 'px';
-                        
                         playground.appendChild(intersection);
                     }
                 }
@@ -667,6 +421,7 @@
         }
 
         window.onload = function() {
+            setupStandalonePWA();
             generateChart();
         };
     </script>
