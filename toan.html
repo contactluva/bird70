@@ -219,7 +219,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 1px solid #ffe066;
             white-space: nowrap;
-            cursor: pointer;
+            cursor: default;
         }
         .bracket-content .bar-label-text {
             background: transparent !important;
@@ -286,6 +286,41 @@
         .handle-left { left: -7px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
         .handle-right { right: -7px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
 
+        /* GIAO DIỆN EDITABLE & NÚT XÓA TO HƠN */
+        .editable-wrapper {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .clear-btn {
+            position: absolute;
+            left: calc(100% + 12px); /* Tăng lề để không đè vào chữ */
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px; /* Tăng từ 18px lên 50px */
+            height: 50px; 
+            font-size: 32px; /* Tăng cỡ chữ dấu X */
+            line-height: 50px;
+            text-align: center;
+            cursor: pointer;
+            display: none; 
+            z-index: 1001;
+            padding: 0;
+            font-weight: bold;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        .clear-btn:active {
+            transform: scale(0.9);
+        }
+        .editable-wrapper:focus-within .clear-btn {
+            display: block;
+        }
+
         .editable { 
             cursor: text; 
             outline: none; 
@@ -293,10 +328,19 @@
             border: 1px dashed transparent; 
             padding: 1px 4px; 
             transition: all 0.2s; 
+            min-width: 15px; 
         }
         .editable:hover { border-color: #aaa; background: rgba(255,255,255,0.9); }
         .editable:focus { border-color: #4a90e2; background: #fff; box-shadow: 0 0 6px rgba(74, 144, 226, 0.4); z-index: 1000; }
         
+        /* PLACEHOLDER KHI LABEL/SỐ RỖNG */
+        .editable:empty:before {
+            content: "-";
+            color: #888;
+            pointer-events: none;
+            text-shadow: none; 
+        }
+
         .bar-label-text { 
             font-weight: bold; 
             color: #222; 
@@ -346,7 +390,6 @@
     <button id="reset-btn" class="ios-blur-btn" onclick="initDefaultChart()">Đặt lại</button>
     <button id="add-floating-btn" onclick="addBracketMeasure()">+</button>
     
-    <!-- Thay nút Mở Bảng thành nút Thêm Cột trực tiếp -->
     <button id="add-col-btn" class="ios-blur-btn" onclick="addNewColumn()">Thêm cột</button>
 
     <div id="zoom-controls">
@@ -354,7 +397,6 @@
         <button class="zoom-btn ios-blur-btn" onclick="applyZoom(1 / 1.15)" title="Thu nhỏ">−</button>
     </div>
 
-    <!-- Playground chứa lớp viewport có thể Pan toàn bộ màn hình -->
     <div id="playground">
         <div id="viewport-layer"></div>
     </div>
@@ -389,7 +431,7 @@
 
         let zoomScale = 1.0; 
         let baseScaleRatio = 1.0; 
-        let barColorIndex = 0; // Đếm màu cột tự động xoay vòng
+        let barColorIndex = 0; 
 
         let panX = 0;
         let panY = 0;
@@ -402,7 +444,6 @@
             layer.style.transform = `translate(${panX}px, ${panY}px)`;
         }
 
-        // TÍNH LẠI CHIỀU CAO CÁC CỘT (khi thêm cột mới hoặc đổi số liệu)
         function updateAllBarHeights() {
             const containers = document.querySelectorAll('.bar-container');
             
@@ -418,7 +459,6 @@
 
             containers.forEach(c => {
                 const val = parseInt(c.dataset.val) || 0;
-                // Lấy tọa độ đáy hiện tại của cột trước khi đổi để ghim chặt đáy, cho cột dãn lên trên
                 const oldBottom = parseFloat(c.offsetTop) + parseFloat(c.offsetHeight);
                 const newHeight = Math.max(15, val * baseScaleRatio * zoomScale);
                 
@@ -429,7 +469,6 @@
             updateLabelPlacements();
         }
 
-        // HÀM ZOOM ĐỒNG BỘ TOÀN CỘT
         function applyZoom(factor) {
             const newScale = zoomScale * factor;
             if (newScale < 0.25 || newScale > 3.5) return;
@@ -440,14 +479,7 @@
             const baselineY = playground.clientHeight - 50;
             const containers = document.querySelectorAll('.bar-container');
 
-            let avgCenterX = 0;
-            if (containers.length > 0) {
-                let sumX = 0;
-                containers.forEach(c => {
-                    sumX += (parseFloat(c.offsetLeft) + parseFloat(c.offsetWidth) / 2);
-                });
-                avgCenterX = sumX / containers.length;
-            }
+            const pivotX = (playground.clientWidth / 2) - panX;
 
             const currentWidth = BASE_BAR_WIDTH * zoomScale;
             const labelFont = Math.max(12, Math.round(BASE_LABEL_FONT * zoomScale));
@@ -458,12 +490,20 @@
 
             containers.forEach(c => {
                 const val = parseInt(c.dataset.val) || 0;
-                const curLeft = parseFloat(c.offsetLeft);
+                const curLeft = parseFloat(c.style.left) || c.offsetLeft;
+                const curTop = parseFloat(c.style.top) || c.offsetTop;
+                const curH = parseFloat(c.style.height) || c.offsetHeight;
                 
-                const distFromCenterX = curLeft - avgCenterX;
-                const newLeft = avgCenterX + (distFromCenterX * factor);
+                const distFromCenterX = curLeft - pivotX;
+                const newLeft = pivotX + (distFromCenterX * factor);
+                
+                const curBottom = curTop + curH;
+                const distFromBaseline = baselineY - curBottom;
+                const newDistFromBaseline = distFromBaseline * factor;
+                const newBottom = baselineY - newDistFromBaseline;
+                
                 const newH = Math.max(15, val * baseScaleRatio * zoomScale);
-                const newTop = baselineY - newH; // Đưa về dính chặt baseline
+                const newTop = newBottom - newH;
 
                 c.style.width = currentWidth + 'px';
                 c.style.height = newH + 'px';
@@ -471,18 +511,17 @@
                 c.style.left = newLeft + 'px';
             });
 
-            // Đồng bộ zoom cho các khung đo
             const brackets = document.querySelectorAll('.bracket-measure-box');
             brackets.forEach(b => {
-                const curLeft = parseFloat(b.offsetLeft);
-                const curTop = parseFloat(b.offsetTop);
-                const curW = parseFloat(b.offsetWidth);
-                const curH = parseFloat(b.offsetHeight);
+                const curLeft = parseFloat(b.style.left) || b.offsetLeft;
+                const curTop = parseFloat(b.style.top) || b.offsetTop;
+                const curW = parseFloat(b.style.width) || b.offsetWidth;
+                const curH = parseFloat(b.style.height) || b.offsetHeight;
                 
-                const distFromCenterX = curLeft - avgCenterX;
+                const distFromCenterX = curLeft - pivotX;
                 const distFromBaseline = baselineY - (curTop + curH);
                 
-                const newLeft = avgCenterX + (distFromCenterX * factor);
+                const newLeft = pivotX + (distFromCenterX * factor);
                 const newBottom = baselineY - (distFromBaseline * factor);
                 const newW = Math.max(35, curW * factor);
                 const newH2 = Math.max(40, curH * factor);
@@ -498,7 +537,6 @@
             updateLabelPlacements();
         }
 
-        // TẠO CỘT HTML DOM
         function createBarDOM(label, val, left, colorIndex) {
             const viewport = document.getElementById('viewport-layer');
             const baselineY = document.getElementById('playground').clientHeight - 50;
@@ -520,8 +558,14 @@
 
             barContainer.innerHTML = `
                 <div class="bar-header">
-                    <div class="bar-label-text editable" contenteditable="true" style="font-size: ${labelFont}px;">${label}</div>
-                    <div class="bar-val-text editable" contenteditable="true" style="font-size: ${valFont}px;">${val}</div>
+                    <div class="editable-wrapper">
+                        <div class="bar-label-text editable" contenteditable="true" style="font-size: ${labelFont}px;">${label}</div>
+                        <button class="clear-btn" tabindex="-1">×</button>
+                    </div>
+                    <div class="editable-wrapper">
+                        <div class="bar-val-text editable" contenteditable="true" style="font-size: ${valFont}px;">${val}</div>
+                        <button class="clear-btn" tabindex="-1">×</button>
+                    </div>
                 </div>
                 <div class="bar-value" style="background-color: ${color};">
                     <div class="snap-point"></div>
@@ -537,7 +581,6 @@
             viewport.appendChild(barContainer);
         }
 
-        // KHỞI TẠO MẶC ĐỊNH BÀN LÀM VIỆC A, B
         function initDefaultChart() {
             const viewport = document.getElementById('viewport-layer');
             viewport.innerHTML = '<div id="baseline"></div>'; 
@@ -563,16 +606,13 @@
             updateAllBarHeights();
         }
 
-        // THÊM CỘT MỚI TỨC THÌ (BẤM NÚT THÊM CỘT)
         function addNewColumn() {
             const currentBars = document.querySelectorAll('.bar-container');
             
-            // Tên mặc định: A, B, C...
             let label = String.fromCharCode(65 + currentBars.length);
             if (currentBars.length >= 26) label = 'C' + currentBars.length; 
             const val = 10;
             
-            // Tìm vị trí ngoài cùng bên phải để đặt cột mới
             let maxLeft = -Infinity;
             currentBars.forEach(c => {
                 const l = parseFloat(c.style.left);
@@ -590,7 +630,6 @@
             updateAllBarHeights(); 
         }
 
-        // THÊM THƯỚC ĐO NGOẶC VUÔNG
         function addBracketMeasure() {
             const viewport = document.getElementById('viewport-layer');
             const playground = document.getElementById('playground');
@@ -617,8 +656,14 @@
                     <button class="bracket-btn del-btn" onclick="this.closest('.bracket-measure-box').remove()">×</button>
                 </div>
                 <div class="bracket-content">
-                    <div class="bar-label-text editable" contenteditable="true" style="font-size: ${labelFont}px;">A</div>
-                    <div class="bar-val-text editable" contenteditable="true" style="font-size: ${valFont}px;">?</div>
+                    <div class="editable-wrapper">
+                        <div class="bar-label-text editable" contenteditable="true" style="font-size: ${labelFont}px;">A</div>
+                        <button class="clear-btn" tabindex="-1">×</button>
+                    </div>
+                    <div class="editable-wrapper">
+                        <div class="bar-val-text editable" contenteditable="true" style="font-size: ${valFont}px;">?</div>
+                        <button class="clear-btn" tabindex="-1">×</button>
+                    </div>
                 </div>
                 <div class="resize-handle handle-top" data-handle="top"></div>
                 <div class="resize-handle handle-bottom" data-handle="bottom"></div>
@@ -640,17 +685,7 @@
             }, { passive: true });
 
             const editables = box.querySelectorAll('.editable');
-            editables.forEach(el => {
-                const stopProp = (e) => e.stopPropagation();
-                el.addEventListener('mousedown', stopProp);
-                el.addEventListener('touchstart', stopProp, { passive: true });
-                el.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        el.blur();
-                    }
-                });
-            });
+            editables.forEach(el => setupEditableEvents(el, el.classList.contains('bar-val-text'), box));
 
             addDragEvents(box);
             setupResizeEvents(box);
@@ -778,11 +813,23 @@
             });
         }
 
-        // SỬA LỖI ĐỔI SỐ BÀN PHÍM, HỖ TRỢ XỬ LÝ DẤU "?"
         function setupEditableEvents(element, isNumeric, container) {
             const stopPropagation = (e) => e.stopPropagation();
             element.addEventListener('mousedown', stopPropagation);
             element.addEventListener('touchstart', stopPropagation, {passive: true});
+
+            const wrapper = element.closest('.editable-wrapper');
+            const clearBtn = wrapper ? wrapper.querySelector('.clear-btn') : null;
+            
+            if (clearBtn) {
+                const clearContent = (e) => {
+                    e.preventDefault(); 
+                    element.innerHTML = '';
+                    element.focus();
+                };
+                clearBtn.addEventListener('mousedown', clearContent);
+                clearBtn.addEventListener('touchstart', clearContent, {passive: false});
+            }
 
             element.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -791,31 +838,33 @@
                 }
             });
 
-            if (isNumeric) {
-                element.addEventListener('blur', () => {
-                    let text = element.innerText.trim();
+            element.addEventListener('blur', () => {
+                let text = element.innerText.trim();
+                
+                if (text === '' || text === '-') {
+                    element.innerHTML = ''; 
+                } else if (isNumeric) {
                     if (text === '?') {
-                        // Nếu điền dấu ?, giữ nguyên chiều cao, chỉ hiển thị ?
                         element.innerText = '?';
                     } else {
                         let num = parseInt(text);
-                        if (isNaN(num) || num <= 0) {
-                            // Quay về giá trị cũ nếu nhập bậy bạ (khoảng trống)
-                            num = parseInt(container.dataset.val) || 10;
-                            if(text !== '?') element.innerText = num;
-                        } else {
+                        if (!isNaN(num) && num > 0) {
                             if (num > 100) num = 100;
                             element.innerText = num;
-                            container.dataset.val = num; // Cập nhật gốc
+                            if (container && container.classList.contains('bar-container')) {
+                                container.dataset.val = num; 
+                                updateAllBarHeights(); 
+                            }
+                        } else {
+                            let oldVal = (container && container.dataset.val) ? parseInt(container.dataset.val) : 10;
+                            element.innerText = oldVal;
+                            if (container && container.classList.contains('bar-container')) {
+                                updateAllBarHeights();
+                            }
                         }
                     }
-
-                    // Riêng với cột biểu đồ, cập nhật lại mọi tỉ lệ để cột dãn/ngắn lại
-                    if (container.classList.contains('bar-container')) {
-                        updateAllBarHeights(); 
-                    }
-                });
-            }
+                }
+            });
         }
 
         function addDragEvents(el) {
@@ -824,8 +873,8 @@
         }
 
         function dragStart(e) {
-            if (e.target.isContentEditable || e.target.classList.contains('bracket-btn') || e.target.classList.contains('resize-handle')) return;
-            e.stopPropagation(); // Ngăn chặn nổi bọt kích hoạt Pan màn hình
+            if (e.target.isContentEditable || e.target.classList.contains('bracket-btn') || e.target.classList.contains('resize-handle') || e.target.classList.contains('clear-btn')) return;
+            e.stopPropagation(); 
 
             if (e.type === "touchstart") { 
                 startX = e.touches[0].clientX; 
@@ -916,7 +965,6 @@
             document.removeEventListener('mouseup', dragEnd);
         }
 
-        // PAN KHÔNG GIAN
         const playgroundEl = document.getElementById('playground');
 
         function onPanStart(e) {
@@ -1021,6 +1069,7 @@
             });
         }
 
+        // --- ĐÃ SỬA: Loại bỏ phép chia / zoomScale bị dư thừa để vùng xanh lá (intersection) bám đúng vị trí và kích thước ---
         function checkIntersections() {
             const viewport = document.getElementById('viewport-layer');
             const vpRect = viewport.getBoundingClientRect();
