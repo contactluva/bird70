@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Biểu đồ Toán lớp 2 - Tự động né chữ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        #controls {
+            padding: 15px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transition: transform 0.3s ease;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        #controls.hidden {
+            transform: translateY(-100%);
+        }
+        h2 { margin: 0 0 10px 0; font-size: 18px; color: #333; }
+        .form-group { margin-bottom: 10px; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .val-input { width: 60px; }
+        .label-input { flex: 1; }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-add { background: #3498db; color: white; }
+        .btn-submit { background: #2ecc71; color: white; width: 100%; padding: 12px; font-size: 16px; margin-top: 5px; }
+        
+        #edit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 999;
+            background: #f39c12;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: block; /* Hiện sẵn nút mở bảng điều khiển khi cần */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #playground {
+            flex: 1;
+            position: relative;
+            background: #e9ecef;
+            touch-action: none; 
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        #baseline {
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #7f8c8d;
+            z-index: 0;
+        }
+
+        .bar-container {
+            position: absolute;
+            cursor: grab;
+            width: 75px;
+        }
+        .bar-container:active { cursor: grabbing; }
+
+        .bar-header {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 8px;
+            white-space: nowrap;
+            user-select: none;
+            transition: left 0.15s ease, right 0.15s ease, transform 0.15s ease;
+            pointer-events: auto;
+        }
+
+        .bar-header.displaced-right {
+            bottom: auto;
+            top: 0;
+            left: calc(100% + 8px);
+            transform: none;
+            align-items: flex-start;
+            padding-bottom: 0;
+        }
+
+        .bar-header.displaced-left {
+            bottom: auto;
+            top: 0;
+            left: auto;
+            right: calc(100% + 8px);
+            transform: none;
+            align-items: flex-end;
+            padding-bottom: 0;
+        }
+
+        .editable {
+            cursor: text;
+            outline: none;
+            border-radius: 6px;
+            border: 2px dashed transparent;
+            padding: 2px 6px;
+            transition: all 0.2s;
+        }
+        .editable:hover {
+            border-color: #999;
+            background: rgba(255,255,255,0.9);
+        }
+        .editable:focus {
+            border-color: #2980b9;
+            background: #fff;
+            box-shadow: 0 0 6px rgba(41, 128, 185, 0.5);
+            z-index: 1000;
+        }
+
+        .bar-label-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 2px;
+            background: rgba(255,255,255,0.85);
+            line-height: 1.1;
+        }
+        .bar-val-text {
+            font-size: 52px;
+            font-weight: 900;
+            color: black;
+            line-height: 1;
+            text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px 2px 0 #fff, -2px 2px 0 #fff; 
+        }
+
+        .bar-value {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px 4px 0 0;
+            box-sizing: border-box;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-bottom: 2px solid #222;
+            position: relative;
+        }
+
+        .intersection {
+            position: absolute;
+            background-color: #003300; 
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.85;
+            border: 2px dashed #fff;
+            box-sizing: border-box;
+        }
+
+        .snap-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+
+    <button id="edit-btn" onclick="toggleControls()">⚙️ Thêm cột mới</button>
+
+    <!-- Ẩn ngay từ đầu bằng class="hidden" -->
+    <div id="controls" class="hidden">
+        <h2>Bài toán cộng trừ lớp 2</h2>
+        
+        <div class="form-group">
+            <label>Chọn dạng bài:</label>
+            <select id="chartType">
+                <option value="gop">1. Bài toán Gộp (Phép cộng)</option>
+                <option value="tach">2. Bài toán Tách (Phép trừ)</option>
+                <option value="sosanh">3. Bài toán So sánh</option>
+            </select>
+        </div>
+
+        <div id="inputs-container">
+            <div class="input-row">
+                <input type="text" class="label-input" placeholder="Tên (VD: Cam)" value="Cam">
+                <input type="number" class="val-input" placeholder="Giá trị" value="50" max="100">
+            </div>
+            <div class="input-row">
+                <input type="text" class="label-input" placeholder="Tên (VD: Táo)" value="Táo">
+                <input type="number" class="val-input" placeholder="Giá trị" value="20" max="100">
+            </div>
+        </div>
+
+        <button class="btn-add" onclick="addInputRow()">+ Thêm giá trị</button>
+        <button class="btn-submit" onclick="generateChart()">Tạo biểu đồ & Bắt đầu</button>
+    </div>
+
+    <div id="playground"></div>
+
+    <script>
+        const colors = ['#e74c3c', '#9b59b6', '#f1c40f', '#e67e22', '#1abc9c', '#34495e'];
+        let activeElement = null;
+        let startX, startY, initialLeft, initialTop;
+        const SNAP_THRESHOLD = 20;
+        const BAR_WIDTH = 75;
+        const BAR_GAP = 50;
+
+        function addInputRow() {
+            const container = document.getElementById('inputs-container');
+            const row = document.createElement('div');
+            row.className = 'input-row';
+            row.innerHTML = `
+                <input type="text" class="label-input" placeholder="Tên cột">
+                <input type="number" class="val-input" placeholder="Số" max="100">
+            `;
+            container.appendChild(row);
+        }
+
+        function toggleControls() {
+            const controls = document.getElementById('controls');
+            const editBtn = document.getElementById('edit-btn');
+            if(controls.classList.contains('hidden')) {
+                controls.classList.remove('hidden');
+                editBtn.style.display = 'none';
+            } else {
+                controls.classList.add('hidden');
+                editBtn.style.display = 'block';
+            }
+        }
+
+        function generateChart() {
+            const controls = document.getElementById('controls');
+            const editBtn = document.getElementById('edit-btn');
+            if (!controls.classList.contains('hidden')) {
+                controls.classList.add('hidden');
+                editBtn.style.display = 'block';
+            }
+
+            const playground = document.getElementById('playground');
+            playground.innerHTML = ''; 
+            
+            const baselineDiv = document.createElement('div');
+            baselineDiv.id = 'baseline';
+            playground.appendChild(baselineDiv);
+
+            const rows = document.querySelectorAll('.input-row');
+            let data = [];
+            let maxVal = 0;
+
+            rows.forEach((row, index) => {
+                const label = row.querySelector('.label-input').value || `Cột ${index+1}`;
+                const val = parseInt(row.querySelector('.val-input').value) || 0;
+                if(val > 0) {
+                    data.push({ label, val });
+                    if(val > maxVal) maxVal = val;
+                }
+            });
+
+            if(data.length === 0) return;
+
+            const playgroundHeight = playground.clientHeight;
+            const playgroundWidth = playground.clientWidth;
+            const targetMaxHeight = playgroundHeight * 0.5;
+            const scaleRatio = targetMaxHeight / maxVal; 
+
+            const totalGroupWidth = data.length * BAR_WIDTH + (data.length - 1) * BAR_GAP;
+            let startPos = Math.max(15, (playgroundWidth - totalGroupWidth) / 2);
+            const baselineY = playgroundHeight - 50; 
+
+            data.forEach((item, index) => {
+                const heightPx = item.val * scaleRatio;
+                const color = colors[index % colors.length];
+
+                const barContainer = document.createElement('div');
+                barContainer.className = 'bar-container';
+                barContainer.dataset.val = item.val;
+                barContainer.style.width = BAR_WIDTH + 'px';
+                barContainer.style.left = startPos + 'px';
+                barContainer.style.height = heightPx + 'px'; 
+                barContainer.style.top = (baselineY - heightPx) + 'px'; 
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'bar-header';
+                
+                const labelEl = document.createElement('div');
+                labelEl.className = 'bar-label-text editable';
+                labelEl.contentEditable = "true";
+                labelEl.innerText = item.label;
+
+                const valEl = document.createElement('div');
+                valEl.className = 'bar-val-text editable';
+                valEl.contentEditable = "true";
+                valEl.innerText = item.val;
+
+                setupEditableEvents(labelEl, false, barContainer);
+                setupEditableEvents(valEl, true, barContainer);
+
+                headerDiv.appendChild(labelEl);
+                headerDiv.appendChild(valEl);
+
+                const bar = document.createElement('div');
+                bar.className = 'bar-value';
+                bar.style.backgroundColor = color;
+                
+                const snapPoint = document.createElement('div');
+                snapPoint.className = 'snap-point';
+                bar.appendChild(snapPoint);
+
+                barContainer.appendChild(headerDiv);
+                barContainer.appendChild(bar);
+                playground.appendChild(barContainer);
+
+                addDragEvents(barContainer);
+                startPos += (BAR_WIDTH + BAR_GAP);
+            });
+            checkIntersections();
+            updateLabelPlacements();
+        }
+
+        function updateAllBarHeights() {
+            const playground = document.getElementById('playground');
+            const containers = document.querySelectorAll('.bar-container');
+            if (containers.length === 0) return;
+
+            let maxVal = 0;
+            containers.forEach(c => {
+                const v = parseInt(c.dataset.val) || 0;
+                if (v > maxVal) maxVal = v;
+            });
+            if (maxVal <= 0) maxVal = 1;
+
+            const playgroundHeight = playground.clientHeight;
+            const targetMaxHeight = playgroundHeight * 0.5;
+            const scaleRatio = targetMaxHeight / maxVal;
+
+            containers.forEach(c => {
+                const val = parseInt(c.dataset.val) || 0;
+                const oldBottom = c.offsetTop + c.offsetHeight;
+                const newHeight = Math.max(20, val * scaleRatio);
+
+                c.style.height = newHeight + 'px';
+                c.style.top = (oldBottom - newHeight) + 'px';
+            });
+
+            checkIntersections();
+            updateLabelPlacements();
+        }
+
+        function setupEditableEvents(element, isNumeric, container) {
+            const stopPropagation = (e) => e.stopPropagation();
+            element.addEventListener('mousedown', stopPropagation);
+            element.addEventListener('touchstart', stopPropagation, {passive: true});
+
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    element.blur();
+                }
+            });
+
+            if (isNumeric) {
+                element.addEventListener('blur', () => {
+                    let num = parseInt(element.innerText.trim());
+                    if (isNaN(num) || num <= 0) num = 1;
+                    if (num > 100) num = 100;
+                    element.innerText = num;
+                    container.dataset.val = num;
+                    updateAllBarHeights();
+                });
+            }
+        }
+
+        // === XỬ LÝ KÉO THẢ & BẮT ĐIỂM ===
+        function addDragEvents(el) {
+            el.addEventListener('touchstart', dragStart, {passive: false});
+            el.addEventListener('mousedown', dragStart);
+        }
+
+        function dragStart(e) {
+            if (e.target.isContentEditable) return;
+
+            if (e.type === "touchstart") {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+                e.preventDefault();
+            }
+            activeElement = this;
+            initialLeft = activeElement.offsetLeft;
+            initialTop = activeElement.offsetTop;
+            activeElement.style.zIndex = 10; 
+
+            document.addEventListener('touchmove', dragMove, {passive: false});
+            document.addEventListener('touchend', dragEnd);
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+        }
+
+        function dragMove(e) {
+            if (!activeElement) return;
+            e.preventDefault(); 
+            
+            let currentX, currentY;
+            if (e.type === "touchmove") {
+                currentX = e.touches[0].clientX;
+                currentY = e.touches[0].clientY;
+            } else {
+                currentX = e.clientX;
+                currentY = e.clientY;
+            }
+
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+
+            let newLeft = initialLeft + dx;
+            let newTop = initialTop + dy;
+
+            const activeHeight = activeElement.offsetHeight;
+            const otherBars = document.querySelectorAll('.bar-container');
+            
+            for (let other of otherBars) {
+                if (other === activeElement) continue;
+                
+                const otherLeft = other.offsetLeft;
+                const otherTop = other.offsetTop;
+                const otherBottom = otherTop + other.offsetHeight;
+                const activeBottom = newTop + activeHeight;
+
+                if (Math.abs(newLeft - otherLeft) < SNAP_THRESHOLD) {
+                    newLeft = otherLeft;
+                }
+
+                if (Math.abs(activeBottom - otherBottom) < SNAP_THRESHOLD) { 
+                    newTop = otherBottom - activeHeight;
+                } else if (Math.abs(newTop - otherTop) < SNAP_THRESHOLD) { 
+                    newTop = otherTop;
+                } else if (Math.abs(activeBottom - otherTop) < SNAP_THRESHOLD) { 
+                    newTop = otherTop - activeHeight;
+                } else if (Math.abs(newTop - otherBottom) < SNAP_THRESHOLD) { 
+                    newTop = otherBottom;
+                }
+            }
+
+            const playgroundHeight = document.getElementById('playground').clientHeight;
+            const baselineY = playgroundHeight - 50;
+            if (Math.abs((newTop + activeHeight) - baselineY) < SNAP_THRESHOLD) {
+                newTop = baselineY - activeHeight;
+            }
+
+            activeElement.style.left = newLeft + 'px';
+            activeElement.style.top = newTop + 'px';
+
+            checkIntersections();
+            updateLabelPlacements();
+        }
+
+        function dragEnd() {
+            if (activeElement) activeElement.style.zIndex = 1;
+            activeElement = null;
+            document.removeEventListener('touchmove', dragMove);
+            document.removeEventListener('touchend', dragEnd);
+            document.removeEventListener('mousemove', dragMove);
+            document.removeEventListener('mouseup', dragEnd);
+        }
+
+        function updateLabelPlacements() {
+            const containers = Array.from(document.querySelectorAll('.bar-container'));
+            const playground = document.getElementById('playground');
+            const pgRect = playground.getBoundingClientRect();
+
+            const sortedContainers = [...containers].sort((a, b) => a.offsetTop - b.offsetTop);
+
+            containers.forEach(c => {
+                const header = c.querySelector('.bar-header');
+                header.classList.remove('displaced-right', 'displaced-left');
+            });
+
+            sortedContainers.forEach((container, i) => {
+                const header = container.querySelector('.bar-header');
+                const barVal = container.querySelector('.bar-value');
+                const barValRect = barVal.getBoundingClientRect();
+                const headerRect = header.getBoundingClientRect();
+
+                let shouldDisplace = false;
+
+                for (let other of containers) {
+                    if (other === container) continue;
+                    const otherBar = other.querySelector('.bar-value');
+                    const otherRect = otherBar.getBoundingClientRect();
+
+                    const headerZoneTop = barValRect.top - 100;
+                    const headerZoneBottom = barValRect.top + 5;
+                    const headerZoneLeft = barValRect.left - 5;
+                    const headerZoneRight = barValRect.right + 5;
+
+                    const overlapX = Math.max(0, Math.min(headerZoneRight, otherRect.right) - Math.max(headerZoneLeft, otherRect.left));
+                    const overlapY = Math.max(0, Math.min(headerZoneBottom, otherRect.bottom) - Math.max(headerZoneTop, otherRect.top));
+
+                    if (overlapX > 10 && overlapY > 10) {
+                        shouldDisplace = true;
+                        break;
+                    }
+                }
+
+                if (!shouldDisplace) {
+                    for (let j = 0; j < i; j++) {
+                        const higherContainer = sortedContainers[j];
+                        const higherHeader = higherContainer.querySelector('.bar-header');
+                        const higherRect = higherHeader.getBoundingClientRect();
+
+                        const overlapX = Math.max(0, Math.min(headerRect.right, higherRect.right) - Math.max(headerRect.left, higherRect.left));
+                        const overlapY = Math.max(0, Math.min(headerRect.bottom, higherRect.bottom) - Math.max(headerRect.top, higherRect.top));
+
+                        if (overlapX > 10 && overlapY > 10) {
+                            shouldDisplace = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldDisplace) {
+                    if (barValRect.right + 130 > pgRect.right) {
+                        header.classList.remove('displaced-right');
+                        header.classList.add('displaced-left');
+                    } else {
+                        header.classList.remove('displaced-left');
+                        header.classList.add('displaced-right');
+                    }
+                }
+            });
+        }
+
+        function checkIntersections() {
+            const playground = document.getElementById('playground');
+            const pgRect = playground.getBoundingClientRect();
+            
+            document.querySelectorAll('.intersection').forEach(el => el.remove());
+            
+            const bars = Array.from(document.querySelectorAll('.bar-value'));
+            
+            for(let i = 0; i < bars.length; i++) {
+                for(let j = i + 1; j < bars.length; j++) {
+                    const rect1 = bars[i].getBoundingClientRect();
+                    const rect2 = bars[j].getBoundingClientRect();
+                    
+                    const overlapX = Math.max(0, Math.min(rect1.right, rect2.right) - Math.max(rect1.left, rect2.left));
+                    const overlapY = Math.max(0, Math.min(rect1.bottom, rect2.bottom) - Math.max(rect1.top, rect2.top));
+                    
+                    if(overlapX > 0 && overlapY > 0) {
+                        const interLeft = Math.max(rect1.left, rect2.left) - pgRect.left;
+                        const interTop = Math.max(rect1.top, rect2.top) - pgRect.top;
+                        
+                        const intersection = document.createElement('div');
+                        intersection.className = 'intersection';
+                        intersection.style.left = interLeft + 'px';
+                        intersection.style.top = interTop + 'px';
+                        intersection.style.width = overlapX + 'px';
+                        intersection.style.height = overlapY + 'px';
+                        
+                        playground.appendChild(intersection);
+                    }
+                }
+            }
+        }
+
+        // Tự động khởi tạo và vẽ biểu đồ ngay khi trang load xong
+        window.onload = function() {
+            generateChart();
+        };
+    </script>
+</body>
+</html>
