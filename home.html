@@ -4,25 +4,25 @@
             <p>EngDau là công cụ mã nguồn mở, sử dụng API chính thức của TikTok, giúp bạn tải video vào hộp thư thông báo tài khoản TikTok một cách thuận tiện. Ứng dụng được phát triển cho mục đích cá nhân và nội bộ.</p>
         </section>
 
-        <!-- === PHẦN MỚI: Kết nối & Tải lên === -->
+        <!-- === PHẦN Kết nối & Tải lên — Đã sửa nền xám === -->
         <section>
             <h2>Kết nối & Sử dụng</h2>
             
-            <div style="background:#1e293b; padding:1.5rem; border-radius:8px; margin-bottom:1.5rem;">
+            <div style="background:#334155; padding:1.5rem; border-radius:8px; margin-bottom:1.5rem;">
                 <h3 style="color:#facc15; margin-bottom:1rem;">🔑 Bước 1: Kết nối tài khoản TikTok</h3>
                 <p>Nhấn nút bên dưới để mở trang ủy quyền TikTok. Sau khi cấp quyền, bạn sẽ được chuyển về trang callback để lấy mã xác nhận.</p>
-                <button onclick="connectTikTok()" style="background:#2563eb; color:white; border:none; padding:0.75rem 1.5rem; border-radius:6px; font-size:1rem; cursor:pointer; transition:background 0.2s;">
+                <button onclick="connectTikTok()" style="background:#64748b; color:white; border:none; padding:0.75rem 1.5rem; border-radius:6px; font-size:1rem; cursor:pointer; transition:background 0.2s;">
                     🔗 Kết nối TikTok
                 </button>
                 <p id="connect-status" style="margin-top:1rem; color:#94a3b8;">Chưa kết nối</p>
             </div>
 
-            <div style="background:#1e293b; padding:1.5rem; border-radius:8px;">
+            <div style="background:#334155; padding:1.5rem; border-radius:8px;">
                 <h3 style="color:#facc15; margin-bottom:1rem;">📤 Bước 2: Tải video vào hộp thư</h3>
                 <p>Chọn file video MP4 trên máy bạn và nhấn "Tải lên". Video sẽ được gửi trực tiếp đến hộp thư thông báo tài khoản TikTok đã kết nối.</p>
                 <input type="file" id="video-file" accept=".mp4" style="margin:0.75rem 0; color:#cbd5e1;">
                 <br>
-                <button onclick="uploadVideo()" style="background:#16a34a; color:white; border:none; padding:0.75rem 1.5rem; border-radius:6px; font-size:1rem; cursor:pointer; transition:background 0.2s;">
+                <button onclick="uploadVideo()" style="background:#475569; color:white; border:none; padding:0.75rem 1.5rem; border-radius:6px; font-size:1rem; cursor:pointer; transition:background 0.2s;">
                     📤 Tải vào Hộp thư TikTok
                 </button>
                 <p id="upload-status" style="margin-top:1rem; color:#94a3b8;">Chưa chọn file</p>
@@ -30,7 +30,6 @@
             
             <p style="margin-top:1rem; font-size:0.9rem; color:#94a3b8;">⚠️ Lưu ý: Đây là giao diện minh họa cho luồng hoạt động — cần cấu hình Client Key và code xử lý phía máy chủ để hoạt động thực tế.</p>
         </section>
-        <!-- === KẾT THÚC PHẦN MỚI === -->
 
         <section>
             <h2>Tính năng chính</h2>
@@ -57,16 +56,22 @@
         </section>
     </main>
 
-    <!-- === THÊM SCRIPT NÀY TRƯỚC </body> === -->
     <script>
-        // === CẤU HÌNH ===
-        const CLIENT_KEY = "THAY_CLIENT_KEY_CUA_BAN_VAO_DAY";
+        // ✅ CẤU HÌNH ĐÚNG — Điền Client Key của bạn vào dấu ngoặc kép bên dưới
+        const CLIENT_KEY = "awt58km9497yc375";  // ← Đã điền sẵn của bạn
         const REDIRECT_URI = "https://engdau.vercel.app/callback.html";
         const SCOPE = "video.upload";
 
         function connectTikTok() {
-            const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${awt58km9497yc375}&scope=${encodeURIComponent(SCOPE)}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
-            document.getElementById("connect-status").innerHTML = `<span style="color:#38bdf8;">Đang mở trang ủy quyền...</span>`;
+            if (CLIENT_KEY === "THAY_CLIENT_KEY_CUA_BAN_VAO_DAY" || !CLIENT_KEY) {
+                document.getElementById("connect-status").innerHTML = `<span style="color:#f87171">❌ Vui lòng điền Client Key trước khi sử dụng</span>`;
+                return;
+            }
+            
+            const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${encodeURIComponent(SCOPE)}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+            
+            console.log("Mở link:", authUrl); // Kiểm tra link trong Console (F12)
+            document.getElementById("connect-status").innerHTML = `<span style="color:#38bdf8;">🔄 Đang mở trang ủy quyền...</span>`;
             window.open(authUrl, "_blank");
         }
 
