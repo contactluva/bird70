@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đang xử lý...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+        }
+        .container { max-width: 400px; }
+        h1 { color: #facc15; font-size: 1.5rem; margin-bottom: 1rem; }
+        p { color: #cbd5e1; line-height: 1.6; }
+        code {
+            background: #1e293b;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: #38bdf8;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Đã cấp quyền thành công!</h1>
+        <p>Mã xác nhận (code):</p>
+        <p id="code-display"><code>Đang nhận...</code></p>
+        <p style="margin-top: 1.5rem; font-size: 0.9rem;">Bạn có thể đóng trang này và quay lại công cụ.</p>
+    </div>
+
+    <script>
+        // Lấy giá trị 'code' từ tham số URL
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const error = params.get('error');
+
+        const display = document.getElementById('code-display');
+        
+        if (error) {
+            display.innerHTML = `<code style="color:#f87171">Lỗi: ${error}</code>`;
+        } else if (code) {
+            display.innerHTML = `<code>${code}</code>`;
+            console.log('Authorization Code:', code);
+        } else {
+            display.innerHTML = `<code>Không nhận được mã xác nhận</code>`;
+        }
+    </script>
+</body>
+</html>
