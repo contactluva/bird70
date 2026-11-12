@@ -65,7 +65,7 @@
         const SCOPE = "video.upload";
 
         function connectTikTok() {
-            const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${encodeURIComponent(SCOPE)}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+            const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${awt58km9497yc375}&scope=${encodeURIComponent(SCOPE)}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
             document.getElementById("connect-status").innerHTML = `<span style="color:#38bdf8;">Đang mở trang ủy quyền...</span>`;
             window.open(authUrl, "_blank");
         }
