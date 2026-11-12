@@ -56,21 +56,21 @@
         </section>
     </main>
 
-    <script>
-        // ✅ CẤU HÌNH ĐÚNG — Điền Client Key của bạn vào dấu ngoặc kép bên dưới
-        const CLIENT_KEY = "awt58km9497yc375";  // ← Đã điền sẵn của bạn
+       <script>
+        // ✅ Đã cập nhật: Sử dụng Client Key Sandbox
+        const CLIENT_KEY = "sbaw6q54g42ga805r7";
         const REDIRECT_URI = "https://engdau.vercel.app/callback.html";
         const SCOPE = "video.upload";
 
         function connectTikTok() {
-            if (CLIENT_KEY === "awt58km9497yc375" || !CLIENT_KEY) {
+            if (!CLIENT_KEY || CLIENT_KEY === "") {
                 document.getElementById("connect-status").innerHTML = `<span style="color:#f87171">❌ Vui lòng điền Client Key trước khi sử dụng</span>`;
                 return;
             }
             
             const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${encodeURIComponent(SCOPE)}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
             
-            console.log("Mở link:", authUrl); // Kiểm tra link trong Console (F12)
+            console.log("🔗 Link ủy quyền:", authUrl);
             document.getElementById("connect-status").innerHTML = `<span style="color:#38bdf8;">🔄 Đang mở trang ủy quyền...</span>`;
             window.open(authUrl, "_blank");
         }
@@ -88,3 +88,4 @@
             status.innerHTML = `<span style="color:#facc15;">⏳ Đang chuẩn bị tải lên: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)...</span><br><span style="font-size:0.85rem; color:#94a3b8;">Đây là giao diện demo — cần code xử lý gọi API thực tế</span>`;
         }
     </script>
+
